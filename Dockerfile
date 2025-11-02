@@ -8,7 +8,7 @@
 FROM node:20-bookworm
 
 # Imposta la working directory
-WORKDIR /usr/src/app
+WORKDIR /usr/src/expo_app
 
 # Installa strumenti di base
 RUN apt-get update && apt-get install -y \
@@ -21,7 +21,7 @@ RUN apt-get update && apt-get install -y \
 RUN npm install -g expo
 
 # Copia il codice del progetto (cartella app)
-COPY ./app /usr/src/app
+COPY ./expo_app /usr/src/expo_app
 
 # Installa le dipendenze del progetto
 RUN npm install

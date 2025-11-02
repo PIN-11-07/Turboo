@@ -7,7 +7,7 @@ services:
   expo:
     build: .
     container_name: expo
-    working_dir: /usr/src/app
+    working_dir: /usr/src/expo_app
 
     # Espone le porte usate da Expo e Metro
     ports:
@@ -15,7 +15,7 @@ services:
 
     # Monta il codice locale nel container (hot reload)
     volumes:
-      - ./app:/usr/src/app
+      - ./expo_app:/usr/src/expo_app
       - /usr/src/app/node_modules
 
     # Variabili d'ambiente
