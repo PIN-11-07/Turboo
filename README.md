@@ -57,7 +57,7 @@ docker compose build
 > 🔧 Questo comando crea un container basato su Node.js e installa automaticamente:
 >
 > * `expo-cli`
-> * `@expo/ngrok` (per il tunnel)
+> * `@expo/ngrok` verrà installato automaticamente da Expo quando usi expo start --tunnel
 > * le dipendenze del tuo progetto (`package.json`)
 
 ---

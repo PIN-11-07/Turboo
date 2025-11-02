@@ -18,7 +18,7 @@ RUN apt-get update && apt-get install -y \
   && rm -rf /var/lib/apt/lists/*
 
 # Installa Expo CLI e ngrok globalmente
-RUN npm install -g expo @expo/ngrok
+RUN npm install -g expo
 
 # Copia il codice del progetto (cartella app)
 COPY ./app /usr/src/app
