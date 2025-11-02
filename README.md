@@ -3,13 +3,8 @@
 
 ## Requisiti
 
-- Docker Desktop (macOS/Windows) o Docker Engine (Linux) — versione consigliata: 4.x o superiore
+- Docker Desktop (macOS/Windows) o Docker Engine (Linux)
 - Git
-
-Note utili:
-- macOS M1/M2: Docker Desktop supporta ARM64; non sono necessarie configurazioni speciali nella maggior parte dei casi.
-- Windows: usa WSL2 nelle impostazioni di Docker Desktop.
-- Linux: aggiungi il tuo utente al gruppo `docker` per evitare `sudo`.
 
 ## Struttura principale
 
@@ -68,4 +63,4 @@ npx expo start --tunnel
 
 5) Apri Expo Go sul telefono e scansiona il QR code mostrato dal processo `expo start`.
 
-Nota: il flag └── tunnel` usa ngrok per creare un URL pubblico. Questo ti permette di connetterti anche da reti diverse.
+Nota: il flag `--tunnel` usa ngrok per creare un URL pubblico. Questo ti permette di connetterti anche da reti diverse.
