@@ -14,17 +14,10 @@ WORKDIR /usr/src/expo_app
 RUN apt-get update && apt-get install -y \
   git \
   curl \
-  watchman \
   && rm -rf /var/lib/apt/lists/*
-
-# Installa Expo CLI e ngrok globalmente
-RUN npm install -g expo
 
 # Copia il codice del progetto (cartella app)
 COPY ./expo_app /usr/src/expo_app
-
-# Installa le dipendenze del progetto
-RUN npm install
 
 # Espone le porte usate da Expo e Metro
 EXPOSE 8081
