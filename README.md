@@ -68,7 +68,7 @@ Aggiungi le chiavi in `.env` (non committare il file nel VCS):
 - SUPABASE_URL
 - ANON_KEY
 
-## Autenticazione con Supabase (sintesi)
+## Autenticazione con Supabase
 - Librerie installate:
     - @supabase/supabase-js
     - @react-native-async-storage/async-storage (salvataggio sessione sul dispositivo)
@@ -86,8 +86,3 @@ Aggiungi le chiavi in `.env` (non committare il file nel VCS):
 ## Schermate principali
 - LoginScreen: registrazione e accesso via email/password.
 - HomeScreen: visualizza l'email dell'utente e consente il logout.
-
-Suggerimenti rapidi:
-- Verifica che `.env` sia caricato correttamente nel container.
-- Usa i log di Expo e i devtools per debug della UI e delle chiamate al backend.
-- Proteggi le chiavi sensibili e non committare `.env` né file contenenti secret.

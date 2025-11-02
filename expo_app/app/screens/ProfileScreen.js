@@ -7,7 +7,7 @@ export default function HomeScreen() {
 
   return (
     <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-      <Text>Benvenuto, {user?.email}</Text>
+      <Text>Benvenuto nella schermata 2, {user?.email}</Text>
       <Button title="Logout" onPress={signOut} />
     </View>
   )
