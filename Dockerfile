@@ -5,7 +5,7 @@
 # ================================
 
 # Usa un'immagine Node stabile e compatibile ARM
-FROM node:20-bullseye
+FROM node:20-bookworm
 
 # Imposta la working directory
 WORKDIR /usr/src/app
@@ -27,7 +27,7 @@ COPY ./app /usr/src/app
 RUN npm install
 
 # Espone le porte usate da Expo e Metro
-EXPOSE 19000 19001 19002 8081
+EXPOSE 8081
 
 # Variabili d’ambiente base
 ENV EXPO_DEVTOOLS_LISTEN_ADDRESS=0.0.0.0

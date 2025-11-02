@@ -11,10 +11,7 @@ services:
 
     # Espone le porte usate da Expo e Metro
     ports:
-      - "19000:19000"  # Metro Bundler exp://
-      - "19001:19001"  # WebSocket debugger
-      - "19002:19002"  # DevTools UI
-      - "8081-8090:8081-8090"  # Intervallo porte Metro alternative
+      - "8081-8090:8081-8090"
 
     # Monta il codice locale nel container (hot reload)
     volumes:
