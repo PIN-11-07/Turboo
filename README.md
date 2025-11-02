@@ -40,8 +40,8 @@ turboo/
 Apri un terminale:
 
 ```bash
-git clone https://github.com/<organizzazione>/<nome-repo>.git
-cd <nome-repo>
+git clone https://github.com/PIN-11-07/Turboo.git
+cd Turboo
 ```
 
 ---
