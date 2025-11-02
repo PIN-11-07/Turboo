@@ -33,5 +33,5 @@ EXPOSE 19000 19001 19002 8081
 ENV EXPO_DEVTOOLS_LISTEN_ADDRESS=0.0.0.0
 ENV EXPO_USE_DEV_SERVER=true
 
-# Avvia Expo in modalità tunnel (funziona anche se non sei sulla stessa rete)
-CMD ["npx", "expo", "start", "--tunnel"]
+# Avvia bash
+CMD [ "bash" ]
