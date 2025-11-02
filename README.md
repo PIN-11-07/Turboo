@@ -67,7 +67,7 @@ docker compose build
 Avvia Expo in modalità **tunnel**:
 
 ```bash
-docker compose up
+docker compose up -d
 ```
 
 Aspetta che compaia qualcosa come:

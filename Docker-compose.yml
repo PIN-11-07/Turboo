@@ -6,7 +6,7 @@
 services:
   expo:
     build: .
-    container_name: expo_app
+    container_name: expo
     working_dir: /usr/src/app
 
     # Espone le porte usate da Expo e Metro
