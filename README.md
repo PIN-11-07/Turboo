@@ -49,11 +49,11 @@ docker compose up -d
 4) Entra nel container `expo` per avviare lo script di sviluppo. Esegui il comando interattivo e poi lancia Expo:
 
 ```bash
-docker compose exec expo sh
+docker compose exec expo bash
 ```
 Dentro il container (prompt):
 ```bash
-npx expo start --tunnel --dev-client
+npx expo start --tunnel
 ```
 
 5) Apri Expo Go sul telefono e scansiona il QR code mostrato dal processo `expo start`.
