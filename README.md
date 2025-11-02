@@ -1,5 +1,5 @@
 
-# Turboo — Ambiente di sviluppo Expo + Supabase (Docker + Tunnel)
+# Ambiente di sviluppo
 
 ## Cosa c'è in questa repo
 
@@ -53,6 +53,8 @@ docker compose exec expo bash
 ```
 Dentro il container (prompt):
 ```bash
+npm i
+apt-get update -y && apt-get upgrade -y
 npx expo start --tunnel
 ```
 
