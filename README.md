@@ -2,65 +2,92 @@
 # Ambiente di sviluppo
 
 ## Requisiti
-
 - Docker Desktop (macOS/Windows) o Docker Engine (Linux)
 - Git
+- Node.js (se esegui in locale senza Docker)
+- Expo Go (app mobile per test)
 
-## Struttura principale
+## Struttura del progetto
+Radice principale del progetto e file/significato:
 
 ```
 expo_app/
-├─ App.js            — Punto d'ingresso dell'app; configura navigazione e layout globale
+├─ App.js            — Punto d'ingresso; configura navigazione e provider globali
 ├─ app/
-|   ├─ components/   — Componenti riutilizzabili (bottoni, card, header, ecc.)
-|   ├─ context/      — Provider e contesti per stato globale (React Context)
-|   ├─ hooks/        — Hook personalizzati (es. useAuth, useFetch)
-|   ├─ lib/          — Librerie interne e integrazioni (config, adapter)
-|   ├─ services/     — Moduli per chiamate API e logica di backend
-|   ├─ utils/        — Funzioni di utilità pure e helper
-|   ├─ screens/      — Schermate principali dell'app (es. Home, Profile, Settings)
-|   ├─ navigation/   — Navigatori e configurazioni di routing (React Navigation)
-|   └─ config/       — Configurazioni e costanti specifiche dell'app
-├─ app.json          — Configurazione Expo e metadati dell'app
-├─ .env              — Variabili d'ambiente
-├─ assets/           — Risorse statiche: immagini, icone, font
-├─ index.js          — Bootstrap dell'app (registro dell'app per Expo)
-└─ package.json      — Dipendenze, script e metadata del progetto
+|   ├─ components/   — Componenti riutilizzabili (Button, Card, Header, ecc.)
+|   ├─ context/      — Provider e contesti (es. AuthContext)
+|   ├─ hooks/        — Hook personalizzati (useAuth, useFetch, ...)
+|   ├─ lib/          — Librerie interne e integrazioni (es. client Supabase)
+|   ├─ services/     — Logica per chiamate API e integrazioni backend
+|   ├─ utils/        — Funzioni di utilità e helper
+|   ├─ screens/      — Schermate principali (Home, Login, Profile, ...)
+|   ├─ navigation/   — Configurazioni di routing (React Navigation)
+|   └─ config/       — Costanti e configurazioni specifiche
+├─ app.json          — Configurazione Expo
+├─ .env              — Variabili d'ambiente (NON committare)
+├─ assets/           — Immagini, icone, font
+├─ index.js          — Bootstrap dell'app per Expo
+└─ package.json      — Dipendenze e script
 ```
 
-## Quick start (sviluppo locale)
+## Avvio rapido (sviluppo locale)
 
-1) Clona la repo e entra nella cartella:
-
+1. Clona la repository e entra nella cartella:
 ```bash
 git clone https://github.com/PIN-11-07/Turboo.git
 cd Turboo
 ```
 
-2) Costruisci l'immagine Docker (installa le dipendenze nel container):
-
+2. Costruisci l'immagine Docker (installa dipendenze nel container):
 ```bash
 docker compose build
 ```
 
-3) Avvia i servizi in background:
-
+3. Avvia i servizi in background:
 ```bash
 docker compose up -d
 ```
 
-4) Entra nel container `expo` per avviare lo script di sviluppo. Esegui il comando interattivo e poi lancia Expo:
-
+4. Entra nel container `expo` per l'ambiente di sviluppo:
 ```bash
 docker compose exec expo bash
 ```
-Dentro il container (prompt):
+All'interno del container:
 ```bash
 npm i
 apt-get update -y && apt-get upgrade -y
 npx expo start --tunnel
 ```
 
-5) Apri Expo Go sul telefono e scansiona il QR code mostrato dal processo `expo start`.
+5. Apri Expo Go sul dispositivo mobile e scansiona il QR code mostrato da `expo start`.
 
-Nota: il flag `--tunnel` usa ngrok per creare un URL pubblico. Questo ti permette di connetterti anche da reti diverse.
+Nota: il flag `--tunnel` utilizza ngrok per esporre un URL pubblico, utile per testare da reti differenti.
+
+## Variabili d'ambiente
+Aggiungi le chiavi in `.env` (non committare il file nel VCS):
+- SUPABASE_URL
+- ANON_KEY
+
+## Autenticazione con Supabase (sintesi)
+- Librerie installate:
+    - @supabase/supabase-js
+    - @react-native-async-storage/async-storage (salvataggio sessione sul dispositivo)
+- Client Supabase:
+    - Creato in `app/lib/supabase.js` usando le variabili d'ambiente.
+    - È configurato per salvare/ripristinare la sessione tramite AsyncStorage.
+- AuthContext:
+    - Definito in `app/context/AuthContext.js`.
+    - Tiene traccia di sessione e user; espone metodi per login, register e logout.
+    - Si sottoscrive ai cambiamenti di sessione e aggiorna lo stato automaticamente.
+- Integrazione:
+    - In `App.js` l'app è avvolta da `<AuthProvider>` per rendere lo stato auth accessibile globalmente.
+    - La navigazione mostra la schermata Home se l'utente è autenticato, altrimenti la Login.
+
+## Schermate principali
+- LoginScreen: registrazione e accesso via email/password.
+- HomeScreen: visualizza l'email dell'utente e consente il logout.
+
+Suggerimenti rapidi:
+- Verifica che `.env` sia caricato correttamente nel container.
+- Usa i log di Expo e i devtools per debug della UI e delle chiamate al backend.
+- Proteggi le chiavi sensibili e non committare `.env` né file contenenti secret.
