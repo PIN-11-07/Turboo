@@ -1,20 +1,27 @@
-import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View } from 'react-native';
+import React from 'react'
+import { View, ActivityIndicator } from 'react-native'
+import { AuthProvider, useAuth } from './app/context/AuthContext'
+import HomeScreen from './app/screens/Home'
+import LoginScreen from './app/screens/Login'
+
+function Main() {
+  const { user, loading } = useAuth()
+
+  if (loading) {
+    return (
+      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+        <ActivityIndicator size="large" />
+      </View>
+    )
+  }
+
+  return user ? <HomeScreen /> : <LoginScreen />
+}
 
 export default function App() {
   return (
-    <View style={styles.container}>
-      <Text>Open up App.js to start working on your app!</Text>
-      <StatusBar style="auto" />
-    </View>
-  );
+    <AuthProvider>
+      <Main />
+    </AuthProvider>
+  )
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});

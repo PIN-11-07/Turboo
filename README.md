@@ -14,16 +14,23 @@ Note utili:
 ## Struttura principale
 
 ```
-turboo/
-├── Dockerfile           # Dockerfile per l'immagine di sviluppo (Node + Expo)
-├── docker-compose.yml   # Definisce i servizi di sviluppo (expo, db, ecc.)
-└── expo_app/            # Codice sorgente dell'app Expo (JavaScript + React Native)
-	├── components/      # Componenti UI riutilizzabili (bottoni, card, layout)
-	├── context/         # Context e provider React per stato globale (Auth, Theme, ecc.)
-	├── hooks/           # Custom hooks riutilizzabili (useAuth, useFetch, ecc.)
-	├── lib/             # Librerie e configurazioni di basso livello (es. `supabase.js`)
-	├── services/        # Integrazione con API esterne e logica di rete
-	└──  utils/           # Helper e funzioni utilitarie (formati, validazioni)
+expo_app/
+├─ App.js            — Punto d'ingresso dell'app; configura navigazione e layout globale
+├─ app/
+|   ├─ components/   — Componenti riutilizzabili (bottoni, card, header, ecc.)
+|   ├─ context/      — Provider e contesti per stato globale (React Context)
+|   ├─ hooks/        — Hook personalizzati (es. useAuth, useFetch)
+|   ├─ lib/          — Librerie interne e integrazioni (config, adapter)
+|   ├─ services/     — Moduli per chiamate API e logica di backend
+|   ├─ utils/        — Funzioni di utilità pure e helper
+|   ├─ screens/      — Schermate principali dell'app (es. Home, Profile, Settings)
+|   ├─ navigation/   — Navigatori e configurazioni di routing (React Navigation)
+|   └─ config/       — Configurazioni e costanti specifiche dell'app
+├─ app.json          — Configurazione Expo e metadati dell'app
+├─ .env              — Variabili d'ambiente
+├─ assets/           — Risorse statiche: immagini, icone, font
+├─ index.js          — Bootstrap dell'app (registro dell'app per Expo)
+└─ package.json      — Dipendenze, script e metadata del progetto
 ```
 
 ## Quick start (sviluppo locale)
@@ -61,4 +68,4 @@ npx expo start --tunnel
 
 5) Apri Expo Go sul telefono e scansiona il QR code mostrato dal processo `expo start`.
 
-Nota: il flag `--tunnel` usa ngrok per creare un URL pubblico. Questo ti permette di connetterti anche da reti diverse.
+Nota: il flag └── tunnel` usa ngrok per creare un URL pubblico. Questo ti permette di connetterti anche da reti diverse.
