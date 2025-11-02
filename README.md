@@ -1,11 +1,6 @@
 
 # Ambiente di sviluppo
 
-## Cosa c'è in questa repo
-
-- Dockerfile e docker-compose per costruire un container di sviluppo con Node, Expo e dipendenze del progetto.
-- Cartella `app/` con l'app Expo (TypeScript + React Native).
-
 ## Requisiti
 
 - Docker Desktop (macOS/Windows) o Docker Engine (Linux) — versione consigliata: 4.x o superiore
@@ -20,9 +15,15 @@ Note utili:
 
 ```
 turboo/
-├── Dockerfile
-├── docker-compose.yml
-└── app/           # codice dell'app Expo
+├── Dockerfile           # Dockerfile per l'immagine di sviluppo (Node + Expo)
+├── docker-compose.yml   # Definisce i servizi di sviluppo (expo, db, ecc.)
+└── expo_app/            # Codice sorgente dell'app Expo (JavaScript + React Native)
+	├── components/      # Componenti UI riutilizzabili (bottoni, card, layout)
+	├── context/         # Context e provider React per stato globale (Auth, Theme, ecc.)
+	├── hooks/           # Custom hooks riutilizzabili (useAuth, useFetch, ecc.)
+	├── lib/             # Librerie e configurazioni di basso livello (es. `supabase.js`)
+	├── services/        # Integrazione con API esterne e logica di rete
+	└──  utils/           # Helper e funzioni utilitarie (formati, validazioni)
 ```
 
 ## Quick start (sviluppo locale)
