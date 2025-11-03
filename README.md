@@ -1,4 +1,3 @@
-
 # Ambiente di sviluppo
 
 ## Requisiti
@@ -68,133 +67,76 @@ Aggiungi le chiavi in `.env` (non committare il file nel VCS):
 - SUPABASE_URL
 - ANON_KEY
 
-## Autenticazione con Supabase
-- Librerie installate:
-    - @supabase/supabase-js
-    - @react-native-async-storage/async-storage (salvataggio sessione sul dispositivo)
-- Client Supabase:
-    - Creato in `app/lib/supabase.js` usando le variabili d'ambiente.
-    - È configurato per salvare/ripristinare la sessione tramite AsyncStorage.
-- AuthContext:
-    - Definito in `app/context/AuthContext.js`.
-    - Tiene traccia di sessione e user; espone metodi per login, register e logout.
-    - Si sottoscrive ai cambiamenti di sessione e aggiorna lo stato automaticamente.
-- Integrazione:
-    - In `App.js` l'app è avvolta da `<AuthProvider>` per rendere lo stato auth accessibile globalmente.
-    - La navigazione mostra la schermata Home se l'utente è autenticato, altrimenti la Login.
+
+# Autenticazione
+
+## Librerie
+- @supabase/supabase-js
+- @react-native-async-storage/async-storage (persistenza sessione)
+
+## Client Supabase
+- File: `app/lib/supabase.js`
+- Usa variabili d’ambiente e AsyncStorage per salvare/ripristinare la sessione.
+
+## AuthContext
+- File: `app/context/AuthContext.js`
+- Gestisce `user` e `session`
+- Espone `signIn`, `signUp`, `signOut`
+- Sottoscrizione agli eventi di Supabase e ripristino sessione via AsyncStorage
+
+## Integrazione nell’app
+- In `App.js`, l’app è avvolta da `<AuthProvider>` per stato auth globale.
+- La navigazione mostra Home se autenticato, altrimenti Login.
 
 ## Schermata di login
-- LoginScreen: registrazione e accesso via email/password.
+- `LoginScreen`: registrazione e accesso via email/password.
 
-## 🧭 Struttura generale della navigazione
 
-1. **RootNavigator** → decide quale parte dell’app mostrare (login o area privata)
-2. **AuthNavigator** → gestisce le schermate pubbliche (login, signup)
-3. **AppNavigator** → gestisce le schermate private accessibili dopo il login
+# Navigazione
 
----
+## Struttura generale
+1. RootNavigator → decide se mostrare area pubblica o privata
+2. AuthNavigator → schermate pubbliche (Login)
+3. AppNavigator → schermate private (Home, Profile, Settings)
 
-## 🗂️ Struttura delle cartelle per la navigazione
+Snippet decisionale:
+```js
+{user ? <AppNavigator /> : <AuthNavigator />}
+```
 
+## Struttura cartelle navigazione
 ```
 app/
 ├── navigation/
 │   ├── AuthNavigator.js        # Stack pubblico (Login, Signup)
 │   ├── AppNavigator.js         # Navigatore privato (Home, Profilo, Settings)
-│   └── RootNavigator.js        # Router principale che decide quale usare
+│   └── RootNavigator.js        # Router principale
 ├── screens/
-│   ├── LoginScreen.js          # Schermata di accesso
-│   ├── HomeScreen.js           # Pagina principale post-login
-│   ├── ProfileScreen.js        # Pagina profilo utente con logout
-│   └── SettingsScreen.js       # Impostazioni utente
-└── App.js                      # Punto d’ingresso, avvolge tutto con AuthProvider
+│   ├── LoginScreen.js
+│   ├── HomeScreen.js
+│   ├── ProfileScreen.js
+│   └── SettingsScreen.js
+└── App.js                      # Punto d’ingresso con AuthProvider
 ```
 
----
+## Dettagli navigatori
+- RootNavigator: mostra `AuthNavigator` se `user` è null, altrimenti `AppNavigator`.
+- AuthNavigator: Stack senza header (`headerShown: false`), contiene Login.
+- AppNavigator: Bottom Tab con `HomeScreen`, `ProfileScreen`, `SettingsScreen`. Accesso a `useAuth`.
 
-## ⚙️ Funzionamento logico
-
-### 1. `AuthContext`
-
-Il contesto centralizza la logica di autenticazione Supabase:
-
-* Tiene traccia di `user` e `session`
-* Espone funzioni `signIn`, `signUp`, `signOut`
-* Si sottoscrive automaticamente agli eventi di login/logout di Supabase
-* Ripristina la sessione salvata con `AsyncStorage` (quindi il login persiste tra riavvii)
-
-➡️ Grazie a questo, lo stato dell’utente (`user`) è disponibile globalmente.
-
----
-
-### 2. `RootNavigator`
-
-È il **router principale** dell’app.
-Decide quale navigatore mostrare in base allo stato `user` del contesto:
-
-```js
-{user ? <AppNavigator /> : <AuthNavigator />}
-```
-
-* Se `user` è `null` → l’utente **non è autenticato**, quindi mostra il `AuthNavigator`
-* Se `user` è valorizzato → l’utente **è autenticato**, quindi mostra il `AppNavigator`
-
-Questo avviene automaticamente ogni volta che cambia la sessione Supabase.
-
----
-
-### 3. `AuthNavigator`
-
-È un **Stack Navigator** che contiene le schermate pubbliche:
-
-```js
-LoginScreen
-```
-
-* Usa `createNativeStackNavigator`
-* Nessuna `header bar` (disattivata con `headerShown: false`)
-
----
-
-### 4. `AppNavigator`
-
-È il **navigatore privato**.
-Implementa un **Bottom Tab Navigator**:
-
-```js
-HomeScreen
-ProfileScreen
-SettingsScreen
-```
-
-* Usa `@react-navigation/bottom-tabs`
-* Mostra una barra inferiore con le tre schermate principali
-* Ogni schermata può accedere al contesto utente (`useAuth`) per mostrare dati o gestire il logout
-
----
-
-### 5. `App.js`
-
-È il punto d’ingresso dell’app.
-Avvolge tutto con il provider di autenticazione e il navigatore principale:
-
+## Ingresso app
+- `App.js` avvolge tutto:
 ```js
 <AuthProvider>
   <RootNavigator />
 </AuthProvider>
 ```
 
-In questo modo, **tutta la navigazione è consapevole dello stato di login**.
-
----
-
-## 🔄 Flusso di navigazione completo
-
-1. All’avvio, `AuthContext` recupera la sessione Supabase (se presente in AsyncStorage).
+## Flusso di navigazione
+1. All’avvio, `AuthContext` recupera la sessione (AsyncStorage).
 2. `RootNavigator` controlla `user`:
-
-   * Se non esiste → mostra `AuthNavigator` → `LoginScreen`
-   * Se esiste → mostra `AppNavigator` → `HomeScreen`
-3. Dopo il login (`signIn()`), Supabase aggiorna la sessione → `user` cambia → `RootNavigator` mostra automaticamente l’area privata.
-4. Da `ProfileScreen`, l’utente può fare `signOut()` → `user` diventa `null` → l’app torna automaticamente al `LoginScreen`.
+   - Se assente → `AuthNavigator` → `LoginScreen`
+   - Se presente → `AppNavigator` → `HomeScreen`
+3. Dopo `signIn()`, `user` cambia → passaggio automatico all’area privata.
+4. Da `ProfileScreen`, `signOut()` → `user` null → ritorno a `LoginScreen`.
 
