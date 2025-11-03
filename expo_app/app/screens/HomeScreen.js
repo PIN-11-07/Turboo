@@ -1,11 +1,13 @@
-import React, { useCallback, useEffect, useState } from 'react'
+import React, { useCallback, useEffect, useMemo, useState } from 'react'
 import {
   ActivityIndicator,
   FlatList,
   Image,
   RefreshControl,
+  SafeAreaView,
   StyleSheet,
   Text,
+  TextInput,
   View,
 } from 'react-native'
 import { supabase } from '../lib/supabase'
@@ -32,6 +34,7 @@ export default function HomeScreen() {
   const [loadingMore, setLoadingMore] = useState(false)
   const [hasMore, setHasMore] = useState(true)
   const [error, setError] = useState(null)
+  const [searchQuery, setSearchQuery] = useState('')
 
   const fetchListings = useCallback(async ({ cursor, refresh } = {}) => {
     if (refresh) {
@@ -90,6 +93,29 @@ export default function HomeScreen() {
     }
   }, [])
 
+  const filteredListings = useMemo(() => {
+    const normalizedQuery = searchQuery.trim().toLowerCase()
+
+    if (!normalizedQuery) {
+      return listings
+    }
+
+    return listings.filter((listing) => {
+      const searchableFields = [
+        listing.title,
+        listing.make,
+        listing.model,
+        listing.description,
+        listing.location,
+      ]
+        .filter(Boolean)
+        .join(' ')
+        .toLowerCase()
+
+      return searchableFields.includes(normalizedQuery)
+    })
+  }, [listings, searchQuery])
+
   useEffect(() => {
     fetchListings()
   }, [fetchListings])
@@ -101,6 +127,10 @@ export default function HomeScreen() {
   }, [fetchListings, refreshing])
 
   const handleLoadMore = useCallback(() => {
+    if (searchQuery.trim()) {
+      return
+    }
+
     if (
       !loadingMore &&
       hasMore &&
@@ -110,7 +140,7 @@ export default function HomeScreen() {
       const cursor = listings[listings.length - 1]
       fetchListings({ cursor })
     }
-  }, [fetchListings, hasMore, initialLoading, listings, loadingMore])
+  }, [fetchListings, hasMore, initialLoading, listings, loadingMore, searchQuery])
 
   const renderListing = useCallback(({ item }) => {
     const mainImage = getMainImage(item.images)
@@ -125,28 +155,34 @@ export default function HomeScreen() {
           </View>
         )}
         <View style={styles.cardContent}>
-          <Text style={styles.cardTitle}>{item.title}</Text>
+          <View style={styles.cardHeader}>
+            <Text style={styles.cardTitle}>{item.title}</Text>
+            <Text style={styles.cardPrice}>{formatPrice(item.price)}</Text>
+          </View>
           <Text style={styles.cardSubtitle}>
             {item.make} {item.model} • {item.year}
           </Text>
-          <Text style={styles.cardMeta}>
-            {item.mileage ? `${item.mileage} km` : 'km n/d'} • {item.fuel_type}{' '}
-            • {item.transmission}
-          </Text>
-          <Text style={styles.cardPrice}>{formatPrice(item.price)}</Text>
-          <Text style={styles.cardLocation}>{item.location}</Text>
+          <View style={styles.cardBadgeRow}>
+            <Text style={styles.cardBadge}>
+              {item.mileage ? `${item.mileage} km` : 'km n/d'}
+            </Text>
+            {item.fuel_type ? (
+              <Text style={styles.cardBadge}>{item.fuel_type}</Text>
+            ) : null}
+            {item.transmission ? (
+              <Text style={styles.cardBadge}>{item.transmission}</Text>
+            ) : null}
+          </View>
+          <View style={styles.cardFooter}>
+            <Text style={styles.cardLocation}>{item.location}</Text>
+            <Text style={styles.cardMeta}>
+              {item.doors ? `${item.doors} porte` : item.color || 'Dettagli n/d'}
+            </Text>
+          </View>
         </View>
       </View>
     )
   }, [])
-
-  const listHeader = useCallback(() => {
-    if (!error) {
-      return null
-    }
-
-    return <Text style={styles.errorText}>{error}</Text>
-  }, [error])
 
   const listFooter = useCallback(() => {
     if (!loadingMore) {
@@ -161,63 +197,132 @@ export default function HomeScreen() {
   }, [loadingMore])
 
   return (
-    <View style={styles.container}>
-      <FlatList
-        data={listings}
-        keyExtractor={(item) => item.id}
-        renderItem={renderListing}
-        contentContainerStyle={
-          listings.length === 0 ? styles.emptyList : styles.listContent
-        }
-        ListEmptyComponent={
-          !initialLoading && (
-            <Text style={styles.emptyText}>
-              Non ci sono annunci disponibili al momento.
+    <SafeAreaView style={styles.safeArea}>
+      <View style={styles.container}>
+        <View style={styles.topSection}>
+          <View style={styles.hero}>
+            <Text style={styles.heroTitle}>Esplora le migliori occasioni</Text>
+            <Text style={styles.heroSubtitle}>
+              Trova l'auto perfetta vicino a te
             </Text>
-          )
-        }
-        ListHeaderComponent={listHeader}
-        ListFooterComponent={listFooter}
-        onEndReached={handleLoadMore}
-        onEndReachedThreshold={0.5}
-        refreshControl={
-          <RefreshControl refreshing={refreshing} onRefresh={handleRefresh} />
-        }
-      />
-
-      {initialLoading && (
-        <View style={styles.loadingOverlay}>
-          <ActivityIndicator size="large" color="#0B5FFF" />
+          </View>
+          <View style={styles.searchContainer}>
+            <Text style={styles.searchIcon}>🔍</Text>
+            <TextInput
+              value={searchQuery}
+              onChangeText={setSearchQuery}
+              placeholder="Cerca marca, modello o città"
+              placeholderTextColor="#9CA3AF"
+              style={styles.searchInput}
+              returnKeyType="search"
+              clearButtonMode="while-editing"
+            />
+          </View>
+          {error && <Text style={styles.errorText}>{error}</Text>}
         </View>
-      )}
-    </View>
+        <FlatList
+          data={filteredListings}
+          keyExtractor={(item) => item.id.toString()}
+          renderItem={renderListing}
+          contentContainerStyle={
+            filteredListings.length === 0 ? styles.emptyList : styles.listContent
+          }
+          ListEmptyComponent={
+            !initialLoading && (
+              <View style={styles.emptyState}>
+                <Text style={styles.emptyText}>
+                  {searchQuery
+                    ? 'Nessun annuncio corrisponde alla tua ricerca.'
+                    : 'Non ci sono annunci disponibili al momento.'}
+                </Text>
+              </View>
+            )
+          }
+          ListFooterComponent={listFooter}
+          onEndReached={handleLoadMore}
+          onEndReachedThreshold={0.5}
+          refreshControl={
+            <RefreshControl refreshing={refreshing} onRefresh={handleRefresh} />
+          }
+        />
+
+        {initialLoading && (
+          <View style={styles.loadingOverlay}>
+            <ActivityIndicator size="large" color="#0B5FFF" />
+          </View>
+        )}
+      </View>
+    </SafeAreaView>
   )
 }
 
 const styles = StyleSheet.create({
+  safeArea: {
+    flex: 1,
+    backgroundColor: '#F5F6FA',
+  },
   container: {
     flex: 1,
     backgroundColor: '#F5F6FA',
   },
   listContent: {
-    padding: 16,
+    paddingHorizontal: 16,
+    paddingBottom: 16,
   },
   emptyList: {
+    paddingHorizontal: 16,
+    paddingBottom: 16,
     flexGrow: 1,
-    padding: 16,
-    justifyContent: 'center',
+  },
+  topSection: {
+    paddingTop: 16,
+    paddingHorizontal: 16,
+    marginBottom: 12,
+  },
+  hero: {
+    paddingHorizontal: 4,
+    marginBottom: 12,
+  },
+  heroTitle: {
+    fontSize: 20,
+    fontWeight: '700',
+    color: '#0F172A',
+  },
+  heroSubtitle: {
+    fontSize: 14,
+    color: '#6B7280',
+    marginTop: 4,
+  },
+  searchContainer: {
+    backgroundColor: '#fff',
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: '#E5E7EB',
+    paddingHorizontal: 14,
+    paddingVertical: 10,
+    flexDirection: 'row',
     alignItems: 'center',
+  },
+  searchIcon: {
+    fontSize: 16,
+    color: '#9CA3AF',
+  },
+  searchInput: {
+    fontSize: 16,
+    color: '#111827',
+    flex: 1,
+    marginLeft: 8,
   },
   card: {
     backgroundColor: '#fff',
-    borderRadius: 16,
+    borderRadius: 18,
     overflow: 'hidden',
-    marginBottom: 16,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 4 },
+    marginBottom: 18,
+    shadowColor: '#111827',
+    shadowOffset: { width: 0, height: 8 },
     shadowOpacity: 0.08,
-    shadowRadius: 12,
-    elevation: 4,
+    shadowRadius: 14,
+    elevation: 5,
   },
   cardImage: {
     width: '100%',
@@ -233,7 +338,13 @@ const styles = StyleSheet.create({
     fontWeight: '600',
   },
   cardContent: {
-    padding: 16,
+    padding: 18,
+  },
+  cardHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'flex-start',
+    marginBottom: 8,
   },
   cardTitle: {
     fontSize: 18,
@@ -246,30 +357,56 @@ const styles = StyleSheet.create({
     marginTop: 4,
   },
   cardMeta: {
-    fontSize: 13,
-    color: '#6B7280',
-    marginTop: 4,
+    fontSize: 12,
+    color: '#9CA3AF',
   },
   cardPrice: {
-    fontSize: 20,
+    fontSize: 18,
     fontWeight: '700',
     color: '#0B5FFF',
-    marginTop: 6,
+  },
+  cardBadgeRow: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    marginTop: 12,
+  },
+  cardBadge: {
+    backgroundColor: '#EEF2FF',
+    color: '#1E3A8A',
+    fontSize: 12,
+    fontWeight: '600',
+    paddingHorizontal: 10,
+    paddingVertical: 6,
+    borderRadius: 999,
+    marginRight: 8,
+    marginBottom: 6,
+  },
+  cardFooter: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginTop: 14,
   },
   cardLocation: {
     fontSize: 13,
     color: '#6B7280',
-    marginTop: 2,
+    fontWeight: '500',
   },
   emptyText: {
     fontSize: 16,
     color: '#6B7280',
     textAlign: 'center',
+    marginTop: 24,
+  },
+  emptyState: {
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingTop: 48,
   },
   errorText: {
     color: '#B91C1C',
     fontWeight: '600',
-    marginBottom: 16,
+    marginTop: 12,
     textAlign: 'center',
   },
   footer: {
