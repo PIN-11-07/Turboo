@@ -14,15 +14,11 @@ Radice principale del progetto e file/significato:
 expo_app/
 ├─ App.js            — Punto d'ingresso; configura navigazione e provider globali
 ├─ app/
-|   ├─ components/   — Componenti riutilizzabili (Button, Card, Header, ecc.)
 |   ├─ context/      — Provider e contesti (es. AuthContext)
-|   ├─ hooks/        — Hook personalizzati (useAuth, useFetch, ...)
 |   ├─ lib/          — Librerie interne e integrazioni (es. client Supabase)
 |   ├─ services/     — Logica per chiamate API e integrazioni backend
-|   ├─ utils/        — Funzioni di utilità e helper
 |   ├─ screens/      — Schermate principali (Home, Login, Profile, ...)
-|   ├─ navigation/   — Configurazioni di routing (React Navigation)
-|   └─ config/       — Costanti e configurazioni specifiche
+|   └─ navigation/   — Configurazioni di routing (React Navigation)
 ├─ app.json          — Configurazione Expo
 ├─ .env              — Variabili d'ambiente (NON committare)
 ├─ assets/           — Immagini, icone, font
