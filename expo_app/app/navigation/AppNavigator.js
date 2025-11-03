@@ -13,9 +13,21 @@ export default function AppNavigator() {
         headerShown: false,
       }}
     >
-      <Tab.Screen name="Home" component={HomeScreen} />
-      <Tab.Screen name="Publish" component={PublishScreen} />
-      <Tab.Screen name="Profile" component={ProfileScreen} />
+      <Tab.Screen
+        name="Home"
+        component={HomeScreen}
+        options={{ tabBarLabel: 'Inicio' }}
+      />
+      <Tab.Screen
+        name="Publish"
+        component={PublishScreen}
+        options={{ tabBarLabel: 'Publicar' }}
+      />
+      <Tab.Screen
+        name="Profile"
+        component={ProfileScreen}
+        options={{ tabBarLabel: 'Perfil' }}
+      />
     </Tab.Navigator>
   )
 }

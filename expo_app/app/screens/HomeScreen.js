@@ -18,7 +18,7 @@ const formatPrice = (value) => {
   const numericValue = Number(value)
 
   if (Number.isFinite(numericValue)) {
-    return `€ ${numericValue.toLocaleString('it-IT')}`
+    return `€ ${numericValue.toLocaleString('es-ES')}`
   }
 
   return value ?? '-'
@@ -81,7 +81,7 @@ export default function HomeScreen() {
       }
     } catch (fetchError) {
       console.error(fetchError)
-      setError('Impossibile caricare gli annunci. Riprova più tardi.')
+      setError('No es posible cargar los anuncios. Inténtalo de nuevo más tarde.')
     } finally {
       if (refresh) {
         setRefreshing(false)
@@ -151,7 +151,7 @@ export default function HomeScreen() {
           <Image source={{ uri: mainImage }} style={styles.cardImage} />
         ) : (
           <View style={[styles.cardImage, styles.cardImagePlaceholder]}>
-            <Text style={styles.cardImagePlaceholderText}>Nessuna foto</Text>
+            <Text style={styles.cardImagePlaceholderText}>Sin foto</Text>
           </View>
         )}
         <View style={styles.cardContent}>
@@ -164,7 +164,7 @@ export default function HomeScreen() {
           </Text>
           <View style={styles.cardBadgeRow}>
             <Text style={styles.cardBadge}>
-              {item.mileage ? `${item.mileage} km` : 'km n/d'}
+              {item.mileage ? `${item.mileage} km` : 'km s/d'}
             </Text>
             {item.fuel_type ? (
               <Text style={styles.cardBadge}>{item.fuel_type}</Text>
@@ -176,7 +176,7 @@ export default function HomeScreen() {
           <View style={styles.cardFooter}>
             <Text style={styles.cardLocation}>{item.location}</Text>
             <Text style={styles.cardMeta}>
-              {item.doors ? `${item.doors} porte` : item.color || 'Dettagli n/d'}
+              {item.doors ? `${item.doors} puertas` : item.color || 'Detalles s/d'}
             </Text>
           </View>
         </View>
@@ -201,9 +201,9 @@ export default function HomeScreen() {
       <View style={styles.container}>
         <View style={styles.topSection}>
           <View style={styles.hero}>
-            <Text style={styles.heroTitle}>Esplora le migliori occasioni</Text>
+            <Text style={styles.heroTitle}>Explora las mejores ofertas</Text>
             <Text style={styles.heroSubtitle}>
-              Trova l'auto perfetta vicino a te
+              Encuentra el coche perfecto cerca de ti
             </Text>
           </View>
           <View style={styles.searchContainer}>
@@ -211,7 +211,7 @@ export default function HomeScreen() {
             <TextInput
               value={searchQuery}
               onChangeText={setSearchQuery}
-              placeholder="Cerca marca, modello o città"
+              placeholder="Busca marca, modelo o ciudad"
               placeholderTextColor="#9CA3AF"
               style={styles.searchInput}
               returnKeyType="search"
@@ -232,8 +232,8 @@ export default function HomeScreen() {
               <View style={styles.emptyState}>
                 <Text style={styles.emptyText}>
                   {searchQuery
-                    ? 'Nessun annuncio corrisponde alla tua ricerca.'
-                    : 'Non ci sono annunci disponibili al momento.'}
+                    ? 'Ningún anuncio coincide con tu búsqueda.'
+                    : 'No hay anuncios disponibles en este momento.'}
                 </Text>
               </View>
             )
