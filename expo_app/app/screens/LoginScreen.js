@@ -7,15 +7,34 @@ export default function LoginScreen() {
   const { signIn, signUp } = useAuth()
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
+  const [name, setName] = useState('')
+  const [phone, setPhone] = useState('')
   const [error, setError] = useState(null)
   const [isSignup, setIsSignup] = useState(false)
 
   const handleSubmit = async () => {
     setError(null)
-    const { error } = isSignup
-      ? await signUp(email, password)
-      : await signIn(email, password)
+
+    if (isSignup) {
+      const trimmedName = name.trim()
+      if (!trimmedName) {
+        setError('Inserisci il tuo nome per completare la registrazione.')
+        return
+      }
+      const { error } = await signUp(email, password, trimmedName, phone.trim())
+      if (error) setError(error.message)
+      return
+    }
+
+    const { error } = await signIn(email, password)
     if (error) setError(error.message)
+  }
+
+  const toggleAuthMode = () => {
+    setError(null)
+    setName('')
+    setPhone('')
+    setIsSignup((prev) => !prev)
   }
 
   return (
@@ -26,6 +45,29 @@ export default function LoginScreen() {
           <Text style={styles.title}>
             {isSignup ? 'Crea un account' : 'Accedi'}
           </Text>
+
+          {isSignup && (
+            <>
+              <TextInput
+                style={styles.input}
+                placeholder="Nome completo"
+                value={name}
+                onChangeText={setName}
+                autoCapitalize="words"
+                placeholderTextColor="#aaa"
+                textContentType="name"
+              />
+              <TextInput
+                style={styles.input}
+                placeholder="Numero di telefono (opzionale)"
+                value={phone}
+                onChangeText={setPhone}
+                keyboardType="phone-pad"
+                placeholderTextColor="#aaa"
+                textContentType="telephoneNumber"
+              />
+            </>
+          )}
 
           <TextInput
             style={styles.input}
@@ -53,7 +95,7 @@ export default function LoginScreen() {
             </Text>
           </TouchableOpacity>
 
-          <TouchableOpacity onPress={() => setIsSignup(!isSignup)}>
+          <TouchableOpacity onPress={toggleAuthMode}>
             <Text style={styles.link}>
               {isSignup
                 ? 'Hai già un account? Accedi'
