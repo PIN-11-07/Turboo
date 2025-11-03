@@ -83,6 +83,118 @@ Aggiungi le chiavi in `.env` (non committare il file nel VCS):
     - In `App.js` l'app è avvolta da `<AuthProvider>` per rendere lo stato auth accessibile globalmente.
     - La navigazione mostra la schermata Home se l'utente è autenticato, altrimenti la Login.
 
-## Schermate principali
+## Schermata di login
 - LoginScreen: registrazione e accesso via email/password.
-- HomeScreen: visualizza l'email dell'utente e consente il logout.
+
+## 🧭 Struttura generale della navigazione
+
+1. **RootNavigator** → decide quale parte dell’app mostrare (login o area privata)
+2. **AuthNavigator** → gestisce le schermate pubbliche (login, signup)
+3. **AppNavigator** → gestisce le schermate private accessibili dopo il login
+
+---
+
+## 🗂️ Struttura delle cartelle per la navigazione
+
+```
+app/
+├── navigation/
+│   ├── AuthNavigator.js        # Stack pubblico (Login, Signup)
+│   ├── AppNavigator.js         # Navigatore privato (Home, Profilo, Settings)
+│   └── RootNavigator.js        # Router principale che decide quale usare
+├── screens/
+│   ├── LoginScreen.js          # Schermata di accesso
+│   ├── HomeScreen.js           # Pagina principale post-login
+│   ├── ProfileScreen.js        # Pagina profilo utente con logout
+│   └── SettingsScreen.js       # Impostazioni utente
+└── App.js                      # Punto d’ingresso, avvolge tutto con AuthProvider
+```
+
+---
+
+## ⚙️ Funzionamento logico
+
+### 1. `AuthContext`
+
+Il contesto centralizza la logica di autenticazione Supabase:
+
+* Tiene traccia di `user` e `session`
+* Espone funzioni `signIn`, `signUp`, `signOut`
+* Si sottoscrive automaticamente agli eventi di login/logout di Supabase
+* Ripristina la sessione salvata con `AsyncStorage` (quindi il login persiste tra riavvii)
+
+➡️ Grazie a questo, lo stato dell’utente (`user`) è disponibile globalmente.
+
+---
+
+### 2. `RootNavigator`
+
+È il **router principale** dell’app.
+Decide quale navigatore mostrare in base allo stato `user` del contesto:
+
+```js
+{user ? <AppNavigator /> : <AuthNavigator />}
+```
+
+* Se `user` è `null` → l’utente **non è autenticato**, quindi mostra il `AuthNavigator`
+* Se `user` è valorizzato → l’utente **è autenticato**, quindi mostra il `AppNavigator`
+
+Questo avviene automaticamente ogni volta che cambia la sessione Supabase.
+
+---
+
+### 3. `AuthNavigator`
+
+È un **Stack Navigator** che contiene le schermate pubbliche:
+
+```js
+LoginScreen
+```
+
+* Usa `createNativeStackNavigator`
+* Nessuna `header bar` (disattivata con `headerShown: false`)
+
+---
+
+### 4. `AppNavigator`
+
+È il **navigatore privato**.
+Implementa un **Bottom Tab Navigator**:
+
+```js
+HomeScreen
+ProfileScreen
+SettingsScreen
+```
+
+* Usa `@react-navigation/bottom-tabs`
+* Mostra una barra inferiore con le tre schermate principali
+* Ogni schermata può accedere al contesto utente (`useAuth`) per mostrare dati o gestire il logout
+
+---
+
+### 5. `App.js`
+
+È il punto d’ingresso dell’app.
+Avvolge tutto con il provider di autenticazione e il navigatore principale:
+
+```js
+<AuthProvider>
+  <RootNavigator />
+</AuthProvider>
+```
+
+In questo modo, **tutta la navigazione è consapevole dello stato di login**.
+
+---
+
+## 🔄 Flusso di navigazione completo
+
+1. All’avvio, `AuthContext` recupera la sessione Supabase (se presente in AsyncStorage).
+2. `RootNavigator` controlla `user`:
+
+   * Se non esiste → mostra `AuthNavigator` → `LoginScreen`
+   * Se esiste → mostra `AppNavigator` → `HomeScreen`
+3. Dopo il login (`signIn()`), Supabase aggiorna la sessione → `user` cambia → `RootNavigator` mostra automaticamente l’area privata.
+4. Da `ProfileScreen`, l’utente può fare `signOut()` → `user` diventa `null` → l’app torna automaticamente al `LoginScreen`.
+
