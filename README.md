@@ -1,4 +1,3 @@
-
 # Ambiente di sviluppo
 
 ## Requisiti
@@ -63,133 +62,213 @@ Aggiungi le chiavi in `.env` (non committare il file nel VCS):
 - SUPABASE_URL
 - ANON_KEY
 
-## Autenticazione con Supabase
-- Librerie installate:
-    - @supabase/supabase-js
-    - @react-native-async-storage/async-storage (salvataggio sessione sul dispositivo)
-- Client Supabase:
-    - Creato in `app/lib/supabase.js` usando le variabili d'ambiente.
-    - È configurato per salvare/ripristinare la sessione tramite AsyncStorage.
-- AuthContext:
-    - Definito in `app/context/AuthContext.js`.
-    - Tiene traccia di sessione e user; espone metodi per login, register e logout.
-    - Si sottoscrive ai cambiamenti di sessione e aggiorna lo stato automaticamente.
-- Integrazione:
-    - In `App.js` l'app è avvolta da `<AuthProvider>` per rendere lo stato auth accessibile globalmente.
-    - La navigazione mostra la schermata Home se l'utente è autenticato, altrimenti la Login.
+
+# Autenticazione
+
+## Librerie
+- @supabase/supabase-js
+- @react-native-async-storage/async-storage (persistenza sessione)
+
+## Client Supabase
+- File: `app/lib/supabase.js`
+- Usa variabili d’ambiente e AsyncStorage per salvare/ripristinare la sessione.
+
+## AuthContext
+- File: `app/context/AuthContext.js`
+- Gestisce `user` e `session`
+- Espone `signIn`, `signUp`, `signOut`
+- Sottoscrizione agli eventi di Supabase e ripristino sessione via AsyncStorage
+
+## Integrazione nell’app
+- In `App.js`, l’app è avvolta da `<AuthProvider>` per stato auth globale.
+- La navigazione mostra Home se autenticato, altrimenti Login.
 
 ## Schermata di login
-- LoginScreen: registrazione e accesso via email/password.
+- `LoginScreen`: registrazione e accesso via email/password.
 
-## 🧭 Struttura generale della navigazione
 
-1. **RootNavigator** → decide quale parte dell’app mostrare (login o area privata)
-2. **AuthNavigator** → gestisce le schermate pubbliche (login, signup)
-3. **AppNavigator** → gestisce le schermate private accessibili dopo il login
+# Navigazione
 
----
+## Struttura generale
+1. RootNavigator → decide se mostrare area pubblica o privata
+2. AuthNavigator → schermate pubbliche (Login)
+3. AppNavigator → schermate private (Home, Profile, Settings)
 
-## 🗂️ Struttura delle cartelle per la navigazione
+Snippet decisionale:
+```js
+{user ? <AppNavigator /> : <AuthNavigator />}
+```
 
+## Struttura cartelle navigazione
 ```
 app/
 ├── navigation/
 │   ├── AuthNavigator.js        # Stack pubblico (Login, Signup)
 │   ├── AppNavigator.js         # Navigatore privato (Home, Profilo, Settings)
-│   └── RootNavigator.js        # Router principale che decide quale usare
+│   └── RootNavigator.js        # Router principale
 ├── screens/
-│   ├── LoginScreen.js          # Schermata di accesso
-│   ├── HomeScreen.js           # Pagina principale post-login
-│   ├── ProfileScreen.js        # Pagina profilo utente con logout
-│   └── SettingsScreen.js       # Impostazioni utente
-└── App.js                      # Punto d’ingresso, avvolge tutto con AuthProvider
+│   ├── LoginScreen.js
+│   ├── HomeScreen.js
+│   ├── ProfileScreen.js
+│   └── SettingsScreen.js
+└── App.js                      # Punto d’ingresso con AuthProvider
 ```
 
----
+## Dettagli navigatori
+- RootNavigator: mostra `AuthNavigator` se `user` è null, altrimenti `AppNavigator`.
+- AuthNavigator: Stack senza header (`headerShown: false`), contiene Login.
+- AppNavigator: Bottom Tab con `HomeScreen`, `ProfileScreen`, `SettingsScreen`. Accesso a `useAuth`.
 
-## ⚙️ Funzionamento logico
-
-### 1. `AuthContext`
-
-Il contesto centralizza la logica di autenticazione Supabase:
-
-* Tiene traccia di `user` e `session`
-* Espone funzioni `signIn`, `signUp`, `signOut`
-* Si sottoscrive automaticamente agli eventi di login/logout di Supabase
-* Ripristina la sessione salvata con `AsyncStorage` (quindi il login persiste tra riavvii)
-
-➡️ Grazie a questo, lo stato dell’utente (`user`) è disponibile globalmente.
-
----
-
-### 2. `RootNavigator`
-
-È il **router principale** dell’app.
-Decide quale navigatore mostrare in base allo stato `user` del contesto:
-
-```js
-{user ? <AppNavigator /> : <AuthNavigator />}
-```
-
-* Se `user` è `null` → l’utente **non è autenticato**, quindi mostra il `AuthNavigator`
-* Se `user` è valorizzato → l’utente **è autenticato**, quindi mostra il `AppNavigator`
-
-Questo avviene automaticamente ogni volta che cambia la sessione Supabase.
-
----
-
-### 3. `AuthNavigator`
-
-È un **Stack Navigator** che contiene le schermate pubbliche:
-
-```js
-LoginScreen
-```
-
-* Usa `createNativeStackNavigator`
-* Nessuna `header bar` (disattivata con `headerShown: false`)
-
----
-
-### 4. `AppNavigator`
-
-È il **navigatore privato**.
-Implementa un **Bottom Tab Navigator**:
-
-```js
-HomeScreen
-ProfileScreen
-SettingsScreen
-```
-
-* Usa `@react-navigation/bottom-tabs`
-* Mostra una barra inferiore con le tre schermate principali
-* Ogni schermata può accedere al contesto utente (`useAuth`) per mostrare dati o gestire il logout
-
----
-
-### 5. `App.js`
-
-È il punto d’ingresso dell’app.
-Avvolge tutto con il provider di autenticazione e il navigatore principale:
-
+## Ingresso app
+- `App.js` avvolge tutto:
 ```js
 <AuthProvider>
   <RootNavigator />
 </AuthProvider>
 ```
 
-In questo modo, **tutta la navigazione è consapevole dello stato di login**.
+## Flusso di navigazione
+1. All’avvio, `AuthContext` recupera la sessione (AsyncStorage).
+2. `RootNavigator` controlla `user`:
+   - Se assente → `AuthNavigator` → `LoginScreen`
+   - Se presente → `AppNavigator` → `HomeScreen`
+3. Dopo `signIn()`, `user` cambia → passaggio automatico all’area privata.
+4. Da `ProfileScreen`, `signOut()` → `user` null → ritorno a `LoginScreen`.
+
+
+# 🧩 Tabella `listings`
+
+La tabella `listings` rappresenta la **struttura dati principale** dell’applicazione e contiene tutti gli annunci di automobili pubblicati dagli utenti.
+Ogni riga corrisponde a **un veicolo messo in vendita**, con i relativi dettagli tecnici, informazioni di localizzazione e metadati di pubblicazione.
 
 ---
 
-## 🔄 Flusso di navigazione completo
+### 🏗 Struttura
 
-1. All’avvio, `AuthContext` recupera la sessione Supabase (se presente in AsyncStorage).
-2. `RootNavigator` controlla `user`:
+| Campo            | Tipo                              | Descrizione                                                                                                                               |
+| ---------------- | --------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------- |
+| **id**           | `uuid` *(PK)*                     | Identificatore univoco generato automaticamente (`gen_random_uuid()`).                                                                    |
+| **user_id**      | `uuid` *(FK → auth.users.id)*     | Identificativo dell’utente proprietario dell’annuncio. È una chiave esterna che collega l’annuncio al sistema di autenticazione Supabase. |
+| **title**        | `text`                            | Titolo breve dell’annuncio (es. “Fiat Panda 1.2 Easy”).                                                                                   |
+| **description**  | `text`                            | Descrizione estesa del veicolo.                                                                                                           |
+| **price**        | `numeric(12,2)`                   | Prezzo richiesto in euro. Controllato con vincolo `CHECK (price >= 0)`.                                                                   |
+| **make**         | `text`                            | Marca del veicolo (es. Fiat, BMW, Tesla).                                                                                                 |
+| **model**        | `text`                            | Modello specifico del veicolo.                                                                                                            |
+| **year**         | `int`                             | Anno di immatricolazione, con vincolo di validità tra 1900 e l’anno corrente +1.                                                          |
+| **mileage**      | `int`                             | Chilometraggio (km). Deve essere non negativo.                                                                                            |
+| **fuel_type**    | `text`                            | Tipo di alimentazione (es. “Benzina”, “Diesel”, “Ibrida”, “Elettrica”).                                                                   |
+| **transmission** | `text`                            | Tipo di cambio (es. “Manuale”, “Automatica”).                                                                                             |
+| **doors**        | `int`                             | Numero di porte.                                                                                                                          |
+| **color**        | `text`                            | Colore esterno del veicolo.                                                                                                               |
+| **images**       | `jsonb`                           | Array JSON di URL pubblici alle immagini del veicolo, salvate nel bucket Supabase `listing-images`.                                       |
+| **location**     | `text`                            | Città o zona geografica in cui si trova il veicolo.                                                                                       |
+| **is_active**    | `boolean` *(default `true`)*      | Flag che indica se l’annuncio è pubblicato e visibile nel feed pubblico.                                                                  |
+| **created_at**   | `timestamptz` *(default `now()`)* | Timestamp di creazione dell’annuncio, utilizzato anche per l’ordinamento cronologico nel feed.                                            |
 
-   * Se non esiste → mostra `AuthNavigator` → `LoginScreen`
-   * Se esiste → mostra `AppNavigator` → `HomeScreen`
-3. Dopo il login (`signIn()`), Supabase aggiorna la sessione → `user` cambia → `RootNavigator` mostra automaticamente l’area privata.
-4. Da `ProfileScreen`, l’utente può fare `signOut()` → `user` diventa `null` → l’app torna automaticamente al `LoginScreen`.
+---
+
+### 🔐 Sicurezza e policy (RLS)
+
+La tabella utilizza **Row Level Security (RLS)** per garantire che ogni utente possa gestire solo i propri annunci.
+Le policy attive sono le seguenti:
+
+| Nome policy              | Azione   | Regola                                                                                                        |
+| ------------------------ | -------- | ------------------------------------------------------------------------------------------------------------- |
+| **Read active listings** | `SELECT` | Consente a chiunque (pubblico) di leggere solo gli annunci dove `is_active = true`.                           |
+| **Insert own listing**   | `INSERT` | Permette l’inserimento solo se `auth.uid() = user_id`, quindi un utente può creare soltanto i propri annunci. |
+| **Update own listing**   | `UPDATE` | Permette la modifica solo se l’annuncio appartiene all’utente loggato (`auth.uid() = user_id`).               |
+| **Delete own listing**   | `DELETE` | Permette la cancellazione solo se l’annuncio appartiene all’utente loggato (`auth.uid() = user_id`).          |
+
+➡️  In questo modo:
+
+* Gli utenti **autenticati** possono creare, modificare o eliminare **solo i propri** annunci.
+* Tutti (anche non loggati) possono **visualizzare** gli annunci pubblici (`is_active = true`).
+
+---
+
+### ⚡️ Indici e performance
+
+Per ottimizzare il caricamento del feed (ordinato per data decrescente), è presente un indice composito:
+
+```sql
+create index listings_is_active_created_id_desc
+  on public.listings (is_active, created_at desc, id desc);
+```
+
+Questo indice:
+
+* velocizza la paginazione basata su `created_at` + `id` (keyset pagination);
+* migliora le performance delle query usate nel feed infinito.
+
+---
+
+### 🖼 Storage delle immagini
+
+Le immagini dei veicoli sono salvate nel bucket pubblico **`listing-images`** del modulo Supabase Storage.
+Le policy del bucket sono configurate in modo che:
+
+* **chiunque** possa leggere (`SELECT`) gli oggetti, rendendo gli URL pubblicamente accessibili;
+* **solo gli utenti autenticati** possano caricare (`INSERT`) nuovi file.
+
+Ogni immagine è referenziata nel campo `images` della tabella come array JSON di stringhe (esempio):
+
+```json
+[
+  "https://<project>.supabase.co/storage/v1/object/public/listing-images/panda.jpg",
+  "https://<project>.supabase.co/storage/v1/object/public/listing-images/panda_interni.jpg"
+]
+```
+
+---
+
+### 🔄 Utilizzo nel feed dell’app
+
+Il feed principale dell’app Expo carica i dati da questa tabella utilizzando Supabase Client SDK.
+Le query principali:
+
+* **prima pagina:**
+
+  ```ts
+  .from('listings')
+  .select('*')
+  .eq('is_active', true)
+  .order('created_at', { ascending: false })
+  .order('id', { ascending: false })
+  .limit(PAGE_SIZE)
+  ```
+* **paginazione (keyset):**
+
+  ```ts
+  .or(`and(created_at.eq.${cursor.created_at},id.lt.${cursor.id}),created_at.lt.${cursor.created_at}`)
+  ```
+
+L’ordinamento su `created_at DESC, id DESC` garantisce un feed **infinito, stabile e coerente**.
+
+---
+
+### 📦 Relazioni
+
+* `user_id` → `auth.users.id`
+  Collega ogni annuncio all’utente autenticato che lo ha pubblicato.
+* Relazioni future possibili:
+
+  * `favorites` o `saved_listings` per salvare auto nei preferiti;
+  * `messages` per chat tra venditore e acquirente.
+
+---
+
+### 🧠 Riassunto tecnico
+
+| Proprietà                       | Valore                                  |
+| ------------------------------- | --------------------------------------- |
+| **Tabella**                     | `public.listings`                       |
+| **PK**                          | `id`                                    |
+| **FK**                          | `user_id → auth.users.id`               |
+| **RLS**                         | Attiva                                  |
+| **Accesso pubblico in lettura** | Sì (`is_active = true`)                 |
+| **Accesso in scrittura**        | Solo owner autenticato                  |
+| **Immagini**                    | Bucket pubblico `listing-images`        |
+| **Feed sorting**                | `ORDER BY created_at DESC, id DESC`     |
+| **Pagination**                  | Keyset (cursor-based)                   |
+| **Indice**                      | `(is_active, created_at DESC, id DESC)` |
 

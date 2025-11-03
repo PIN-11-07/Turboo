@@ -2,7 +2,7 @@ import React from 'react'
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs'
 import HomeScreen from '../screens/HomeScreen'
 import ProfileScreen from '../screens/ProfileScreen'
-import SettingsScreen from '../screens/SettingsScreen'
+import PublishScreen from '../screens/PublishScreen'
 
 const Tab = createBottomTabNavigator()
 
@@ -14,8 +14,8 @@ export default function AppNavigator() {
       }}
     >
       <Tab.Screen name="Home" component={HomeScreen} />
+      <Tab.Screen name="Publish" component={PublishScreen} />
       <Tab.Screen name="Profile" component={ProfileScreen} />
-      <Tab.Screen name="Settings" component={SettingsScreen} />
     </Tab.Navigator>
   )
 }
