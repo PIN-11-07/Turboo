@@ -10,10 +10,12 @@ export default function LoginScreen() {
   const [name, setName] = useState('')
   const [phone, setPhone] = useState('')
   const [error, setError] = useState(null)
+  const [message, setMessage] = useState(null)
   const [isSignup, setIsSignup] = useState(false)
 
   const handleSubmit = async () => {
     setError(null)
+    setMessage(null)
 
     if (isSignup) {
       const trimmedName = name.trim()
@@ -22,7 +24,17 @@ export default function LoginScreen() {
         return
       }
       const { error } = await signUp(email, password, trimmedName, phone.trim())
-      if (error) setError(error.message)
+      if (error) {
+        setError(error.message)
+      } else {
+        setMessage(
+          'Registrazione riuscita! Controlla la tua email per confermare il tuo account.'
+        )
+        setIsSignup(false)
+        setPassword('')
+        setName('')
+        setPhone('')
+      }
       return
     }
 
@@ -32,6 +44,7 @@ export default function LoginScreen() {
 
   const toggleAuthMode = () => {
     setError(null)
+    setMessage(null)
     setName('')
     setPhone('')
     setIsSignup((prev) => !prev)
@@ -88,6 +101,7 @@ export default function LoginScreen() {
           />
 
           {error && <Text style={styles.error}>{error}</Text>}
+          {message && <Text style={styles.success}>{message}</Text>}
 
           <TouchableOpacity style={styles.button} onPress={handleSubmit}>
             <Text style={styles.buttonText}>
@@ -160,6 +174,11 @@ const styles = StyleSheet.create({
   },
   error: {
     color: 'red',
+    textAlign: 'center',
+    marginBottom: 10,
+  },
+  success: {
+    color: '#0f9d58',
     textAlign: 'center',
     marginBottom: 10,
   },
