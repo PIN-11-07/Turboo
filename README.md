@@ -4,7 +4,6 @@
 ## Requisiti
 - Docker Desktop (macOS/Windows) o Docker Engine (Linux)
 - Git
-- Node.js (se esegui in locale senza Docker)
 - Expo Go (app mobile per test)
 
 ## Struttura del progetto
