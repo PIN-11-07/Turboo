@@ -137,9 +137,30 @@ app/
 
 
 # 🧩 Tabella `listings`
+La tabella listings rappresenta la struttura dati principale dell’applicazione e contiene tutti gli annunci di automobili pubblicati dagli utenti. Ogni riga corrisponde a un veicolo messo in vendita, con i relativi dettagli tecnici, informazioni di localizzazione e metadati di pubblicazione.
 
-La tabella `listings` rappresenta la **struttura dati principale** dell’applicazione e contiene tutti gli annunci di automobili pubblicati dagli utenti.
-Ogni riga corrisponde a **un veicolo messo in vendita**, con i relativi dettagli tecnici, informazioni di localizzazione e metadati di pubblicazione.
+---
+
+#### Prompt per AI
+Nel database ho una tabella chiamata listings con i seguenti campi principali:
+
+id (uuid, PK)
+
+user_id (uuid → auth.users.id)
+
+title, description, price, make, model, year, mileage, fuel_type, transmission, doors, color, location
+
+images (jsonb con array di URL pubblici dal bucket listing-images)
+
+is_active (boolean, default true)
+
+created_at (timestamp)
+
+È attiva la Row Level Security con queste policy:
+
+Tutti possono leggere gli annunci con is_active = true
+
+Solo l’owner (auth.uid() = user_id) può creare, modificare o cancellare i propri annunci
 
 ---
 
@@ -271,4 +292,44 @@ L’ordinamento su `created_at DESC, id DESC` garantisce un feed **infinito, sta
 | **Feed sorting**                | `ORDER BY created_at DESC, id DESC`     |
 | **Pagination**                  | Keyset (cursor-based)                   |
 | **Indice**                      | `(is_active, created_at DESC, id DESC)` |
+
+# 🧱 Tabella `profiles`
+
+## 1. `auth.users` (gestita da Supabase)
+- Tabella predefinita di Supabase con le informazioni di autenticazione.
+- Fonte di verità per identità e accesso.
+- ⚙️ Gestita internamente: non modificare manualmente.
+
+## 2. `public.profiles`
+Tabella personalizzata che estende `auth.users` con dati extra e facilita le relazioni (es. listings, favorites).
+
+| Colonna              | Tipo  | Descrizione                                         |
+| -------------------- | ----- | --------------------------------------------------- |
+| `id`                 | uuid  | PK, corrisponde a `auth.users.id`.                  |
+| `profile_image_url`  | text  | URL dell’immagine profilo.                          |
+
+Relazione: `id` → `auth.users(id)` (ON DELETE CASCADE).
+
+## 3. Sincronizzazione automatica
+Trigger su `auth.users` che richiama `public.ensure_profile()` per:
+- creare il record in `public.profiles` se mancante;
+- evitare duplicazioni o aggiornamenti dei campi gestiti da `auth.users`.
+
+Oggetti coinvolti:
+- 🔧 `public.ensure_profile()` (funzione PL/pgSQL)
+- 🔔 `on_auth_user_created` (trigger su `auth.users`)
+
+## 4. Sicurezza (Row Level Security)
+
+| Policy                               | Operazione | Regola                               |
+| ------------------------------------ | ---------- | ------------------------------------ |
+| `Users can view their own profile`   | SELECT     | `auth.uid() = id`                    |
+| `Users can update their own profile` | UPDATE     | `auth.uid() = id`                    |
+
+📊 Schema logico semplificato:
+```
+auth.users
+   └── (trigger → ensure_profile)
+        └── public.profiles
+```
 
