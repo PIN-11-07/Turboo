@@ -137,12 +137,12 @@ app/
 
 
 # 🧩 Tabla `listings`
-La tabella listings rappresenta la struttura dati principale dell’applicazione e contiene tutti gli annunci di automobili publicados por los usuarios. Cada fila corresponde a un vehículo puesto a la venta, con los respectivos detalles técnicos, información de localización y metadatos de publicación.
+La tabla listings representa la estructura de datos principal de la aplicación y contiene todos los anuncios de automóviles publicados por los usuarios. Cada fila corresponde a un vehículo puesto a la venta, con los respectivos detalles técnicos, información de localización y metadatos de publicación.
 
 ---
 
 #### Prompt per AI
-En la base de datos tengo una tabla llamada listings con i seguenti campi principali:
+En la base de datos tengo una tabla llamada listings con los siguientes campos principales:
 
 id (uuid, PK)
 
@@ -150,7 +150,7 @@ user_id (uuid → auth.users.id)
 
 title, description, price, make, model, year, mileage, fuel_type, transmission, doors, color, location
 
-images (jsonb con array di URL pubblici dal bucket listing-images)
+images (jsonb con array de URLs públicas del bucket listing-images)
 
 is_active (boolean, default true)
 
@@ -160,7 +160,7 @@ Está activa la Row Level Security con estas políticas:
 
 Todos pueden leer los anuncios con is_active = true
 
-Solo l’owner (auth.uid() = user_id) può creare, modificare o cancellare i propri annunci
+Solo el propietario (auth.uid() = user_id) puede crear, modificar o eliminar sus propios anuncios
 
 ---
 
