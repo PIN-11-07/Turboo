@@ -306,18 +306,18 @@ Tabla personalizada que extiende `auth.users` con datos extra y facilita las rel
 | Columna              | Tipo  | Descripción                                         |
 | -------------------- | ----- | --------------------------------------------------- |
 | `id`                 | uuid  | PK, corresponde a `auth.users.id`.                  |
-| `profile_image_url`  | text  | URL dell’immagine profilo.                          |
+| `profile_image_url`  | text  | URL de la imagen de perfil.                          |
 
 Relación: `id` → `auth.users(id)` (ON DELETE CASCADE).
 
-## 3. Sincronizzazione automatica
-Trigger su `auth.users` che richiama `public.ensure_profile()` per:
+## 3. Sincronización automática
+Trigger en `auth.users` que invoca `public.ensure_profile()` para:
 - crear el registro en `public.profiles` si falta;
 - evitar duplicaciones o actualizaciones de los campos gestionados por `auth.users`.
 
-Oggetti coinvolti:
-- 🔧 `public.ensure_profile()` (funzione PL/pgSQL)
-- 🔔 `on_auth_user_created` (trigger su `auth.users`)
+Objetos involucrados:
+- 🔧 `public.ensure_profile()` (función PL/pgSQL)
+- 🔔 `on_auth_user_created` (trigger en `auth.users`)
 
 ## 4. Seguridad (Row Level Security)
 
@@ -326,7 +326,7 @@ Oggetti coinvolti:
 | `Users can view their own profile`   | SELECT     | `auth.uid() = id`                    |
 | `Users can update their own profile` | UPDATE     | `auth.uid() = id`                    |
 
-📊 Schema logico semplificato:
+📊 Esquema lógico simplificado:
 ```
 auth.users
    └── (trigger → ensure_profile)
