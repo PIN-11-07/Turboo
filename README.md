@@ -71,26 +71,26 @@ Agrega las claves en `.env` (no commitear el archivo en el VCS):
 
 ## Cliente Supabase
 - Archivo: `app/lib/supabase.js`
-- Usa variabili d’ambiente e AsyncStorage per salvare/ripristinare la sessione.
+- Usa variables de entorno y AsyncStorage para guardar/restaurar la sesión.
 
 ## AuthContext
 - Archivo: `app/context/AuthContext.js`
-- Gestisce `user` e `session`
-- Espone `signIn`, `signUp`, `signOut`
-- Sottoscrizione agli eventi di Supabase e ripristino sessione via AsyncStorage
+- Gestiona `user` y `session`
+- Expone `signIn`, `signUp`, `signOut`
+- Suscripción a eventos de Supabase y restauración de sesión vía AsyncStorage
 
-## Integrazione nell’app
-- In `App.js`, l’app è avvolta da `<AuthProvider>` per stato auth globale.
+## Integración en la app
+- En `App.js`, la app está envuelta en `<AuthProvider>` para estado auth global.
 - La navegación muestra Home si está autenticado, de lo contrario Login.
 
-## Schermata di login
-- `LoginScreen`: registrazione e accesso via email/password.
+## Pantalla de login
+- `LoginScreen`: registro y acceso vía email/password.
 
 
 # Navegación
 
 ## Estructura general
-1. RootNavigator → decide se muestrare area pubblica o privata
+1. RootNavigator → decide si mostrar área pública o privada
 2. AuthNavigator → pantallas públicas (Login)
 3. AppNavigator → pantallas privadas (Home, Profile, Settings)
 
@@ -104,7 +104,7 @@ Fragmento de código decisional:
 app/
 ├── navigation/
 │   ├── AuthNavigator.js        # Stack público (Login, Signup)
-│   ├── AppNavigator.js         # Navegador privado (Home, Profilo, Settings)
+│   ├── AppNavigator.js         # Navegador privado (Home, Perfil, Settings)
 │   └── RootNavigator.js        # Router principal
 ├── screens/
 │   ├── LoginScreen.js
@@ -115,9 +115,9 @@ app/
 ```
 
 ## Detalles de navegadores
-- RootNavigator: muestra `AuthNavigator` si.*es null, de lo contrario `AppNavigator`.
+- RootNavigator: muestra `AuthNavigator` si `user` es null, de lo contrario `AppNavigator`.
 - AuthNavigator: Stack sin header (`headerShown: false`), contiene Login.
-- AppNavigator: Bottom Tab con `HomeScreen`, `ProfileScreen`, `SettingsScreen`. Accesso a `useAuth`.
+- AppNavigator: Bottom Tab con `HomeScreen`, `ProfileScreen`, `SettingsScreen`. Acceso a `useAuth`.
 
 ## Entrada de la app
 - `App.js` envuelve todo:
@@ -127,9 +127,9 @@ app/
 </AuthProvider>
 ```
 
-## Flusso di navigazione
-1. All’avvio, `AuthContext` recupera la sessione (AsyncStorage).
-2. `RootNavigator` controlla `user`:
+## Flujo de navegación
+1. All’avvio, `AuthContext` recupera la sesión (AsyncStorage).
+2. `RootNavigator` verifica `user`:
    - Si está ausente → `AuthNavigator` → `LoginScreen`
    - Si está presente → `AppNavigator` → `HomeScreen`
 3. Después de `signIn()`, `user` cambia → paso automático all’area privata.
@@ -301,7 +301,7 @@ L’ordinamento su `created_at DESC, id DESC` garantiza un feed **infinito, stab
 - ⚙️ Gestionada internamente: no modificar manualmente.
 
 ## 2. `public.profiles`
-Tabla personalizada que extiende `auth.users` con datos extra y facilita las relaciones (es. listings, favorites).
+Tabla personalizada que extiende `auth.users` con datos extra y facilita las relaciones (ej. listings, favorites).
 
 | Columna              | Tipo  | Descripción                                         |
 | -------------------- | ----- | --------------------------------------------------- |
