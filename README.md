@@ -31,36 +31,35 @@ expo_app/
 git clone https://github.com/PIN-11-07/Turboo.git
 cd Turboo
 ```
+2. Variables de entorno
+Añade las claves en `.env` (no hagas commit del archivo en el VCS):
+- SUPABASE_URL
+- ANON_KEY
 
-2. Construye la imagen de Docker (instala dependencias en el contenedor):
+3. Construye la imagen de Docker (instala dependencias en el contenedor):
 ```bash
 docker compose build
 ```
 
-3. Inicia los servicios en segundo plano:
+4. Inicia los servicios en segundo plano:
 ```bash
 docker compose up -d
 ```
 
-4. Entra en el contenedor `expo` para el entorno de desarrollo:
+5. Entra en el contenedor `expo` para el entorno de desarrollo:
 ```bash
 docker compose exec expo bash
 ```
-Dentro del contenedor:
+6. Dentro del contenedor:
 ```bash
 npm i
 apt-get update -y && apt-get upgrade -y
 npx expo start --tunnel
 ```
 
-5. Abre Expo Go en el dispositivo móvil y escanea el código QR mostrado por `expo start`.
+7. Abre Expo Go en el dispositivo móvil y escanea el código QR mostrado por `expo start`.
 
 Nota: la opción `--tunnel` utiliza ngrok para exponer una URL pública, útil para pruebas desde redes diferentes.
-
-## Variables de entorno
-Añade las claves en `.env` (no hagas commit del archivo en el VCS):
-- SUPABASE_URL
-- ANON_KEY
 
 
 # Autenticación
