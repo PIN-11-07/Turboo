@@ -1,111 +1,111 @@
-# Ambiente di sviluppo
+# Entorno de desarrollo
 
-## Requisiti
+## Requisitos
 - Docker Desktop (macOS/Windows) o Docker Engine (Linux)
 - Git
-- Expo Go (app mobile per test)
+- Expo Go (aplicación móvil para pruebas)
 
-## Struttura del progetto
-Radice principale del progetto e file/significato:
+## Estructura del proyecto
+Raíz principal del proyecto y archivos/significado:
 
 ```
 expo_app/
-├─ App.js            — Punto d'ingresso; configura navigazione e provider globali
+├─ App.js            — Punto de entrada; configura navegación y proveedores globales
 ├─ app/
-|   ├─ context/      — Provider e contesti (es. AuthContext)
-|   ├─ lib/          — Librerie interne e integrazioni (es. client Supabase)
-|   ├─ services/     — Logica per chiamate API e integrazioni backend
-|   ├─ screens/      — Schermate principali (Home, Login, Profile, ...)
-|   └─ navigation/   — Configurazioni di routing (React Navigation)
-├─ app.json          — Configurazione Expo
-├─ .env              — Variabili d'ambiente (NON committare)
-├─ assets/           — Immagini, icone, font
-├─ index.js          — Bootstrap dell'app per Expo
-└─ package.json      — Dipendenze e script
+|   ├─ context/      — Proveedores y contextos (ej. AuthContext)
+|   ├─ lib/          — Bibliotecas internas e integraciones (ej. cliente Supabase)
+|   ├─ services/     — Lógica para llamadas API e integraciones backend
+|   ├─ screens/      — Pantallas principales (Home, Login, Profile, ...)
+|   └─ navigation/   — Configuraciones de routing (React Navigation)
+├─ app.json          — Configuración Expo
+├─ .env              — Variables de entorno (NO commitear)
+├─ assets/           — Imágenes, iconos, fuentes
+├─ index.js          — Bootstrap de la app para Expo
+└─ package.json      — Dependencias y scripts
 ```
 
-## Avvio rapido (sviluppo locale)
+## Inicio rápido (desarrollo local)
 
-1. Clona la repository e entra nella cartella:
+1. Clona el repositorio y entra en la carpeta:
 ```bash
 git clone https://github.com/PIN-11-07/Turboo.git
 cd Turboo
 ```
 
-2. Costruisci l'immagine Docker (installa dipendenze nel container):
+2. Construye la imagen Docker (instala dependencias en el contenedor):
 ```bash
 docker compose build
 ```
 
-3. Avvia i servizi in background:
+3. Inicia los servicios en segundo plano:
 ```bash
 docker compose up -d
 ```
 
-4. Entra nel container `expo` per l'ambiente di sviluppo:
+4. Entra en el contenedor `expo` para el entorno de desarrollo:
 ```bash
 docker compose exec expo bash
 ```
-All'interno del container:
+Dentro del contenedor:
 ```bash
 npm i
 apt-get update -y && apt-get upgrade -y
 npx expo start --tunnel
 ```
 
-5. Apri Expo Go sul dispositivo mobile e scansiona il QR code mostrato da `expo start`.
+5. Abre Expo Go en el dispositivo móvil y escanea el código QR muestrado por `expo start`.
 
-Nota: il flag `--tunnel` utilizza ngrok per esporre un URL pubblico, utile per testare da reti differenti.
+Nota: el flag `--tunnel` utiliza ngrok para exponer una URL pública, útil para probar desde redes diferentes.
 
-## Variabili d'ambiente
-Aggiungi le chiavi in `.env` (non committare il file nel VCS):
+## Variables de entorno
+Agrega las claves en `.env` (no commitear el archivo en el VCS):
 - SUPABASE_URL
 - ANON_KEY
 
 
-# Autenticazione
+# Autenticación
 
-## Librerie
+## Bibliotecas
 - @supabase/supabase-js
-- @react-native-async-storage/async-storage (persistenza sessione)
+- @react-native-async-storage/async-storage (persistencia de sesión)
 
-## Client Supabase
-- File: `app/lib/supabase.js`
+## Cliente Supabase
+- Archivo: `app/lib/supabase.js`
 - Usa variabili d’ambiente e AsyncStorage per salvare/ripristinare la sessione.
 
 ## AuthContext
-- File: `app/context/AuthContext.js`
+- Archivo: `app/context/AuthContext.js`
 - Gestisce `user` e `session`
 - Espone `signIn`, `signUp`, `signOut`
 - Sottoscrizione agli eventi di Supabase e ripristino sessione via AsyncStorage
 
 ## Integrazione nell’app
 - In `App.js`, l’app è avvolta da `<AuthProvider>` per stato auth globale.
-- La navigazione mostra Home se autenticato, altrimenti Login.
+- La navegación muestra Home si está autenticado, de lo contrario Login.
 
 ## Schermata di login
 - `LoginScreen`: registrazione e accesso via email/password.
 
 
-# Navigazione
+# Navegación
 
-## Struttura generale
-1. RootNavigator → decide se mostrare area pubblica o privata
-2. AuthNavigator → schermate pubbliche (Login)
-3. AppNavigator → schermate private (Home, Profile, Settings)
+## Estructura general
+1. RootNavigator → decide se muestrare area pubblica o privata
+2. AuthNavigator → pantallas públicas (Login)
+3. AppNavigator → pantallas privadas (Home, Profile, Settings)
 
-Snippet decisionale:
+Fragmento de código decisional:
 ```js
 {user ? <AppNavigator /> : <AuthNavigator />}
 ```
 
-## Struttura cartelle navigazione
+## Estructura de carpetas de navegación
 ```
 app/
 ├── navigation/
-│   ├── AuthNavigator.js        # Stack pubblico (Login, Signup)
-│   ├── AppNavigator.js         # Navigatore privato (Home, Profilo, Settings)
-│   └── RootNavigator.js        # Router principale
+│   ├── AuthNavigator.js        # Stack público (Login, Signup)
+│   ├── AppNavigator.js         # Navegador privado (Home, Profilo, Settings)
+│   └── RootNavigator.js        # Router principal
 ├── screens/
 │   ├── LoginScreen.js
 │   ├── HomeScreen.js
@@ -114,13 +114,13 @@ app/
 └── App.js                      # Punto d’ingresso con AuthProvider
 ```
 
-## Dettagli navigatori
-- RootNavigator: mostra `AuthNavigator` se `user` è null, altrimenti `AppNavigator`.
-- AuthNavigator: Stack senza header (`headerShown: false`), contiene Login.
+## Detalles de navegadores
+- RootNavigator: muestra `AuthNavigator` si.*es null, de lo contrario `AppNavigator`.
+- AuthNavigator: Stack sin header (`headerShown: false`), contiene Login.
 - AppNavigator: Bottom Tab con `HomeScreen`, `ProfileScreen`, `SettingsScreen`. Accesso a `useAuth`.
 
-## Ingresso app
-- `App.js` avvolge tutto:
+## Entrada de la app
+- `App.js` envuelve todo:
 ```js
 <AuthProvider>
   <RootNavigator />
@@ -130,19 +130,19 @@ app/
 ## Flusso di navigazione
 1. All’avvio, `AuthContext` recupera la sessione (AsyncStorage).
 2. `RootNavigator` controlla `user`:
-   - Se assente → `AuthNavigator` → `LoginScreen`
-   - Se presente → `AppNavigator` → `HomeScreen`
-3. Dopo `signIn()`, `user` cambia → passaggio automatico all’area privata.
+   - Si está ausente → `AuthNavigator` → `LoginScreen`
+   - Si está presente → `AppNavigator` → `HomeScreen`
+3. Después de `signIn()`, `user` cambia → paso automático all’area privata.
 4. Da `ProfileScreen`, `signOut()` → `user` null → ritorno a `LoginScreen`.
 
 
-# 🧩 Tabella `listings`
-La tabella listings rappresenta la struttura dati principale dell’applicazione e contiene tutti gli annunci di automobili pubblicati dagli utenti. Ogni riga corrisponde a un veicolo messo in vendita, con i relativi dettagli tecnici, informazioni di localizzazione e metadati di pubblicazione.
+# 🧩 Tabla `listings`
+La tabella listings rappresenta la struttura dati principale dell’applicazione e contiene tutti gli annunci di automobili publicados por los usuarios. Cada fila corresponde a un vehículo puesto a la venta, con los respectivos detalles técnicos, información de localización y metadatos de publicación.
 
 ---
 
 #### Prompt per AI
-Nel database ho una tabella chiamata listings con i seguenti campi principali:
+En la base de datos tengo una tabla llamada listings con i seguenti campi principali:
 
 id (uuid, PK)
 
@@ -156,82 +156,82 @@ is_active (boolean, default true)
 
 created_at (timestamp)
 
-È attiva la Row Level Security con queste policy:
+Está activa la Row Level Security con estas políticas:
 
-Tutti possono leggere gli annunci con is_active = true
+Todos pueden leer los anuncios con is_active = true
 
 Solo l’owner (auth.uid() = user_id) può creare, modificare o cancellare i propri annunci
 
 ---
 
-### 🏗 Struttura
+### 🏗 Estructura
 
-| Campo            | Tipo                              | Descrizione                                                                                                                               |
+| Campo            | Tipo                              | Descripción                                                                                                                               |
 | ---------------- | --------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------- |
-| **id**           | `uuid` *(PK)*                     | Identificatore univoco generato automaticamente (`gen_random_uuid()`).                                                                    |
+| **id**           | `uuid` *(PK)*                     | Identificador único generado automáticamente (`gen_random_uuid()`).                                                                    |
 | **user_id**      | `uuid` *(FK → auth.users.id)*     | Identificativo dell’utente proprietario dell’annuncio. È una chiave esterna che collega l’annuncio al sistema di autenticazione Supabase. |
 | **title**        | `text`                            | Titolo breve dell’annuncio (es. “Fiat Panda 1.2 Easy”).                                                                                   |
-| **description**  | `text`                            | Descrizione estesa del veicolo.                                                                                                           |
-| **price**        | `numeric(12,2)`                   | Prezzo richiesto in euro. Controllato con vincolo `CHECK (price >= 0)`.                                                                   |
-| **make**         | `text`                            | Marca del veicolo (es. Fiat, BMW, Tesla).                                                                                                 |
-| **model**        | `text`                            | Modello specifico del veicolo.                                                                                                            |
-| **year**         | `int`                             | Anno di immatricolazione, con vincolo di validità tra 1900 e l’anno corrente +1.                                                          |
+| **description**  | `text`                            | Descripción estesa del veicolo.                                                                                                           |
+| **price**        | `numeric(12,2)`                   | Precio solicitado en euros. Controlado con restricción `CHECK (price >= 0)`.                                                                   |
+| **make**         | `text`                            | Marca del vehículo (es. Fiat, BMW, Tesla).                                                                                                 |
+| **model**        | `text`                            | Modelo específico del vehículo.                                                                                                            |
+| **year**         | `int`                             | Año de matriculación, con restricción de validez tra 1900 e l’anno corrente +1.                                                          |
 | **mileage**      | `int`                             | Chilometraggio (km). Deve essere non negativo.                                                                                            |
-| **fuel_type**    | `text`                            | Tipo di alimentazione (es. “Benzina”, “Diesel”, “Ibrida”, “Elettrica”).                                                                   |
-| **transmission** | `text`                            | Tipo di cambio (es. “Manuale”, “Automatica”).                                                                                             |
-| **doors**        | `int`                             | Numero di porte.                                                                                                                          |
+| **fuel_type**    | `text`                            | Tipo de combustible (es. “Gasolina”, “Diésel”, “Híbrido”, “Eléctrico”).                                                                   |
+| **transmission** | `text`                            | Tipo de transmisión (es. “Manual”, “Automática”).                                                                                             |
+| **doors**        | `int`                             | Número de puertas.                                                                                                                          |
 | **color**        | `text`                            | Colore esterno del veicolo.                                                                                                               |
-| **images**       | `jsonb`                           | Array JSON di URL pubblici alle immagini del veicolo, salvate nel bucket Supabase `listing-images`.                                       |
-| **location**     | `text`                            | Città o zona geografica in cui si trova il veicolo.                                                                                       |
+| **images**       | `jsonb`                           | Array JSON di URL pubblici alle immagini del veicolo, guardadas en el bucket Supabase `listing-images`.                                       |
+| **location**     | `text`                            | Ciudad o zona geográfica donde se encuentra el vehículo.                                                                                       |
 | **is_active**    | `boolean` *(default `true`)*      | Flag che indica se l’annuncio è pubblicato e visibile nel feed pubblico.                                                                  |
 | **created_at**   | `timestamptz` *(default `now()`)* | Timestamp di creazione dell’annuncio, utilizzato anche per l’ordinamento cronologico nel feed.                                            |
 
 ---
 
-### 🔐 Sicurezza e policy (RLS)
+### 🔐 Seguridad y políticas (RLS)
 
-La tabella utilizza **Row Level Security (RLS)** per garantire che ogni utente possa gestire solo i propri annunci.
-Le policy attive sono le seguenti:
+La tabla utiliza **Row Level Security (RLS)** para garantizar que cada usuario pueda gestionar solo sus propios anuncios.
+Las políticas activas son las siguientes:
 
-| Nome policy              | Azione   | Regola                                                                                                        |
+| Nombre de política              | Acción   | Regla                                                                                                        |
 | ------------------------ | -------- | ------------------------------------------------------------------------------------------------------------- |
-| **Read active listings** | `SELECT` | Consente a chiunque (pubblico) di leggere solo gli annunci dove `is_active = true`.                           |
+| **Read active listings** | `SELECT` | Permite a cualquiera (público) leer solo los anuncios donde `is_active = true`.                           |
 | **Insert own listing**   | `INSERT` | Permette l’inserimento solo se `auth.uid() = user_id`, quindi un utente può creare soltanto i propri annunci. |
 | **Update own listing**   | `UPDATE` | Permette la modifica solo se l’annuncio appartiene all’utente loggato (`auth.uid() = user_id`).               |
 | **Delete own listing**   | `DELETE` | Permette la cancellazione solo se l’annuncio appartiene all’utente loggato (`auth.uid() = user_id`).          |
 
 ➡️  In questo modo:
 
-* Gli utenti **autenticati** possono creare, modificare o eliminare **solo i propri** annunci.
-* Tutti (anche non loggati) possono **visualizzare** gli annunci pubblici (`is_active = true`).
+* Gli utenti **autenticati** pueden creare, modificare o eliminare **solo sus propios** annunci.
+* Todos (incluso no logueados) pueden **visualizar** los anuncios públicos (`is_active = true`).
 
 ---
 
-### ⚡️ Indici e performance
+### ⚡️ Índices y rendimiento
 
-Per ottimizzare il caricamento del feed (ordinato per data decrescente), è presente un indice composito:
+Para optimizar la carga del feed (ordenado por fecha descendente), está presente un índice compuesto:
 
 ```sql
 create index listings_is_active_created_id_desc
   on public.listings (is_active, created_at desc, id desc);
 ```
 
-Questo indice:
+Este índice:
 
-* velocizza la paginazione basata su `created_at` + `id` (keyset pagination);
-* migliora le performance delle query usate nel feed infinito.
+* acelera la paginación basada en `created_at` + `id` (keyset pagination);
+* mejora el rendimiento de las consultas usadas en el feed infinito.
 
 ---
 
-### 🖼 Storage delle immagini
+### 🖼 Almacenamiento de imágenes
 
-Le immagini dei veicoli sono salvate nel bucket pubblico **`listing-images`** del modulo Supabase Storage.
-Le policy del bucket sono configurate in modo che:
+Las imágenes de los vehículos se guardan en el bucket público **`listing-images`** del módulo Supabase Storage.
+Las políticas del bucket están configuradas de modo que:
 
-* **chiunque** possa leggere (`SELECT`) gli oggetti, rendendo gli URL pubblicamente accessibili;
-* **solo gli utenti autenticati** possano caricare (`INSERT`) nuovi file.
+* **cualquiera** pueda leer (`SELECT`) los objetos, haciendo las URLs públicamente accesibles;
+* **solo los usuarios autenticados** puedan cargar (`INSERT`) nuevos archivos.
 
-Ogni immagine è referenziata nel campo `images` della tabella come array JSON di stringhe (esempio):
+Cada imagen está referenciada en el campo `images` de la tabla como array JSON de strings (ejemplo):
 
 ```json
 [
@@ -244,10 +244,10 @@ Ogni immagine è referenziata nel campo `images` della tabella come array JSON d
 
 ### 🔄 Utilizzo nel feed dell’app
 
-Il feed principale dell’app Expo carica i dati da questa tabella utilizzando Supabase Client SDK.
-Le query principali:
+Il feed principale dell’app Expo carica i dati da questa tabella utilizando Supabase Client SDK.
+Las consultas principales:
 
-* **prima pagina:**
+* **primera página:**
 
   ```ts
   .from('listings')
@@ -257,71 +257,71 @@ Le query principali:
   .order('id', { ascending: false })
   .limit(PAGE_SIZE)
   ```
-* **paginazione (keyset):**
+* **paginación (keyset):**
 
   ```ts
   .or(`and(created_at.eq.${cursor.created_at},id.lt.${cursor.id}),created_at.lt.${cursor.created_at}`)
   ```
 
-L’ordinamento su `created_at DESC, id DESC` garantisce un feed **infinito, stabile e coerente**.
+L’ordinamento su `created_at DESC, id DESC` garantiza un feed **infinito, stabile e coerente**.
 
 ---
 
-### 📦 Relazioni
+### 📦 Relaciones
 
 * `user_id` → `auth.users.id`
-  Collega ogni annuncio all’utente autenticato che lo ha pubblicato.
-* Relazioni future possibili:
+  Conecta cada anuncio all’utente autenticato que lo publicó.
+* Relaciones future possibili:
 
-  * `favorites` o `saved_listings` per salvare auto nei preferiti;
-  * `messages` per chat tra venditore e acquirente.
+  * `favorites` o `saved_listings` para guardar autos en favoritos;
+  * `messages` para chat entre vendedor y comprador.
 
 ---
 
-### 🧠 Riassunto tecnico
+### 🧠 Resumen técnico
 
-| Proprietà                       | Valore                                  |
+| Propiedad                       | Valor                                   |
 | ------------------------------- | --------------------------------------- |
-| **Tabella**                     | `public.listings`                       |
+| **Tabla**                       | `public.listings`                       |
 | **PK**                          | `id`                                    |
 | **FK**                          | `user_id → auth.users.id`               |
-| **RLS**                         | Attiva                                  |
-| **Accesso pubblico in lettura** | Sì (`is_active = true`)                 |
-| **Accesso in scrittura**        | Solo owner autenticato                  |
-| **Immagini**                    | Bucket pubblico `listing-images`        |
+| **RLS**                         | Activa                                  |
+| **Acceso público en lectura**   | Sí (`is_active = true`)                 |
+| **Acceso en escritura**         | Solo propietario autenticado            |
+| **Imágenes**                    | Bucket público `listing-images`         |
 | **Feed sorting**                | `ORDER BY created_at DESC, id DESC`     |
 | **Pagination**                  | Keyset (cursor-based)                   |
-| **Indice**                      | `(is_active, created_at DESC, id DESC)` |
+| **Índice**                      | `(is_active, created_at DESC, id DESC)` |
 
-# 🧱 Tabella `profiles`
+# 🧱 Tabla `profiles`
 
-## 1. `auth.users` (gestita da Supabase)
-- Tabella predefinita di Supabase con le informazioni di autenticazione.
-- Fonte di verità per identità e accesso.
-- ⚙️ Gestita internamente: non modificare manualmente.
+## 1. `auth.users` (gestionada por Supabase)
+- Tabla predefinida de Supabase con la información de autenticación.
+- Fuente de verdad para identidad y acceso.
+- ⚙️ Gestionada internamente: no modificar manualmente.
 
 ## 2. `public.profiles`
-Tabella personalizzata che estende `auth.users` con dati extra e facilita le relazioni (es. listings, favorites).
+Tabla personalizada que extiende `auth.users` con datos extra y facilita las relaciones (es. listings, favorites).
 
-| Colonna              | Tipo  | Descrizione                                         |
+| Columna              | Tipo  | Descripción                                         |
 | -------------------- | ----- | --------------------------------------------------- |
-| `id`                 | uuid  | PK, corrisponde a `auth.users.id`.                  |
+| `id`                 | uuid  | PK, corresponde a `auth.users.id`.                  |
 | `profile_image_url`  | text  | URL dell’immagine profilo.                          |
 
-Relazione: `id` → `auth.users(id)` (ON DELETE CASCADE).
+Relación: `id` → `auth.users(id)` (ON DELETE CASCADE).
 
 ## 3. Sincronizzazione automatica
 Trigger su `auth.users` che richiama `public.ensure_profile()` per:
-- creare il record in `public.profiles` se mancante;
-- evitare duplicazioni o aggiornamenti dei campi gestiti da `auth.users`.
+- crear el registro en `public.profiles` si falta;
+- evitar duplicaciones o actualizaciones de los campos gestionados por `auth.users`.
 
 Oggetti coinvolti:
 - 🔧 `public.ensure_profile()` (funzione PL/pgSQL)
 - 🔔 `on_auth_user_created` (trigger su `auth.users`)
 
-## 4. Sicurezza (Row Level Security)
+## 4. Seguridad (Row Level Security)
 
-| Policy                               | Operazione | Regola                               |
+| Política                               | Operación | Regla                               |
 | ------------------------------------ | ---------- | ------------------------------------ |
 | `Users can view their own profile`   | SELECT     | `auth.uid() = id`                    |
 | `Users can update their own profile` | UPDATE     | `auth.uid() = id`                    |
