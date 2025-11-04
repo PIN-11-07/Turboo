@@ -3,16 +3,16 @@
 ### 🏁 Sprint 1
 - [ ] Publicar vehículos (Pubblicazione veicoli)  
 - [ ] Ficha de vehículo (Scheda veicolo)  
-- [ ] Perfil (Profilo)  
-- [ ] Login (Accesso)  
-- [ ] Registro del usuario (Registrazione utente)  
+- [x] Perfil (Profilo)  
+- [x] Login (Accesso)  
+- [x] Registro del usuario (Registrazione utente)  
 - [ ] Favoritos (Preferiti)  
-- [ ] Feed principal (Feed principale)  
+- [x] Feed principal (Feed principale)  
 
 ### 🚀 Sprint 2
 - [ ] Incremento de Diseño, Implementación y Poblado de BD (Incremento di progettazione, implementazione e popolamento del database)  
 - [ ] Comprar vehículo (Acquisto veicolo)  
-- [ ] Buscador por texto (Ricerca testuale)  
+- [x] Buscador por texto (Ricerca testuale)  
 - [ ] Filtros de búsqueda (Filtri di ricerca)  
 - [ ] Autorrelleno IA (Compilazione automatica con IA)  
 - [ ] Guardar borrador (Salvataggio bozza)  
