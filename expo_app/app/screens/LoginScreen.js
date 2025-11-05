@@ -7,15 +7,44 @@ export default function LoginScreen() {
   const { signIn, signUp } = useAuth()
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
+  const [name, setName] = useState('')
   const [error, setError] = useState(null)
+  const [message, setMessage] = useState(null)
   const [isSignup, setIsSignup] = useState(false)
 
   const handleSubmit = async () => {
     setError(null)
-    const { error } = isSignup
-      ? await signUp(email, password)
-      : await signIn(email, password)
+    setMessage(null)
+
+    if (isSignup) {
+      const trimmedName = name.trim()
+      if (!trimmedName) {
+        setError('Inserisci il tuo nome per completare la registrazione.')
+        return
+      }
+      const { error } = await signUp(email, password, trimmedName)
+      if (error) {
+        setError(error.message)
+      } else {
+        setMessage(
+          'Registrazione riuscita! Controlla la tua email per confermare il tuo account.'
+        )
+        setIsSignup(false)
+        setPassword('')
+        setName('')
+      }
+      return
+    }
+
+    const { error } = await signIn(email, password)
     if (error) setError(error.message)
+  }
+
+  const toggleAuthMode = () => {
+    setError(null)
+    setMessage(null)
+    setName('')
+    setIsSignup((prev) => !prev)
   }
 
   return (
@@ -26,6 +55,20 @@ export default function LoginScreen() {
           <Text style={styles.title}>
             {isSignup ? 'Crea una cuenta' : 'Inicia sesión'}
           </Text>
+
+          {isSignup && (
+            <>
+              <TextInput
+                style={styles.input}
+                placeholder="Nome completo"
+                value={name}
+                onChangeText={setName}
+                autoCapitalize="words"
+                placeholderTextColor="#aaa"
+                textContentType="name"
+              />
+            </>
+          )}
 
           <TextInput
             style={styles.input}
@@ -46,6 +89,7 @@ export default function LoginScreen() {
           />
 
           {error && <Text style={styles.error}>{error}</Text>}
+          {message && <Text style={styles.success}>{message}</Text>}
 
           <TouchableOpacity style={styles.button} onPress={handleSubmit}>
             <Text style={styles.buttonText}>
@@ -53,7 +97,7 @@ export default function LoginScreen() {
             </Text>
           </TouchableOpacity>
 
-          <TouchableOpacity onPress={() => setIsSignup(!isSignup)}>
+          <TouchableOpacity onPress={toggleAuthMode}>
             <Text style={styles.link}>
               {isSignup
                 ? '¿Ya tienes una cuenta? Inicia sesión'
@@ -118,6 +162,11 @@ const styles = StyleSheet.create({
   },
   error: {
     color: 'red',
+    textAlign: 'center',
+    marginBottom: 10,
+  },
+  success: {
+    color: '#0f9d58',
     textAlign: 'center',
     marginBottom: 10,
   },

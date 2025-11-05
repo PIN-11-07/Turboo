@@ -25,8 +25,20 @@ export const AuthProvider = ({ children }) => {
   const signIn = (email, password) =>
     supabase.auth.signInWithPassword({ email, password })
 
-  const signUp = (email, password) =>
-    supabase.auth.signUp({ email, password })
+  const signUp = (email, password, name) => {
+    const trimmedName = name?.trim()
+    const metadata = {}
+
+    if (trimmedName) metadata.full_name = trimmedName
+
+    return supabase.auth.signUp({
+      email,
+      password,
+      options: {
+        data: metadata,
+      },
+    })
+  }
 
   const signOut = () => supabase.auth.signOut()
 
