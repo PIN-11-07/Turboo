@@ -18,7 +18,7 @@ const formatPrice = (value) => {
   const numericValue = Number(value)
 
   if (Number.isFinite(numericValue)) {
-    return `€ ${numericValue.toLocaleString('it-IT')}`
+    return `€ ${numericValue.toLocaleString('es-ES')}`
   }
 
   return value ?? '-'
@@ -197,7 +197,7 @@ export default function HomeScreen() {
   }, [loadingMore])
 
   return (
-    <SafeAreaView style={styles.safeArea}>
+    <SafeAreaView style={styles.safeArea} edges={['top']}>
       <View style={styles.container}>
         <View style={styles.topSection}>
           <View style={styles.hero}>
