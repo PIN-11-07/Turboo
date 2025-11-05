@@ -33,28 +33,6 @@ const extractName = (supabaseUser) => {
   )
 }
 
-const extractPhone = (supabaseUser) => {
-  if (!supabaseUser) {
-    return null
-  }
-
-  if (typeof supabaseUser.phone === 'string' && supabaseUser.phone.trim()) {
-    return supabaseUser.phone.trim()
-  }
-
-  const metadata =
-    supabaseUser.user_metadata ??
-    supabaseUser.raw_user_meta_data ??
-    supabaseUser.app_metadata ??
-    {}
-
-  if (typeof metadata.phone === 'string' && metadata.phone.trim()) {
-    return metadata.phone.trim()
-  }
-
-  return null
-}
-
 const formatPrice = (value) => {
   const numericValue = Number(value)
 
@@ -139,12 +117,9 @@ export default function ProfileScreen() {
           (typeof user?.email === 'string' && user.email.trim()) ||
           null
 
-        const phone = extractPhone(authUser) || extractPhone(user) || null
-
         setProfile({
           name,
           mail,
-          phone,
           profileImageUrl: profileData?.profile_image_url || null,
         })
         setListings(Array.isArray(listingsData) ? listingsData : [])
@@ -220,8 +195,6 @@ export default function ProfileScreen() {
           <Text style={styles.cardLabel}>Email</Text>
           <Text style={styles.cardValue}>{profile?.mail || 'Non disponibile'}</Text>
 
-          <Text style={styles.cardLabel}>Telefono</Text>
-          <Text style={styles.cardValue}>{profile?.phone || 'Non disponibile'}</Text>
         </View>
 
         <View style={styles.section}>

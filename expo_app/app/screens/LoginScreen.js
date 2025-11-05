@@ -8,7 +8,6 @@ export default function LoginScreen() {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [name, setName] = useState('')
-  const [phone, setPhone] = useState('')
   const [error, setError] = useState(null)
   const [message, setMessage] = useState(null)
   const [isSignup, setIsSignup] = useState(false)
@@ -23,7 +22,7 @@ export default function LoginScreen() {
         setError('Inserisci il tuo nome per completare la registrazione.')
         return
       }
-      const { error } = await signUp(email, password, trimmedName, phone.trim())
+      const { error } = await signUp(email, password, trimmedName)
       if (error) {
         setError(error.message)
       } else {
@@ -33,7 +32,6 @@ export default function LoginScreen() {
         setIsSignup(false)
         setPassword('')
         setName('')
-        setPhone('')
       }
       return
     }
@@ -46,7 +44,6 @@ export default function LoginScreen() {
     setError(null)
     setMessage(null)
     setName('')
-    setPhone('')
     setIsSignup((prev) => !prev)
   }
 
@@ -69,15 +66,6 @@ export default function LoginScreen() {
                 autoCapitalize="words"
                 placeholderTextColor="#aaa"
                 textContentType="name"
-              />
-              <TextInput
-                style={styles.input}
-                placeholder="Numero di telefono (opzionale)"
-                value={phone}
-                onChangeText={setPhone}
-                keyboardType="phone-pad"
-                placeholderTextColor="#aaa"
-                textContentType="telephoneNumber"
               />
             </>
           )}
