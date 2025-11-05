@@ -37,14 +37,14 @@ const formatPrice = (value) => {
   const numericValue = Number(value)
 
   if (Number.isFinite(numericValue)) {
-    return `€ ${numericValue.toLocaleString('it-IT')}`
+    return `€ ${numericValue.toLocaleString('es-ES')}`
   }
 
   if (typeof value === 'string' && value.trim()) {
     return value
   }
 
-  return 'Prezzo su richiesta'
+  return 'Precio a petición'
 }
 
 export default function ProfileScreen() {
@@ -126,7 +126,7 @@ export default function ProfileScreen() {
       } catch (fetchError) {
         console.error(fetchError)
         if (isMounted) {
-          setError('Impossibile caricare il profilo. Riprova più tardi.')
+          setError('No es posible cargar el perfil. Inténtalo de nuevo más tarde.')
         }
       } finally {
         if (isMounted) {
@@ -167,7 +167,7 @@ export default function ProfileScreen() {
     if (!user) {
       return (
         <View style={styles.centerContent}>
-          <Text style={styles.infoText}>Effettua l&apos;accesso per visualizzare il profilo.</Text>
+          <Text style={styles.infoText}>Inicia sesión para ver el perfil.</Text>
         </View>
       )
     }
@@ -189,18 +189,18 @@ export default function ProfileScreen() {
         </View>
 
         <View style={styles.card}>
-          <Text style={styles.cardLabel}>Nome</Text>
-          <Text style={styles.cardValue}>{profile?.name || 'Non disponibile'}</Text>
+          <Text style={styles.cardLabel}>Nombre</Text>
+          <Text style={styles.cardValue}>{profile?.name || 'No disponible'}</Text>
 
-          <Text style={styles.cardLabel}>Email</Text>
-          <Text style={styles.cardValue}>{profile?.mail || 'Non disponibile'}</Text>
+          <Text style={styles.cardLabel}>Correo electrónico</Text>
+          <Text style={styles.cardValue}>{profile?.mail || 'No disponible'}</Text>
 
         </View>
 
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>I tuoi annunci</Text>
+          <Text style={styles.sectionTitle}>Tus anuncios</Text>
           {listings.length === 0 ? (
-            <Text style={styles.emptyState}>Non hai ancora pubblicato annunci.</Text>
+            <Text style={styles.emptyState}>Todavía no has publicado anuncios.</Text>
           ) : (
             listings.map((listing) => (
               <View key={listing.id} style={styles.listingCard}>
@@ -213,7 +213,7 @@ export default function ProfileScreen() {
                     />
                   ) : (
                     <View style={styles.listingImagePlaceholder}>
-                      <Text style={styles.listingImagePlaceholderText}>Nessuna foto</Text>
+                      <Text style={styles.listingImagePlaceholderText}>Sin foto</Text>
                     </View>
                   )}
                 </View>
@@ -221,10 +221,10 @@ export default function ProfileScreen() {
                   <Text style={styles.listingTitle}>{listing.title}</Text>
                   <Text style={styles.listingPrice}>{formatPrice(listing.price)}</Text>
                   <Text style={styles.listingDate}>
-                    Pubblicato il{' '}
+                    Publicado el{' '}
                     {listing.created_at
-                      ? new Date(listing.created_at).toLocaleDateString('it-IT')
-                      : 'data n/d'}
+                      ? new Date(listing.created_at).toLocaleDateString('es-ES')
+                      : 'fecha s/d'}
                   </Text>
                 </View>
               </View>
@@ -233,7 +233,7 @@ export default function ProfileScreen() {
         </View>
 
         <TouchableOpacity style={styles.signOutButton} onPress={signOut}>
-          <Text style={styles.signOutButtonText}>Esci</Text>
+          <Text style={styles.signOutButtonText}>Cerrar sesión</Text>
         </TouchableOpacity>
       </ScrollView>
     )

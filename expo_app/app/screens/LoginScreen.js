@@ -53,7 +53,7 @@ export default function LoginScreen() {
       <View style={styles.innerContainer}>
         <View style={styles.card}>
           <Text style={styles.title}>
-            {isSignup ? 'Crea un account' : 'Accedi'}
+            {isSignup ? 'Crea una cuenta' : 'Inicia sesión'}
           </Text>
 
           {isSignup && (
@@ -72,7 +72,7 @@ export default function LoginScreen() {
 
           <TextInput
             style={styles.input}
-            placeholder="Email"
+            placeholder="Correo electrónico"
             value={email}
             onChangeText={setEmail}
             autoCapitalize="none"
@@ -81,7 +81,7 @@ export default function LoginScreen() {
           />
           <TextInput
             style={styles.input}
-            placeholder="Password"
+            placeholder="Contraseña"
             value={password}
             onChangeText={setPassword}
             secureTextEntry
@@ -93,15 +93,15 @@ export default function LoginScreen() {
 
           <TouchableOpacity style={styles.button} onPress={handleSubmit}>
             <Text style={styles.buttonText}>
-              {isSignup ? 'Registrati' : 'Entra'}
+              {isSignup ? 'Regístrate' : 'Iniciar sesión'}
             </Text>
           </TouchableOpacity>
 
           <TouchableOpacity onPress={toggleAuthMode}>
             <Text style={styles.link}>
               {isSignup
-                ? 'Hai già un account? Accedi'
-                : 'Non hai un account? Registrati'}
+                ? '¿Ya tienes una cuenta? Inicia sesión'
+                : '¿No tienes una cuenta? Regístrate'}
             </Text>
           </TouchableOpacity>
         </View>
