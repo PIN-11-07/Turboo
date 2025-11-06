@@ -19,7 +19,7 @@ export default function LoginScreen() {
     if (isSignup) {
       const trimmedName = name.trim()
       if (!trimmedName) {
-        setError('Inserisci il tuo nome per completare la registrazione.')
+        setError('Ingresa tu nombre para completar el registro.')
         return
       }
       const { error } = await signUp(email, password, trimmedName)
@@ -27,7 +27,7 @@ export default function LoginScreen() {
         setError(error.message)
       } else {
         setMessage(
-          'Registrazione riuscita! Controlla la tua email per confermare il tuo account.'
+          '¡Registro exitoso! Revisa tu correo electrónico para confirmar tu cuenta.'
         )
         setIsSignup(false)
         setPassword('')
@@ -49,7 +49,7 @@ export default function LoginScreen() {
 
   return (
     <LinearGradient colors={['#4C7EFF', '#6AD7F2']} style={styles.container}>
-      {/* Use a plain View instead of KeyboardAvoidingView so the card doesn't shift when the keyboard appears */}
+      {/* Usa una vista simple en lugar de KeyboardAvoidingView para que la tarjeta no se mueva cuando aparece el teclado */}
       <View style={styles.innerContainer}>
         <View style={styles.card}>
           <Text style={styles.title}>
@@ -60,7 +60,7 @@ export default function LoginScreen() {
             <>
               <TextInput
                 style={styles.input}
-                placeholder="Nome completo"
+                placeholder="Nombre completo"
                 value={name}
                 onChangeText={setName}
                 autoCapitalize="words"
@@ -130,7 +130,7 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.15,
     shadowRadius: 8,
     elevation: 5,
-    // sposta leggermente la card verso l'alto rispetto al centro; regola translateY per più/meno spostamento
+    // mueve ligeramente la tarjeta hacia arriba del centro; ajusta translateY para más/menos desplazamiento
     transform: [{ translateY: -90 }],
   },
   title: {
