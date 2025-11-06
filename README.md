@@ -2,7 +2,7 @@
 
 ### 🏁 Sprint 1
 - [x] Publicar vehículos (Pubblicazione veicoli)  
-- [ ] Ficha de vehículo (Scheda veicolo)  
+- [x] Ficha de vehículo (Scheda veicolo)  
 - [x] Perfil (Profilo)  
 - [x] Login (Accesso)  
 - [x] Registro del usuario (Registrazione utente)  
