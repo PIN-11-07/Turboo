@@ -1,12 +1,15 @@
 import React from 'react'
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs'
+import { createNativeStackNavigator } from '@react-navigation/native-stack'
 import HomeScreen from '../screens/HomeScreen'
+import ListingDetailScreen from '../screens/ListingDetailScreen'
 import ProfileScreen from '../screens/ProfileScreen'
 import PublishScreen from '../screens/PublishScreen'
 
 const Tab = createBottomTabNavigator()
+const Stack = createNativeStackNavigator()
 
-export default function AppNavigator() {
+function MainTabs() {
   return (
     <Tab.Navigator
       screenOptions={{
@@ -29,5 +32,22 @@ export default function AppNavigator() {
         options={{ tabBarLabel: 'Perfil' }}
       />
     </Tab.Navigator>
+  )
+}
+
+export default function AppNavigator() {
+  return (
+    <Stack.Navigator>
+      <Stack.Screen
+        name="MainTabs"
+        component={MainTabs}
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen
+        name="ListingDetail"
+        component={ListingDetailScreen}
+        options={{ title: 'Detalles del vehículo' }}
+      />
+    </Stack.Navigator>
   )
 }

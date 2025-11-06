@@ -7,9 +7,11 @@ import {
   StyleSheet,
   Text,
   TextInput,
+  TouchableOpacity,
   View,
 } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
+import { useNavigation } from '@react-navigation/native'
 import { supabase } from '../lib/supabase'
 
 const PAGE_SIZE = 10
@@ -28,6 +30,7 @@ const getMainImage = (images) =>
   Array.isArray(images) && images.length > 0 ? images[0] : null
 
 export default function HomeScreen() {
+  const navigation = useNavigation()
   const [listings, setListings] = useState([])
   const [initialLoading, setInitialLoading] = useState(true)
   const [refreshing, setRefreshing] = useState(false)
@@ -142,47 +145,59 @@ export default function HomeScreen() {
     }
   }, [fetchListings, hasMore, initialLoading, listings, loadingMore, searchQuery])
 
-  const renderListing = useCallback(({ item }) => {
-    const mainImage = getMainImage(item.images)
+  const renderListing = useCallback(
+    ({ item }) => {
+      const mainImage = getMainImage(item.images)
 
-    return (
-      <View style={styles.card}>
-        {mainImage ? (
-          <Image source={{ uri: mainImage }} style={styles.cardImage} />
-        ) : (
-          <View style={[styles.cardImage, styles.cardImagePlaceholder]}>
-            <Text style={styles.cardImagePlaceholderText}>Sin foto</Text>
-          </View>
-        )}
-        <View style={styles.cardContent}>
-          <View style={styles.cardHeader}>
-            <Text style={styles.cardTitle}>{item.title}</Text>
-            <Text style={styles.cardPrice}>{formatPrice(item.price)}</Text>
-          </View>
-          <Text style={styles.cardSubtitle}>
-            {item.make} {item.model} • {item.year}
-          </Text>
-          <View style={styles.cardBadgeRow}>
-            <Text style={styles.cardBadge}>
-              {item.mileage ? `${item.mileage} km` : 'km s/d'}
+      return (
+        <TouchableOpacity
+          style={styles.card}
+          activeOpacity={0.85}
+          onPress={() =>
+            navigation.navigate('ListingDetail', {
+              listingId: item.id,
+              listing: item,
+            })
+          }
+        >
+          {mainImage ? (
+            <Image source={{ uri: mainImage }} style={styles.cardImage} />
+          ) : (
+            <View style={[styles.cardImage, styles.cardImagePlaceholder]}>
+              <Text style={styles.cardImagePlaceholderText}>Sin foto</Text>
+            </View>
+          )}
+          <View style={styles.cardContent}>
+            <View style={styles.cardHeader}>
+              <Text style={styles.cardTitle}>{item.title}</Text>
+              <Text style={styles.cardPrice}>{formatPrice(item.price)}</Text>
+            </View>
+            <Text style={styles.cardSubtitle}>
+              {item.make} {item.model} • {item.year}
             </Text>
-            {item.fuel_type ? (
-              <Text style={styles.cardBadge}>{item.fuel_type}</Text>
-            ) : null}
-            {item.transmission ? (
-              <Text style={styles.cardBadge}>{item.transmission}</Text>
-            ) : null}
+            <View style={styles.cardBadgeRow}>
+              <Text style={styles.cardBadge}>
+                {item.mileage ? `${item.mileage} km` : 'km s/d'}
+              </Text>
+              {item.fuel_type ? (
+                <Text style={styles.cardBadge}>{item.fuel_type}</Text>
+              ) : null}
+              {item.transmission ? (
+                <Text style={styles.cardBadge}>{item.transmission}</Text>
+              ) : null}
+            </View>
+            <View style={styles.cardFooter}>
+              <Text style={styles.cardLocation}>{item.location}</Text>
+              <Text style={styles.cardMeta}>
+                {item.doors ? `${item.doors} puertas` : item.color || 'Detalles s/d'}
+              </Text>
+            </View>
           </View>
-          <View style={styles.cardFooter}>
-            <Text style={styles.cardLocation}>{item.location}</Text>
-            <Text style={styles.cardMeta}>
-              {item.doors ? `${item.doors} puertas` : item.color || 'Detalles s/d'}
-            </Text>
-          </View>
-        </View>
-      </View>
-    )
-  }, [])
+        </TouchableOpacity>
+      )
+    },
+    [navigation]
+  )
 
   const listFooter = useCallback(() => {
     if (!loadingMore) {
