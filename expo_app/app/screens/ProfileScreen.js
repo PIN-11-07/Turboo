@@ -9,6 +9,7 @@ import {
   View,
 } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
+import { useNavigation } from '@react-navigation/native'
 import { useAuth } from '../context/AuthContext'
 import { supabase } from '../lib/supabase'
 
@@ -49,6 +50,7 @@ const formatPrice = (value) => {
 
 export default function ProfileScreen() {
   const { user, signOut } = useAuth()
+  const navigation = useNavigation()
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
   const [profile, setProfile] = useState(null)
@@ -84,7 +86,9 @@ export default function ProfileScreen() {
               .maybeSingle(),
             supabase
               .from('listings')
-              .select('id, title, price, images, created_at')
+              .select(
+                'id, title, description, price, make, model, year, mileage, fuel_type, transmission, doors, color, images, created_at'
+              )
               .eq('user_id', user.id)
               .order('created_at', { ascending: false })
           ])
@@ -203,7 +207,17 @@ export default function ProfileScreen() {
             <Text style={styles.emptyState}>Todavía no has publicado anuncios.</Text>
           ) : (
             listings.map((listing) => (
-              <View key={listing.id} style={styles.listingCard}>
+              <TouchableOpacity
+                key={listing.id}
+                style={styles.listingCard}
+                activeOpacity={0.85}
+                onPress={() =>
+                  navigation.navigate('ListingDetail', {
+                    listingId: listing.id,
+                    listing,
+                  })
+                }
+              >
                 <View style={styles.listingImageWrapper}>
                   {Array.isArray(listing.images) && listing.images.length > 0 ? (
                     <Image
@@ -227,7 +241,7 @@ export default function ProfileScreen() {
                       : 'fecha s/d'}
                   </Text>
                 </View>
-              </View>
+              </TouchableOpacity>
             ))
           )}
         </View>
