@@ -146,11 +146,12 @@ export default function ListingDetailScreen() {
   }, [listing?.created_at])
 
   return (
-    <SafeAreaView style={styles.safeArea}>
+    <SafeAreaView style={styles.safeArea} edges={['left', 'right', 'bottom']}>
       <ScrollView
         style={styles.scrollView}
         contentContainerStyle={styles.scrollContent}
         showsVerticalScrollIndicator={false}
+        contentInsetAdjustmentBehavior="never"
       >
         {loading && (
           <View style={styles.loader}>
@@ -248,12 +249,13 @@ const styles = StyleSheet.create({
     backgroundColor: '#FFFFFF',
   },
   scrollView: {
+    flex: 1,
     backgroundColor: '#FFFFFF',
   },
   scrollContent: {
     paddingHorizontal: 16,
     paddingTop: 16,
-    paddingBottom: 32,
+    paddingBottom: 16,
   },
   loader: {
     marginTop: 24,

@@ -155,6 +155,15 @@ app/
 3. Tras `signIn()`, cambia `user` → paso automático al área privada.
 4. Desde `ProfileScreen`, `signOut()` → `user` null → vuelta a `LoginScreen`.
 
+## ListingDetailScreen
+- Archivo: `app/screens/ListingDetailScreen.js`.
+- Se presenta dentro dello stack `AppNavigator` (`ListingDetail`), sopra i tab nascosti, e mostra automaticamente il pulsante di ritorno del navigator nativo.
+- Accetta `listingId` (obbligatorio per il fetch) e un oggetto `listing` opzionale come parametri di `navigation.navigate`.
+- Se i dati ricevuti contengono già tutti i campi necessari, la schermata li usa direttamente; altrimenti effettua una query `supabase.from('listings')` con `maybeSingle()` per recuperare le colonne: `id, title, description, price, make, model, year, mileage, fuel_type, transmission, doors, color, images, created_at`.
+- Gestisce stati di caricamento ed errore, includendo placeholders per immagini mancanti e messaggi quando l'annuncio non esiste.
+- Layout: galleria orizzontale full width, sezione di intestazione con titolo/prezzo/data, blocco descrizione e tabella specifiche (etichetta/valore) per i campi tecnici del veicolo.
+- Formattazioni dedicate: prezzo (`€` con locale `it-IT`), date (`toLocaleDateString('it-IT')`), chilometraggio con suffisso `km`, parsing di `images` quando arriva come JSON string.
+- Lo scroll parte appena sotto la barra superiore (`SafeAreaView` con `edges={['left','right','bottom']}`) e occupa tutta l'altezza utile, così il contenuto aderisce ai bordi dello schermo.
 
 # 🧩 Tabla `listings`
 La tabla listings representa la estructura de datos principal de la aplicación y contiene todos los anuncios de automóviles publicados por los usuarios. Cada fila corresponde a un vehículo puesto a la venta, con sus detalles técnicos, información de localización y metadatos de publicación.
