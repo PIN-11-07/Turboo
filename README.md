@@ -1,7 +1,7 @@
 # ✅ To-Do List
 
 ### 🏁 Sprint 1
-- [ ] Publicar vehículos (Pubblicazione veicoli)  
+- [x] Publicar vehículos (Pubblicazione veicoli)  
 - [ ] Ficha de vehículo (Scheda veicolo)  
 - [x] Perfil (Profilo)  
 - [x] Login (Accesso)  
@@ -198,6 +198,7 @@ Solo el propietario (auth.uid() = user_id) puede crear, modificar o borrar sus p
 | **year**         | `int`                             | Año de matriculación, con restricción de validez entre 1900 y el año actual +1.                                                         |
 | **mileage**      | `int`                             | Kilometraje (km). Debe ser no negativo.                                                                                                 |
 | **fuel_type**    | `text`                            | Tipo de combustible (ej.: “Gasolina”, “Diésel”, “Híbrida”, “Eléctrica”).                                                                |
+
 | **transmission** | `text`                            | Tipo de cambio (ej.: “Manual”, “Automática”).                                                                                           |
 | **doors**        | `int`                             | Número de puertas.                                                                                                                      |
 | **color**        | `text`                            | Color exterior del vehículo.                                                                                                            |
@@ -353,3 +354,11 @@ auth.users
         └── public.profiles
 ```
 
+## Pantalla PublishScreen
+`app/screens/PublishScreen.js` define un componente funcional de React Native que gestiona todo el flujo de publicación mediante hooks (`useState`, `useMemo`) y el contexto de autenticación (`useAuth`). El estado local `form` conserva los valores de entrada, mientras que `submitting`, `error` y `successMessage` controlan el feedback del proceso.
+
+Las constantes `MAKE_OPTIONS`, `FUEL_OPTIONS` y `TRANSMISSION_OPTIONS` encapsulan las listas de valores permitidos para los campos seleccionables. La función `handleSelectorPress` decide en tiempo de ejecución si se usa `ActionSheetIOS` o un desplegable interno, y `handleOptionSelect` actualiza el estado del formulario.
+
+La validación previa al envío se centraliza en `validateForm`. Esta rutina verifica los campos obligatorios, normaliza los números mediante `sanitizeNumber` y `sanitizeInteger`, y asegura que los datos coincidan con los tipos de la tabla (`numeric` para `price`, `int4` para `year`, `mileage` y `doors`). Si alguna regla falla, escribe un mensaje en `error` y cancela la operación.
+
+`handleSubmit` requiere que el usuario esté autenticado (`user?.id`). Tras pasar la validación, ejecuta `supabase.from('listings').insert` con el payload completo, asignando `user_id` y `is_active: true`. Al completarse, reinicia el formulario y muestra un mensaje de éxito; si Supabase devuelve un error, este se captura y se informa en la interfaz. La vista usa `SafeAreaView`, `KeyboardAvoidingView` y un `ScrollView` con `keyboardShouldPersistTaps="handled"` para mantener el formulario operativo en dispositivos móviles.
