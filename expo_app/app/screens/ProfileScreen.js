@@ -253,7 +253,11 @@ export default function ProfileScreen() {
     )
   }
 
-  return <SafeAreaView style={styles.safeArea}>{renderContent()}</SafeAreaView>
+  return (
+    <SafeAreaView style={styles.safeArea} edges={['top']}>
+      {renderContent()}
+    </SafeAreaView>
+  )
 }
 
 const styles = StyleSheet.create({
