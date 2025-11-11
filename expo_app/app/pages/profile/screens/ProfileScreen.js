@@ -10,8 +10,8 @@ import {
 } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { useNavigation } from '@react-navigation/native'
-import { useAuth } from '../context/AuthContext'
-import { supabase } from '../lib/supabase'
+import { useAuth } from '../../../context/AuthContext'
+import { supabase } from '../../../util/supabase'
 
 const notFoundErrorCodes = new Set(['PGRST116', 'PGRST114'])
 

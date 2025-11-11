@@ -10,7 +10,7 @@ import {
 } from 'react-native'
 import { useRoute } from '@react-navigation/native'
 import { SafeAreaView } from 'react-native-safe-area-context'
-import { supabase } from '../lib/supabase'
+import { supabase } from '../../../util/supabase'
 
 const REQUIRED_FIELDS = [
   'description',

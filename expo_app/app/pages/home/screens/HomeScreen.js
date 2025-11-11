@@ -12,7 +12,7 @@ import {
 } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { useNavigation } from '@react-navigation/native'
-import { supabase } from '../lib/supabase'
+import { supabase } from '../../../util/supabase'
 
 const PAGE_SIZE = 10
 

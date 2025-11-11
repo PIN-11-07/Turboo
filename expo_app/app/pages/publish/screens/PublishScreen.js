@@ -11,8 +11,8 @@ import {
   View,
 } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
-import { useAuth } from '../context/AuthContext'
-import { supabase } from '../lib/supabase'
+import { useAuth } from '../../../context/AuthContext'
+import { supabase } from '../../../util/supabase'
 
 const MAKE_OPTIONS = [
   'Alfa Romeo',
