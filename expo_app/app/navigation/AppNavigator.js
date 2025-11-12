@@ -18,8 +18,6 @@ export default function AppNavigator() {
           backgroundColor: palette.surface,
           borderTopColor: palette.border,
           height: 68,
-          paddingTop: 12,
-          paddingBottom: 10,
         },
         tabBarLabelStyle: {
           fontSize: 12,
