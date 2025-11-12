@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react'
+import React, { useCallback, useEffect, useMemo, useState } from 'react'
 import {
   ActivityIndicator,
   Image,
@@ -8,6 +8,7 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native'
+import { useNavigation } from '@react-navigation/native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { useAuth } from '../../../context/AuthContext'
 import { supabase } from '../../../util/supabase'
@@ -49,6 +50,7 @@ const formatPrice = (value) => {
 
 export default function ProfileScreen() {
   const { user, signOut } = useAuth()
+  const navigation = useNavigation()
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
   const [profile, setProfile] = useState(null)
@@ -149,6 +151,19 @@ export default function ProfileScreen() {
     return fallbackName.trim().charAt(0).toUpperCase() || '?'
   }, [profile?.name, user?.email])
 
+  const handleListingPress = useCallback(
+    (listing) => {
+      if (!listing?.id) {
+        return
+      }
+      navigation.navigate('ProfileListingDetail', {
+        listingId: listing.id,
+        listing,
+      })
+    },
+    [navigation]
+  )
+
   const renderContent = () => {
     if (loading) {
       return (
@@ -205,7 +220,12 @@ export default function ProfileScreen() {
             <Text style={styles.emptyState}>Todavía no has publicado anuncios.</Text>
           ) : (
             listings.map((listing) => (
-              <View key={listing.id} style={styles.listingCard}>
+              <TouchableOpacity
+                key={listing.id}
+                style={styles.listingCard}
+                onPress={() => handleListingPress(listing)}
+                activeOpacity={0.8}
+              >
                 <View style={styles.listingImageWrapper}>
                   {Array.isArray(listing.images) && listing.images.length > 0 ? (
                     <Image
@@ -229,7 +249,7 @@ export default function ProfileScreen() {
                       : 'fecha s/d'}
                   </Text>
                 </View>
-              </View>
+              </TouchableOpacity>
             ))
           )}
         </View>
