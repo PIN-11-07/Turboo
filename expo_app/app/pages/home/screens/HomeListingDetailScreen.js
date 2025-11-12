@@ -31,7 +31,7 @@ const formatPrice = (value) => {
   const numericValue = Number(value)
 
   if (Number.isFinite(numericValue)) {
-    return `€ ${numericValue.toLocaleString('it-IT')}`
+    return `€ ${numericValue.toLocaleString('es-ES')}`
   }
 
   return value ?? 'Prezzo non disponibile'
@@ -43,7 +43,7 @@ const formatDate = (value) => {
   }
 
   try {
-    return new Date(value).toLocaleDateString('it-IT')
+    return new Date(value).toLocaleDateString('es-ES')
   } catch {
     return 'Data non disponibile'
   }

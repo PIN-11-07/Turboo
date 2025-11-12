@@ -217,10 +217,7 @@ export default function HomeScreen() {
       <View style={styles.container}>
         <View style={styles.topSection}>
           <View style={styles.hero}>
-            <Text style={styles.heroTitle}>Explora las mejores ofertas</Text>
-            <Text style={styles.heroSubtitle}>
-              Encuentra el coche perfecto cerca de ti
-            </Text>
+            <Text style={styles.heroTitle}>TURBOO</Text>
           </View>
           <View style={styles.searchContainer}>
             <Text style={styles.searchIcon}>🔍</Text>
