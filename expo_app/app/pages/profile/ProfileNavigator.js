@@ -28,7 +28,7 @@ export default function ProfileNavigator() {
   return (
     <Stack.Navigator screenOptions={stackScreenOptions}>
       <Stack.Screen
-        name="Profile"
+        name="ProfileHome"
         component={ProfileScreen}
         options={{ headerShown: false }}
       />

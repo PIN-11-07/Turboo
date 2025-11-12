@@ -27,7 +27,7 @@ export default function PublishNavigator() {
   return (
     <Stack.Navigator screenOptions={stackScreenOptions}>
       <Stack.Screen
-        name="Publish"
+        name="PublishMain"
         component={PublishScreen}
         options={{ headerShown: false }}
       />
