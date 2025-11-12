@@ -11,6 +11,7 @@ import { useRoute } from '@react-navigation/native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { supabase } from '../../../util/supabase'
 import { homeListingDetailScreenStyles } from '../HomeStyles'
+import { palette } from '../../../theme/palette'
 
 const REQUIRED_FIELDS = [
   'description',
@@ -155,7 +156,7 @@ export default function ListingDetailScreen() {
       >
         {loading && (
           <View style={styles.loader}>
-            <ActivityIndicator size="large" color="#0B5FFF" />
+            <ActivityIndicator size="large" color={palette.accent} />
           </View>
         )}
 

@@ -13,6 +13,7 @@ import { SafeAreaView } from 'react-native-safe-area-context'
 import { useNavigation } from '@react-navigation/native'
 import { supabase } from '../../../util/supabase'
 import { homeScreenStyles } from '../HomeStyles'
+import { palette } from '../../../theme/palette'
 
 const PAGE_SIZE = 10
 
@@ -206,7 +207,7 @@ export default function HomeScreen() {
 
     return (
       <View style={styles.footer}>
-        <ActivityIndicator size="small" color="#0B5FFF" />
+        <ActivityIndicator size="small" color={palette.accent} />
       </View>
     )
   }, [loadingMore])
@@ -227,7 +228,7 @@ export default function HomeScreen() {
               value={searchQuery}
               onChangeText={setSearchQuery}
               placeholder="Busca marca, modelo o ciudad"
-              placeholderTextColor="#9CA3AF"
+              placeholderTextColor={palette.textMuted}
               style={styles.searchInput}
               returnKeyType="search"
               clearButtonMode="while-editing"
@@ -257,13 +258,19 @@ export default function HomeScreen() {
           onEndReached={handleLoadMore}
           onEndReachedThreshold={0.5}
           refreshControl={
-            <RefreshControl refreshing={refreshing} onRefresh={handleRefresh} />
+            <RefreshControl
+              refreshing={refreshing}
+              onRefresh={handleRefresh}
+              tintColor={palette.accent}
+              colors={[palette.accent]}
+              progressBackgroundColor={palette.surface}
+            />
           }
         />
 
         {initialLoading && (
           <View style={styles.loadingOverlay}>
-            <ActivityIndicator size="large" color="#0B5FFF" />
+            <ActivityIndicator size="large" color={palette.accent} />
           </View>
         )}
       </View>

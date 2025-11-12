@@ -2,12 +2,13 @@ import React from 'react'
 import { createNativeStackNavigator } from '@react-navigation/native-stack'
 import ProfileScreen from './screens/ProfileScreen'
 import ProfileListingDetailScreen from './screens/ProfileListingDetailScreen'
+import { stackScreenOptions } from '../../navigation/navigationTheme'
 
 const Stack = createNativeStackNavigator()
 
 export default function ProfileNavigator() {
   return (
-    <Stack.Navigator>
+    <Stack.Navigator screenOptions={stackScreenOptions}>
       <Stack.Screen
         name="Profile"
         component={ProfileScreen}

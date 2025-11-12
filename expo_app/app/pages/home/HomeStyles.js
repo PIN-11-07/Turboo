@@ -1,27 +1,31 @@
 import { StyleSheet } from 'react-native'
+import { palette } from '../../theme/palette'
 
 export const homeScreenStyles = StyleSheet.create({
   safeArea: {
     flex: 1,
-    backgroundColor: '#F5F6FA',
+    backgroundColor: palette.background,
   },
   container: {
     flex: 1,
-    backgroundColor: '#F5F6FA',
+    backgroundColor: palette.background,
   },
   listContent: {
     paddingHorizontal: 16,
     paddingBottom: 16,
+    backgroundColor: palette.background,
   },
   emptyList: {
     paddingHorizontal: 16,
     paddingBottom: 16,
     flexGrow: 1,
+    backgroundColor: palette.background,
   },
   topSection: {
     paddingTop: 16,
     paddingHorizontal: 16,
     marginBottom: 12,
+    backgroundColor: palette.background,
   },
   hero: {
     paddingHorizontal: 4,
@@ -30,18 +34,18 @@ export const homeScreenStyles = StyleSheet.create({
   heroTitle: {
     fontSize: 20,
     fontWeight: '700',
-    color: '#0F172A',
+    color: palette.textPrimary,
   },
   heroSubtitle: {
     fontSize: 14,
-    color: '#6B7280',
+    color: palette.textMuted,
     marginTop: 4,
   },
   searchContainer: {
-    backgroundColor: '#fff',
+    backgroundColor: palette.surface,
     borderRadius: 12,
     borderWidth: 1,
-    borderColor: '#E5E7EB',
+    borderColor: palette.border,
     paddingHorizontal: 14,
     paddingVertical: 10,
     flexDirection: 'row',
@@ -49,36 +53,38 @@ export const homeScreenStyles = StyleSheet.create({
   },
   searchIcon: {
     fontSize: 16,
-    color: '#9CA3AF',
+    color: palette.textMuted,
   },
   searchInput: {
     fontSize: 16,
-    color: '#111827',
+    color: palette.textPrimary,
     flex: 1,
     marginLeft: 8,
   },
   card: {
-    backgroundColor: '#fff',
+    backgroundColor: palette.surface,
     borderRadius: 18,
     overflow: 'hidden',
     marginBottom: 18,
-    shadowColor: '#111827',
+    shadowColor: '#000',
     shadowOffset: { width: 0, height: 8 },
-    shadowOpacity: 0.08,
+    shadowOpacity: 0.35,
     shadowRadius: 14,
     elevation: 5,
+    borderWidth: 1,
+    borderColor: palette.border,
   },
   cardImage: {
     width: '100%',
     height: 200,
   },
   cardImagePlaceholder: {
-    backgroundColor: '#D9DCE3',
+    backgroundColor: palette.overlay,
     justifyContent: 'center',
     alignItems: 'center',
   },
   cardImagePlaceholderText: {
-    color: '#525868',
+    color: palette.textSecondary,
     fontWeight: '600',
   },
   cardContent: {
@@ -93,21 +99,21 @@ export const homeScreenStyles = StyleSheet.create({
   cardTitle: {
     fontSize: 18,
     fontWeight: '700',
-    color: '#111827',
+    color: palette.textPrimary,
   },
   cardSubtitle: {
     fontSize: 15,
-    color: '#4B5563',
+    color: palette.textSecondary,
     marginTop: 4,
   },
   cardMeta: {
     fontSize: 12,
-    color: '#9CA3AF',
+    color: palette.textMuted,
   },
   cardPrice: {
     fontSize: 18,
     fontWeight: '700',
-    color: '#0B5FFF',
+    color: palette.accent,
   },
   cardBadgeRow: {
     flexDirection: 'row',
@@ -115,8 +121,8 @@ export const homeScreenStyles = StyleSheet.create({
     marginTop: 12,
   },
   cardBadge: {
-    backgroundColor: '#EEF2FF',
-    color: '#1E3A8A',
+    backgroundColor: 'rgba(245, 197, 24, 0.15)',
+    color: palette.accent,
     fontSize: 12,
     fontWeight: '600',
     paddingHorizontal: 10,
@@ -133,12 +139,12 @@ export const homeScreenStyles = StyleSheet.create({
   },
   cardLocation: {
     fontSize: 13,
-    color: '#6B7280',
+    color: palette.textMuted,
     fontWeight: '500',
   },
   emptyText: {
     fontSize: 16,
-    color: '#6B7280',
+    color: palette.textMuted,
     textAlign: 'center',
     marginTop: 24,
   },
@@ -148,7 +154,7 @@ export const homeScreenStyles = StyleSheet.create({
     paddingTop: 48,
   },
   errorText: {
-    color: '#B91C1C',
+    color: palette.danger,
     fontWeight: '600',
     marginTop: 12,
     textAlign: 'center',
@@ -160,23 +166,24 @@ export const homeScreenStyles = StyleSheet.create({
     ...StyleSheet.absoluteFillObject,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: 'rgba(245, 246, 250, 0.6)',
+    backgroundColor: 'rgba(4, 4, 4, 0.85)',
   },
 })
 
 export const homeListingDetailScreenStyles = StyleSheet.create({
   safeArea: {
     flex: 1,
-    backgroundColor: '#FFFFFF',
+    backgroundColor: palette.background,
   },
   scrollView: {
     flex: 1,
-    backgroundColor: '#FFFFFF',
+    backgroundColor: palette.background,
   },
   scrollContent: {
     paddingHorizontal: 16,
     paddingTop: 16,
     paddingBottom: 16,
+    backgroundColor: palette.background,
   },
   loader: {
     marginTop: 24,
@@ -186,10 +193,12 @@ export const homeListingDetailScreenStyles = StyleSheet.create({
     marginTop: 24,
     padding: 16,
     borderRadius: 12,
-    backgroundColor: '#FDECEA',
+    backgroundColor: 'rgba(255, 107, 107, 0.12)',
+    borderWidth: 1,
+    borderColor: palette.danger,
   },
   errorText: {
-    color: '#C62828',
+    color: palette.danger,
     fontSize: 16,
     textAlign: 'center',
   },
@@ -202,53 +211,55 @@ export const homeListingDetailScreenStyles = StyleSheet.create({
     height: 220,
     borderRadius: 16,
     marginRight: 12,
-    backgroundColor: '#E2E8F0',
+    backgroundColor: palette.overlay,
   },
   galleryPlaceholder: {
     justifyContent: 'center',
     alignItems: 'center',
   },
   galleryPlaceholderText: {
-    color: '#6B7280',
+    color: palette.textMuted,
     fontSize: 16,
   },
   section: {
-    backgroundColor: '#FFFFFF',
+    backgroundColor: palette.surface,
     borderRadius: 16,
     padding: 18,
     marginBottom: 18,
     shadowColor: '#000000',
-    shadowOpacity: 0.08,
+    shadowOpacity: 0.35,
     shadowOffset: { width: 0, height: 6 },
     shadowRadius: 12,
     elevation: 4,
+    borderWidth: 1,
+    borderColor: palette.border,
   },
   title: {
     fontSize: 22,
-    color: '#111827',
+    color: palette.textPrimary,
     fontWeight: '700',
   },
   price: {
     fontSize: 20,
-    color: '#0B5FFF',
+    color: palette.accent,
     fontWeight: '600',
     marginTop: 8,
   },
   caption: {
     marginTop: 6,
-    color: '#6B7280',
+    color: palette.textMuted,
     fontSize: 14,
   },
   sectionTitle: {
     fontSize: 18,
     fontWeight: '600',
-    color: '#1F2937',
+    color: palette.textPrimary,
     marginBottom: 12,
   },
   description: {
     fontSize: 15,
     lineHeight: 22,
-    color: '#374151',
+    color: palette.textSecondary,
   },
   attributeRow: {
     flexDirection: 'row',
@@ -260,11 +271,11 @@ export const homeListingDetailScreenStyles = StyleSheet.create({
   },
   attributeLabel: {
     fontSize: 15,
-    color: '#6B7280',
+    color: palette.textMuted,
   },
   attributeValue: {
     fontSize: 15,
-    color: '#111827',
+    color: palette.textPrimary,
     fontWeight: '500',
     flexShrink: 1,
     textAlign: 'right',
