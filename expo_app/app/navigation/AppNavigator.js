@@ -1,15 +1,12 @@
 import React from 'react'
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs'
-import { createNativeStackNavigator } from '@react-navigation/native-stack'
-import HomeScreen from '../screens/HomeScreen'
-import ListingDetailScreen from '../screens/ListingDetailScreen'
-import ProfileScreen from '../screens/ProfileScreen'
-import PublishScreen from '../screens/PublishScreen'
+import HomeNavigator from '../pages/home/HomeNavigator'
+import PublishNavigator from '../pages/publish/PublishNavigator'
+import ProfileNavigator from '../pages/profile/ProfileNavigator'
 
 const Tab = createBottomTabNavigator()
-const Stack = createNativeStackNavigator()
 
-function MainTabs() {
+export default function AppNavigator() {
   return (
     <Tab.Navigator
       screenOptions={{
@@ -18,36 +15,19 @@ function MainTabs() {
     >
       <Tab.Screen
         name="Home"
-        component={HomeScreen}
+        component={HomeNavigator}
         options={{ tabBarLabel: 'Inicio' }}
       />
       <Tab.Screen
         name="Publish"
-        component={PublishScreen}
+        component={PublishNavigator}
         options={{ tabBarLabel: 'Publicar' }}
       />
       <Tab.Screen
         name="Profile"
-        component={ProfileScreen}
+        component={ProfileNavigator}
         options={{ tabBarLabel: 'Perfil' }}
       />
     </Tab.Navigator>
-  )
-}
-
-export default function AppNavigator() {
-  return (
-    <Stack.Navigator>
-      <Stack.Screen
-        name="MainTabs"
-        component={MainTabs}
-        options={{ headerShown: false }}
-      />
-      <Stack.Screen
-        name="ListingDetail"
-        component={ListingDetailScreen}
-        options={{ title: 'Detalles del vehículo' }}
-      />
-    </Stack.Navigator>
   )
 }
