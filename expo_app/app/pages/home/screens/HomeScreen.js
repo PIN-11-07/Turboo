@@ -4,7 +4,6 @@ import {
   FlatList,
   Image,
   RefreshControl,
-  StyleSheet,
   Text,
   TextInput,
   TouchableOpacity,
@@ -13,6 +12,7 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { useNavigation } from '@react-navigation/native'
 import { supabase } from '../../../util/supabase'
+import { homeScreenStyles } from '../HomeStyles'
 
 const PAGE_SIZE = 10
 
@@ -271,166 +271,4 @@ export default function HomeScreen() {
   )
 }
 
-const styles = StyleSheet.create({
-  safeArea: {
-    flex: 1,
-    backgroundColor: '#F5F6FA',
-  },
-  container: {
-    flex: 1,
-    backgroundColor: '#F5F6FA',
-  },
-  listContent: {
-    paddingHorizontal: 16,
-    paddingBottom: 16,
-  },
-  emptyList: {
-    paddingHorizontal: 16,
-    paddingBottom: 16,
-    flexGrow: 1,
-  },
-  topSection: {
-    paddingTop: 16,
-    paddingHorizontal: 16,
-    marginBottom: 12,
-  },
-  hero: {
-    paddingHorizontal: 4,
-    marginBottom: 12,
-  },
-  heroTitle: {
-    fontSize: 20,
-    fontWeight: '700',
-    color: '#0F172A',
-  },
-  heroSubtitle: {
-    fontSize: 14,
-    color: '#6B7280',
-    marginTop: 4,
-  },
-  searchContainer: {
-    backgroundColor: '#fff',
-    borderRadius: 12,
-    borderWidth: 1,
-    borderColor: '#E5E7EB',
-    paddingHorizontal: 14,
-    paddingVertical: 10,
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  searchIcon: {
-    fontSize: 16,
-    color: '#9CA3AF',
-  },
-  searchInput: {
-    fontSize: 16,
-    color: '#111827',
-    flex: 1,
-    marginLeft: 8,
-  },
-  card: {
-    backgroundColor: '#fff',
-    borderRadius: 18,
-    overflow: 'hidden',
-    marginBottom: 18,
-    shadowColor: '#111827',
-    shadowOffset: { width: 0, height: 8 },
-    shadowOpacity: 0.08,
-    shadowRadius: 14,
-    elevation: 5,
-  },
-  cardImage: {
-    width: '100%',
-    height: 200,
-  },
-  cardImagePlaceholder: {
-    backgroundColor: '#D9DCE3',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  cardImagePlaceholderText: {
-    color: '#525868',
-    fontWeight: '600',
-  },
-  cardContent: {
-    padding: 18,
-  },
-  cardHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'flex-start',
-    marginBottom: 8,
-  },
-  cardTitle: {
-    fontSize: 18,
-    fontWeight: '700',
-    color: '#111827',
-  },
-  cardSubtitle: {
-    fontSize: 15,
-    color: '#4B5563',
-    marginTop: 4,
-  },
-  cardMeta: {
-    fontSize: 12,
-    color: '#9CA3AF',
-  },
-  cardPrice: {
-    fontSize: 18,
-    fontWeight: '700',
-    color: '#0B5FFF',
-  },
-  cardBadgeRow: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    marginTop: 12,
-  },
-  cardBadge: {
-    backgroundColor: '#EEF2FF',
-    color: '#1E3A8A',
-    fontSize: 12,
-    fontWeight: '600',
-    paddingHorizontal: 10,
-    paddingVertical: 6,
-    borderRadius: 999,
-    marginRight: 8,
-    marginBottom: 6,
-  },
-  cardFooter: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginTop: 14,
-  },
-  cardLocation: {
-    fontSize: 13,
-    color: '#6B7280',
-    fontWeight: '500',
-  },
-  emptyText: {
-    fontSize: 16,
-    color: '#6B7280',
-    textAlign: 'center',
-    marginTop: 24,
-  },
-  emptyState: {
-    justifyContent: 'center',
-    alignItems: 'center',
-    paddingTop: 48,
-  },
-  errorText: {
-    color: '#B91C1C',
-    fontWeight: '600',
-    marginTop: 12,
-    textAlign: 'center',
-  },
-  footer: {
-    paddingVertical: 24,
-  },
-  loadingOverlay: {
-    ...StyleSheet.absoluteFillObject,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: 'rgba(245, 246, 250, 0.6)',
-  },
-})
+const styles = homeScreenStyles

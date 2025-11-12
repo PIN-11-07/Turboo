@@ -4,13 +4,13 @@ import {
   Dimensions,
   Image,
   ScrollView,
-  StyleSheet,
   Text,
   View,
 } from 'react-native'
 import { useRoute } from '@react-navigation/native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { supabase } from '../../../util/supabase'
+import { homeListingDetailScreenStyles } from '../HomeStyles'
 
 const REQUIRED_FIELDS = [
   'description',
@@ -243,109 +243,4 @@ export default function ListingDetailScreen() {
   )
 }
 
-const styles = StyleSheet.create({
-  safeArea: {
-    flex: 1,
-    backgroundColor: '#FFFFFF',
-  },
-  scrollView: {
-    flex: 1,
-    backgroundColor: '#FFFFFF',
-  },
-  scrollContent: {
-    paddingHorizontal: 16,
-    paddingTop: 16,
-    paddingBottom: 16,
-  },
-  loader: {
-    marginTop: 24,
-    alignItems: 'center',
-  },
-  errorBox: {
-    marginTop: 24,
-    padding: 16,
-    borderRadius: 12,
-    backgroundColor: '#FDECEA',
-  },
-  errorText: {
-    color: '#C62828',
-    fontSize: 16,
-    textAlign: 'center',
-  },
-  galleryWrapper: {
-    marginBottom: 20,
-    borderRadius: 16,
-    overflow: 'hidden',
-  },
-  galleryImage: {
-    height: 220,
-    borderRadius: 16,
-    marginRight: 12,
-    backgroundColor: '#E2E8F0',
-  },
-  galleryPlaceholder: {
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  galleryPlaceholderText: {
-    color: '#6B7280',
-    fontSize: 16,
-  },
-  section: {
-    backgroundColor: '#FFFFFF',
-    borderRadius: 16,
-    padding: 18,
-    marginBottom: 18,
-    shadowColor: '#000000',
-    shadowOpacity: 0.08,
-    shadowOffset: { width: 0, height: 6 },
-    shadowRadius: 12,
-    elevation: 4,
-  },
-  title: {
-    fontSize: 22,
-    color: '#111827',
-    fontWeight: '700',
-  },
-  price: {
-    fontSize: 20,
-    color: '#0B5FFF',
-    fontWeight: '600',
-    marginTop: 8,
-  },
-  caption: {
-    marginTop: 6,
-    color: '#6B7280',
-    fontSize: 14,
-  },
-  sectionTitle: {
-    fontSize: 18,
-    fontWeight: '600',
-    color: '#1F2937',
-    marginBottom: 12,
-  },
-  description: {
-    fontSize: 15,
-    lineHeight: 22,
-    color: '#374151',
-  },
-  attributeRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-  },
-  attributeRowSpacing: {
-    marginTop: 12,
-  },
-  attributeLabel: {
-    fontSize: 15,
-    color: '#6B7280',
-  },
-  attributeValue: {
-    fontSize: 15,
-    color: '#111827',
-    fontWeight: '500',
-    flexShrink: 1,
-    textAlign: 'right',
-  },
-})
+const styles = homeListingDetailScreenStyles

@@ -3,7 +3,6 @@ import {
   ActivityIndicator,
   Image,
   ScrollView,
-  StyleSheet,
   Text,
   TouchableOpacity,
   View,
@@ -12,6 +11,7 @@ import { useNavigation } from '@react-navigation/native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { useAuth } from '../../../context/AuthContext'
 import { supabase } from '../../../util/supabase'
+import { profileScreenStyles } from '../profileStyles'
 
 const notFoundErrorCodes = new Set(['PGRST116', 'PGRST114'])
 
@@ -268,160 +268,4 @@ export default function ProfileScreen() {
   )
 }
 
-const styles = StyleSheet.create({
-  safeArea: {
-    flex: 1,
-    backgroundColor: '#F5F7FB',
-  },
-  centerContent: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    paddingHorizontal: 24,
-  },
-  errorText: {
-    textAlign: 'center',
-    color: '#D93025',
-    fontSize: 16,
-  },
-  infoText: {
-    textAlign: 'center',
-    color: '#1F1F1F',
-    fontSize: 16,
-  },
-  scrollContent: {
-    flexGrow: 1,
-    alignItems: 'center',
-    padding: 24,
-  },
-  avatarWrapper: {
-    width: 120,
-    height: 120,
-    borderRadius: 60,
-    marginTop: 16,
-    marginBottom: 24,
-    overflow: 'hidden',
-    backgroundColor: '#E2E8F0',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  avatar: {
-    width: '100%',
-    height: '100%',
-  },
-  avatarPlaceholder: {
-    width: '100%',
-    height: '100%',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  avatarInitial: {
-    fontSize: 48,
-    fontWeight: '600',
-    color: '#4C7EFF',
-  },
-  card: {
-    width: '100%',
-    backgroundColor: '#FFF',
-    borderRadius: 16,
-    padding: 24,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 6 },
-    shadowOpacity: 0.1,
-    shadowRadius: 10,
-    elevation: 6,
-  },
-  cardLabel: {
-    fontSize: 14,
-    color: '#6A7280',
-    marginTop: 12,
-  },
-  cardValue: {
-    fontSize: 18,
-    color: '#1F1F1F',
-    fontWeight: '500',
-    marginTop: 4,
-  },
-  section: {
-    width: '100%',
-    marginTop: 32,
-  },
-  sectionTitle: {
-    fontSize: 20,
-    fontWeight: '600',
-    color: '#1F1F1F',
-    marginBottom: 16,
-  },
-  emptyState: {
-    fontSize: 16,
-    color: '#6A7280',
-  },
-  listingCard: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: '#FFF',
-    borderRadius: 12,
-    padding: 12,
-    marginBottom: 12,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.08,
-    shadowRadius: 6,
-    elevation: 4,
-  },
-  listingImageWrapper: {
-    width: 72,
-    height: 72,
-    borderRadius: 8,
-    overflow: 'hidden',
-    backgroundColor: '#E2E8F0',
-    marginRight: 12,
-  },
-  listingImage: {
-    width: '100%',
-    height: '100%',
-  },
-  listingImagePlaceholder: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  listingImagePlaceholderText: {
-    fontSize: 12,
-    color: '#6A7280',
-    textAlign: 'center',
-  },
-  listingInfo: {
-    flex: 1,
-  },
-  listingTitle: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: '#1F1F1F',
-  },
-  listingPrice: {
-    fontSize: 15,
-    color: '#0B5FFF',
-    marginTop: 6,
-    fontWeight: '500',
-  },
-  listingDate: {
-    fontSize: 13,
-    color: '#6A7280',
-    marginTop: 4,
-  },
-  signOutButton: {
-    marginTop: 32,
-    backgroundColor: '#D93025',
-    paddingVertical: 14,
-    paddingHorizontal: 32,
-    borderRadius: 10,
-    width: '100%',
-    alignItems: 'center',
-  },
-  signOutButtonText: {
-    color: '#FFF',
-    fontSize: 16,
-    fontWeight: '600',
-  },
-})
+const styles = profileScreenStyles
