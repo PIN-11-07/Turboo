@@ -20,69 +20,124 @@
 ---
 
 ## 2. Avvio del Progetto in Locale con Docker
-**Requisiti:**
-- Docker ≥ 24
-- Docker Compose Plugin ≥ 2.20
-- Accesso internet per il tunnel Expo e per comunicare con Supabase
 
-**Preparazione dell’ambiente:**
-1. Copia dei segreti: `cp expo_app/.env.example expo_app/.env`.
-2. Impostare `EXPO_PUBLIC_SUPABASE_URL` e `EXPO_PUBLIC_SUPABASE_ANON_KEY` nel nuovo `.env`.
-3. Al primo avvio installare le dipendenze dal container: `docker compose exec expo npm install`.
-
-**Comandi per build e avvio dei container:**
+1. Clona il repository e entra nella cartella:
 ```bash
-docker compose build expo
-docker compose up -d expo
+git clone https://github.com/PIN-11-07/Turboo.git
+cd Turboo
 ```
 
-**Descrizione dei servizi avviati:**
-- `expo`: container Node 20 che esegue l’app Expo, monta `./expo_app`, espone le porte `8081-8090` per Metro/Expo DevTools, mantiene la sessione interattiva (`stdin_open` + `tty`).
+2. Variabili d'ambiente  
+Aggiungi le chiavi in `.env` (non fare commit del file):
+- SUPABASE_URL
+- ANON_KEY
+
+Per recuperare le chiavi del progetto (Anon/public key) accedi al dashboard Supabase:
+https://supabase.com/dashboard/project/jmkgjqutxrtrmvoeesim
+
+3. Costruisci l'immagine Docker (installa dipendenze nel container):
+```bash
+docker compose build
+```
+
+4. Avvia i servizi in background:
+```bash
+docker compose up -d
+```
+
+5. Entra nel container `expo` per l'ambiente di sviluppo:
+```bash
+docker compose exec expo bash
+```
+
+6. All'interno del container:
+```bash
+npm i
+apt-get update -y && apt-get upgrade -y
+npx expo start --tunnel
+```
 
 **Variabili d’ambiente richieste:**
 - `EXPO_PUBLIC_SUPABASE_URL` – URL del progetto Supabase.
 - `EXPO_PUBLIC_SUPABASE_ANON_KEY` – chiave anonima con accesso pubblico alle tabelle `profiles` e `listings`.
 
-**Note su eventuali file da creare:** `.env` nella cartella `expo_app/`, ottenuto da `.env.example`.
-
 **Come accedere all’app (URL o QR code Expo):**
-1. Aprire una shell nel container: `docker compose exec -it expo bash`.
-2. Avviare il dev server: `npm start -- --tunnel` (alias `npx expo start --tunnel`).
-3. Aprire `http://localhost:8081` per Expo DevTools oppure scansionare il QR code generato nel terminale con l’app Expo Go per eseguire la build in tempo reale.
+
+2. Avviare il dev server: `npx expo start --tunnel`.
+3. Aprire http://localhost:<8081-8090> per Expo DevTools oppure scansionare il QR code generato nel terminale con l’app Expo Go per eseguire la build in tempo reale.
 
 ---
 
 ## 3. Struttura del Progetto
 **Albero delle cartelle principali:**
 ```text
-.
-├─ Dockerfile
-├─ Docker-compose.yml
-└─ expo_app/
-   ├─ App.js
-   ├─ app/
-   │  ├─ components/
-   │  ├─ context/
-   │  ├─ hooks/
-   │  ├─ navigation/
-   │  ├─ pages/
-   │  │  ├─ auth/
-   │  │  ├─ home/
-   │  │  ├─ publish/
-   │  │  └─ profile/
-   │  ├─ services/
-   │  ├─ theme/
-   │  └─ util/
-   ├─ assets/
-   ├─ app.json
-   ├─ package.json
-   └─ .env/.env.example
+Turboo/
+├── Docker-compose.yml
+├── Dockerfile
+├── README.md
+└── expo_app/
+    ├── App.js
+    ├── app/
+    │   ├── components/
+    │   │   └── PlaceHolder.js
+    │   ├── context/
+    │   │   └── AuthContext.js
+    │   ├── hooks/
+    │   │   └── PlaceHolder.js
+    │   ├── navigation/
+    │   │   ├── AppNavigator.js
+    │   │   ├── AuthNavigator.js
+    │   │   └── RootNavigator.js
+    │   ├── pages
+    │   │   ├── auth/
+    │   │   │   ├── AuthNavigator.js
+    │   │   │   ├── AuthStyles.js
+    │   │   │   ├── components/
+    │   │   │   └── screens/
+    │   │   │       └── LoginScreen.js
+    │   │   ├── home/
+    │   │   │   ├── HomeNavigator.js
+    │   │   │   ├── HomeStyles.js
+    │   │   │   ├── components/
+    │   │   │   └── screens/
+    │   │   │       ├── HomeListingDetailScreen.js
+    │   │   │       └── HomeScreen.js
+    │   │   ├── profile/
+    │   │   │   ├── ProfileNavigator.js
+    │   │   │   ├── components/
+    │   │   │   ├── profileStyles.js
+    │   │   │   └── screens/
+    │   │   │       ├── ProfileListingDetailScreen.js
+    │   │   │       └── ProfileScreen.js
+    │   │   └── publish
+    │   │       ├── PublishNavigator.js
+    │   │       ├── PublishStyles.js
+    │   │       ├── components/
+    │   │       └── screens/
+    │   │           └── PublishScreen.js
+    │   ├── services/
+    │   │   └── PlaceHolder.js
+    │   ├── theme/
+    │   │   └── palette.js
+    │   └── util/
+    │       └── supabase.js
+    ├── app.json
+    ├── assets/
+    │   ├── adaptive-icon.png
+    │   ├── favicon.png
+    │   ├── icon.png
+    │   └── splash-icon.png
+    ├── node_modules/
+    │   └── ...
+    ├── index.js
+    ├── package-lock.json
+    └── package.json
 ```
 
 **Spiegazione delle cartelle principali:**
-- `app/components`: componenti UI riutilizzabili (placeholder in attesa di implementazioni comuni).
+- `app/components`: componenti UI riutilizzabili.
 - `app/context`: provider globali; `AuthContext` incapsula il client Supabase e la sessione.
-- `app/navigation`: configurazioni di React Navigation (`RootNavigator`, `AppNavigator`, `AuthNavigator` e navigator per feature).
+- `app/navigation`: configurazioni di React Navigation (`RootNavigator`, `AppNavigator`, `AuthNavigator`.
 - `app/pages/<feature>`: struttura modulare per feature; ogni cartella contiene `screens`, `components` e file di stile (`FeatureStyles.js`).
 - `app/services`: wrapper condivisi per chiamate o utilità lato dati (es. `placeholderService`).
 - `app/theme`: token di design condivisi, come la palette cromatica.
@@ -183,6 +238,9 @@ docker compose up -d expo
 - `profiles` fornisce gli avatar nella schermata Profilo.
 - `auth.users` è usato per autenticazione, estrazione del nome completo e email.
 
+Link per le chiavi del progetto Supabase (anon/public key):  
+https://supabase.com/dashboard/project/jmkgjqutxrtrmvoeesim  (Project → Settings → API)
+
 ---
 
 ## 6. Comandi Utili
@@ -203,5 +261,5 @@ docker compose up -d expo
 - `npm run ios` – avvia l’app su simulatore iOS.
 - `npm run web` – esegue la build web via Expo.
 
-**Comandi di migrazione DB:** 
+**Comandi di migrazione DB:**
 
