@@ -218,7 +218,7 @@ Below is the updated README section that now includes the `favorites` table and 
 
 ### **Table `public.listings`**
 
-| Field         | Type (Supabase) | Description                                                 |
+| Field         | Type (Supabase) | Description                                                  |
 | ------------- | ---------------- | ----------------------------------------------------------- |
 | `id`          | `uuid` PK        | Listing identifier.                                         |
 | `user_id`     | `uuid` FK        | Points to `auth.users.id`, i.e. the listing owner.          |
@@ -316,7 +316,7 @@ This table represents the “user bookmarked a listing” relationship. It conne
 - [x] Profile  
 - [x] Login  
 - [x] User registration  
-- [ ] Favorites  
+- [x] Favorites
 - [x] Main feed  
 
 ### Sprint 2

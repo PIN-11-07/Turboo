@@ -161,11 +161,15 @@ export const profileScreenStyles = StyleSheet.create({
     marginTop: 4,
   },
   favoriteButton: {
-    paddingHorizontal: 6,
-    paddingVertical: 4,
+    width: 36,
+    height: 36,
+    borderRadius: 18,
     alignItems: 'center',
     justifyContent: 'center',
     marginLeft: 12,
+    backgroundColor: palette.surface,
+    borderWidth: 1,
+    borderColor: palette.border,
   },
   favoriteButtonDisabled: {
     opacity: 0.6,
@@ -257,6 +261,14 @@ export const profileListingDetailScreenStyles = StyleSheet.create({
     borderWidth: 1,
     borderColor: palette.border,
   },
+  sectionHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  sectionHeaderText: {
+    flex: 1,
+    paddingRight: 12,
+  },
   title: {
     fontSize: 22,
     color: palette.textPrimary,
@@ -302,5 +314,26 @@ export const profileListingDetailScreenStyles = StyleSheet.create({
     fontWeight: '500',
     flexShrink: 1,
     textAlign: 'right',
+  },
+  favoriteButton: {
+    width: 44,
+    height: 44,
+    borderRadius: 22,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: palette.surface,
+    borderWidth: 1,
+    borderColor: palette.border,
+  },
+  favoriteButtonActive: {},
+  favoriteButtonDisabled: {
+    opacity: 0.6,
+  },
+  favoriteIcon: {
+    fontSize: 20,
+    color: palette.textPrimary,
+  },
+  favoriteIconActive: {
+    color: palette.danger,
   },
 })

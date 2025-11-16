@@ -263,6 +263,14 @@ export const homeListingDetailScreenStyles = StyleSheet.create({
     borderWidth: 1,
     borderColor: palette.border,
   },
+  sectionHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  sectionHeaderText: {
+    flex: 1,
+    paddingRight: 12,
+  },
   title: {
     fontSize: 22,
     color: palette.textPrimary,
@@ -308,5 +316,26 @@ export const homeListingDetailScreenStyles = StyleSheet.create({
     fontWeight: '500',
     flexShrink: 1,
     textAlign: 'right',
+  },
+  favoriteButton: {
+    width: 44,
+    height: 44,
+    borderRadius: 22,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: palette.surface,
+    borderWidth: 1,
+    borderColor: palette.border,
+  },
+  favoriteButtonActive: {},
+  favoriteButtonDisabled: {
+    opacity: 0.6,
+  },
+  favoriteIcon: {
+    fontSize: 20,
+    color: palette.textPrimary,
+  },
+  favoriteIconActive: {
+    color: palette.danger,
   },
 })
