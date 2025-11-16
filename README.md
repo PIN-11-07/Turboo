@@ -193,50 +193,90 @@ Turboo/
 
 ---
 
+Di seguito una versione aggiornata della sezione del README che include anche la tabella `favorites` e la sua funzione nel sistema.
+
+---
+
 ## 5. Struttura del Database
+
 **Elenco delle tabelle:**
-- `auth.users` (gestita da Supabase, contiene credenziali e metadata)
-- `public.listings`
-- `public.profiles`
 
-**Tabella `public.listings`:**
-| Campo | Tipo (Supabase) | Descrizione |
-| --- | --- | --- |
-| `id` | `uuid` PK | Identificativo dell’annuncio. |
-| `user_id` | `uuid` FK | Riferimento a `auth.users.id`, proprietario dell’annuncio. |
-| `title` | `text` | Titolo commerciale mostrato nel feed. |
-| `description` | `text` | Descrizione estesa del veicolo. |
-| `price` | `numeric` | Prezzo in euro; viene formattato lato client. |
-| `make` | `text` | Marca (valori da `MAKE_OPTIONS`). |
-| `model` | `text` | Modello specifico. |
-| `year` | `int4` | Anno del veicolo. |
-| `mileage` | `int4` | Chilometraggio totale. |
-| `fuel_type` | `text` | Tipo di carburante (es. `Gasolina`, `Diesel`). |
-| `transmission` | `text` | Cambio (Manual, Automatica, ecc.). |
-| `doors` | `int2` | Numero di porte. |
-| `color` | `text` | Colore dichiarato. |
-| `location` | `text` | Città o provincia dell’annuncio. |
-| `images` | `jsonb` | Array di URL/URI delle immagini; può arrivare come JSON stringificato. |
-| `is_active` | `boolean` | Flag per rendere l’annuncio visibile nel feed. |
-| `created_at` | `timestamptz` | Timestamp di creazione usato per l’ordinamento/paginazione. |
+* `auth.users` (gestita da Supabase, contiene credenziali e metadata)
+* `public.listings`
+* `public.profiles`
+* `public.favorites`
 
-**Tabella `public.profiles`:**
-| Campo | Tipo (Supabase) | Descrizione |
-| --- | --- | --- |
-| `id` | `uuid` PK | Allineato con `auth.users.id`. |
-| `profile_image_url` | `text` | URL opzionale dell’avatar mostrato in `ProfileScreen`. |
+---
 
-**Relazioni:**
-- `listings.user_id` → `auth.users.id` (relazione 1:N, un utente può avere più annunci).
-- `profiles.id` ↔ `auth.users.id` (relazione 1:1 per informazioni aggiuntive sull’utente).
-- `profiles.id` ↔ `listings.user_id` (relazione 1:N indiretta, usata per mostrare i propri annunci).
+### **Tabella `public.listings`**
 
-**Diagramma ER:**
+| Campo          | Tipo (Supabase) | Descrizione                                                |
+| -------------- | --------------- | ---------------------------------------------------------- |
+| `id`           | `uuid` PK       | Identificativo dell’annuncio.                              |
+| `user_id`      | `uuid` FK       | Riferimento a `auth.users.id`, proprietario dell’annuncio. |
+| `title`        | `text`          | Titolo commerciale mostrato nel feed.                      |
+| `description`  | `text`          | Descrizione estesa del veicolo.                            |
+| `price`        | `numeric`       | Prezzo in euro; viene formattato lato client.              |
+| `make`         | `text`          | Marca (valori da `MAKE_OPTIONS`).                          |
+| `model`        | `text`          | Modello specifico.                                         |
+| `year`         | `int4`          | Anno del veicolo.                                          |
+| `mileage`      | `int4`          | Chilometraggio totale.                                     |
+| `fuel_type`    | `text`          | Tipo di carburante.                                        |
+| `transmission` | `text`          | Cambio (Manuale/Automatico).                               |
+| `doors`        | `int2`          | Numero di porte.                                           |
+| `color`        | `text`          | Colore dichiarato.                                         |
+| `location`     | `text`          | Città o provincia dell’annuncio.                           |
+| `images`       | `jsonb`         | Array di URL/URI delle immagini.                           |
+| `is_active`    | `boolean`       | Flag per rendere l’annuncio visibile nel feed.             |
+| `created_at`   | `timestamptz`   | Timestamp di creazione.                                    |
 
-**Collegamenti DB → feature dell’app:**
-- `listings` alimenta il feed Home, i dettagli degli annunci e la lista nel profilo.
-- `profiles` fornisce gli avatar nella schermata Profilo.
-- `auth.users` è usato per autenticazione, estrazione del nome completo e email.
+---
+
+### **Tabella `public.profiles`**
+
+| Campo               | Tipo      | Descrizione                         |
+| ------------------- | --------- | ----------------------------------- |
+| `id`                | `uuid` PK | Allineato con `auth.users.id`.      |
+| `profile_image_url` | `text`    | Avatar mostrato in `ProfileScreen`. |
+
+---
+
+### **Tabella `public.favorites`**
+
+Questa tabella rappresenta la relazione “utente ha messo tra i preferiti un annuncio”.
+È una join table che collega `profiles` a `listings`.
+
+| Campo        | Tipo                      | Descrizione                          |
+| ------------ | ------------------------- | ------------------------------------ |
+| `id`         | `bigint` PK               | Identificativo interno del record.   |
+| `user_id`    | `uuid` FK → `profiles.id` | Utente che ha espresso il preferito. |
+| `listing_id` | `uuid` FK → `listings.id` | Annuncio marcato come preferito.     |
+| `created_at` | `timestamptz`             | Timestamp di aggiunta ai preferiti.  |
+
+**Caratteristiche principali:**
+
+* `unique (user_id, listing_id)` impedisce duplicati: un utente può aggiungere un annuncio ai preferiti solo una volta.
+* `on delete cascade` su entrambi i riferimenti: se un utente o un annuncio viene eliminato, i relativi preferiti vengono rimossi automaticamente.
+* RLS attivo: ogni utente può leggere, aggiungere e rimuovere solo i propri preferiti.
+
+---
+
+## Relazioni
+
+* `listings.user_id` → `auth.users.id` (1:N)
+* `profiles.id` ↔ `auth.users.id` (1:1)
+* `profiles.id` ↔ `listings.user_id` (1:N indiretta)
+* `favorites.user_id` → `profiles.id` (1:N)
+* `favorites.listing_id` → `listings.id` (N:1)
+
+---
+
+## Collegamenti DB → feature dell’app
+
+* `listings` alimenta feed Home, pagina del dettaglio e annunci utente.
+* `profiles` fornisce gli avatar utente.
+* `favorites` gestisce i preferiti.
+* `auth.users` gestisce autenticazione, email e nome utente.
 
 ---
 
