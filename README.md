@@ -260,3 +260,25 @@ Turboo/
 
 **Comandi di migrazione DB:**
 
+---
+
+## 7. TO DO
+### Sprint 1
+- [x] Publicar vehículos (Pubblicazione veicoli)  
+- [x] Ficha de vehículo (Scheda veicolo)  
+- [x] Perfil (Profilo)  
+- [x] Login (Accesso)  
+- [x] Registro del usuario (Registrazione utente)  
+- [ ] Favoritos (Preferiti)  
+- [x] Feed principale (Feed principale)  
+
+### Sprint 2
+- [ ] Incremento de Diseño, Implementación y Poblado de BD (Incremento di progettazione, implementazione e popolamento del database)  
+- [ ] Comprar vehículo (Acquisto veicolo)  
+- [x] Buscador por texto (Ricerca testuale)  
+- [ ] Filtros de búsqueda (Filtri di ricerca)  
+- [ ] Autorrelleno IA (Compilazione automatica con IA)  
+- [ ] Guardar borrador (Salvataggio bozza)  
+- [ ] Matchmaking de vehículos (Matchmaking dei veicoli)  
+- [ ] Valoraciones (Valutazioni)  
+
