@@ -15,6 +15,7 @@ import { supabase } from '../../../util/supabase'
 import { homeScreenStyles } from '../HomeStyles'
 import { palette } from '../../../theme/palette'
 import { useAuth } from '../../../context/AuthContext'
+import { APP_EVENTS, emitEvent } from '../../../util/eventBus'
 
 const PAGE_SIZE = 10
 
@@ -199,6 +200,10 @@ export default function HomeScreen() {
             next.add(listingId)
           }
           return next
+        })
+        emitEvent(APP_EVENTS.FAVORITES_UPDATED, {
+          listingId,
+          action: isAlreadyFavorite ? 'removed' : 'added',
         })
       } catch (toggleError) {
         console.error('Error updating favorites', toggleError)

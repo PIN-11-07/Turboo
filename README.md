@@ -191,6 +191,15 @@ Turboo/
 - **API utilizzate:** Supabase `profiles` (avatar) e `listings` filtrati per `user_id`, oltre a Supabase Auth per ottenere metadata (nome, email).
 - **Limiti/note tecniche:** assenza di editing del profilo e di gestione immagini dal client; il logout invoca direttamente `supabase.auth.signOut`.
 
+#### Event bus applicativo
+- **Descrizione:** `app/util/eventBus.js` espone un event bus in-memory (basato su `Map` + `Set`) che permette di condividere eventi cross-feature senza introdurre Redux o librerie di terze parti; l’istanza vive finché l’app resta in memoria.
+- **API principali:**
+  - `APP_EVENTS`: registro degli identificativi per gli eventi supportati (`FAVORITES_UPDATED` è il primo, ma può includere badge, notifiche, ecc.).
+  - `emitEvent(eventName, payload)`: propaga un evento a tutti i listener registrati; eventuali eccezioni nei callback vengono catturate per non bloccare il thread UI.
+  - `subscribeToEvent(eventName, callback)`: aggiunge un listener e restituisce una funzione di cleanup da invocare in `useEffect`/`useFocusEffect` per evitare memory leak.
+- **Flusso attuale:** `HomeScreen` emette `APP_EVENTS.FAVORITES_UPDATED` ogni volta che un annuncio viene aggiunto/rimosso dai preferiti; `ProfileScreen` è abbonato allo stesso evento e richiama `refreshFavoriteListings`, sincronizzando la sezione *Tus favoritos* anche se il tab era già montato.
+- **Uso futuro:** lo stesso bus può collegare altre pagine (badge del tab, notifiche locali, aggiornamento di detail view). Per aggiungere nuovi casi basta definire una costante in `APP_EVENTS`, emettere l’evento con `emitEvent` e sottoscriversi dove serve con `subscribeToEvent`.
+
 ---
 
 Di seguito una versione aggiornata della sezione del README che include anche la tabella `favorites` e la sua funzione nel sistema.
@@ -321,4 +330,3 @@ Questa tabella rappresenta la relazione “utente ha messo tra i preferiti un an
 - [ ] Guardar borrador (Salvataggio bozza)  
 - [ ] Matchmaking de vehículos (Matchmaking dei veicoli)  
 - [ ] Valoraciones (Valutazioni)  
-

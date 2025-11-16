@@ -12,6 +12,7 @@ import { SafeAreaView } from 'react-native-safe-area-context'
 import { useAuth } from '../../../context/AuthContext'
 import { supabase } from '../../../util/supabase'
 import { profileScreenStyles } from '../profileStyles'
+import { APP_EVENTS, subscribeToEvent } from '../../../util/eventBus'
 
 const notFoundErrorCodes = new Set(['PGRST116', 'PGRST114'])
 
@@ -51,6 +52,11 @@ const formatPrice = (value) => {
   return 'Precio a petición'
 }
 
+const mapFavoritesToListings = (favoritesData) =>
+  (favoritesData ?? [])
+    .map((favorite) => favorite?.listing)
+    .filter((listing) => listing && listing.id)
+
 export default function ProfileScreen() {
   const { user, signOut } = useAuth()
   const navigation = useNavigation()
@@ -59,6 +65,29 @@ export default function ProfileScreen() {
   const [profile, setProfile] = useState(null)
   const [listings, setListings] = useState([])
   const [favoriteListings, setFavoriteListings] = useState([])
+
+  const refreshFavoriteListings = useCallback(async () => {
+    if (!user) {
+      setFavoriteListings([])
+      return
+    }
+
+    try {
+      const { data, error } = await supabase
+        .from('favorites')
+        .select(`listing:listing_id (${LISTING_FIELDS})`)
+        .eq('user_id', user.id)
+        .order('created_at', { ascending: false })
+
+      if (error) {
+        throw error
+      }
+
+      setFavoriteListings(mapFavoritesToListings(data))
+    } catch (refreshError) {
+      console.error('Error refreshing favorite listings', refreshError)
+    }
+  }, [user])
 
   useEffect(() => {
     let isMounted = true
@@ -140,10 +169,7 @@ export default function ProfileScreen() {
           profileImageUrl: profileData?.profile_image_url || null,
         })
         setListings(Array.isArray(listingsData) ? listingsData : [])
-        const favoriteListingData = (favoritesData ?? [])
-          .map((favorite) => favorite?.listing)
-          .filter((listing) => listing && listing.id)
-        setFavoriteListings(favoriteListingData)
+        setFavoriteListings(mapFavoritesToListings(favoritesData))
       } catch (fetchError) {
         console.error(fetchError)
         if (isMounted) {
@@ -162,6 +188,14 @@ export default function ProfileScreen() {
       isMounted = false
     }
   }, [user])
+
+  useEffect(() => {
+    const unsubscribe = subscribeToEvent(APP_EVENTS.FAVORITES_UPDATED, () => {
+      refreshFavoriteListings()
+    })
+
+    return unsubscribe
+  }, [refreshFavoriteListings])
 
   const avatarInitial = useMemo(() => {
     const fallbackName = profile?.name || user?.email || ''
