@@ -238,9 +238,6 @@ Turboo/
 - `profiles` fornisce gli avatar nella schermata Profilo.
 - `auth.users` è usato per autenticazione, estrazione del nome completo e email.
 
-Link per le chiavi del progetto Supabase (anon/public key):  
-https://supabase.com/dashboard/project/jmkgjqutxrtrmvoeesim  (Project → Settings → API)
-
 ---
 
 ## 6. Comandi Utili
