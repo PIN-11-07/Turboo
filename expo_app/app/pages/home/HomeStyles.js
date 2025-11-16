@@ -74,6 +74,9 @@ export const homeScreenStyles = StyleSheet.create({
     borderWidth: 1,
     borderColor: palette.border,
   },
+  cardImageWrapper: {
+    position: 'relative',
+  },
   cardImage: {
     width: '100%',
     height: 200,
@@ -86,6 +89,32 @@ export const homeScreenStyles = StyleSheet.create({
   cardImagePlaceholderText: {
     color: palette.textSecondary,
     fontWeight: '600',
+  },
+  favoriteButton: {
+    position: 'absolute',
+    top: 12,
+    right: 12,
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    backgroundColor: 'rgba(4, 4, 4, 0.65)',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  favoriteButtonActive: {
+    backgroundColor: palette.surface,
+    borderWidth: 1,
+    borderColor: palette.border,
+  },
+  favoriteButtonDisabled: {
+    opacity: 0.65,
+  },
+  favoriteIcon: {
+    fontSize: 20,
+    color: palette.textPrimary,
+  },
+  favoriteIconActive: {
+    color: palette.danger,
   },
   cardContent: {
     padding: 18,
