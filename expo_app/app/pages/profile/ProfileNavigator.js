@@ -35,7 +35,7 @@ export default function ProfileNavigator() {
       <Stack.Screen
         name="ProfileListingDetail"
         component={ProfileListingDetailScreen}
-        options={{ title: 'Dettagli del veicolo' }}
+        options={{ title: 'Detalles del vehículo' }}
       />
     </Stack.Navigator>
   )

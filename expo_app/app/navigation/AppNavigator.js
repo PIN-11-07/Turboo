@@ -11,6 +11,9 @@ export default function AppNavigator() {
   return (
     <Tab.Navigator
       screenOptions={{
+        // Keep every tab mounted so each stack loads once at startup
+        lazy: false,
+        unmountOnBlur: false,
         headerShown: false,
         tabBarActiveTintColor: palette.accent,
         tabBarInactiveTintColor: palette.textMuted,

@@ -12,8 +12,13 @@ import { SafeAreaView } from 'react-native-safe-area-context'
 import { useAuth } from '../../../context/AuthContext'
 import { supabase } from '../../../util/supabase'
 import { profileScreenStyles } from '../profileStyles'
+import { palette } from '../../../theme/palette'
+import { APP_EVENTS, emitEvent, subscribeToEvent } from '../../../util/eventBus'
 
 const notFoundErrorCodes = new Set(['PGRST116', 'PGRST114'])
+
+const LISTING_FIELDS =
+  'id, title, description, price, make, model, year, mileage, fuel_type, transmission, doors, color, images, created_at'
 
 const extractName = (supabaseUser) => {
   if (!supabaseUser) {
@@ -48,6 +53,11 @@ const formatPrice = (value) => {
   return 'Precio a petición'
 }
 
+const mapFavoritesToListings = (favoritesData) =>
+  (favoritesData ?? [])
+    .map((favorite) => favorite?.listing)
+    .filter((listing) => listing && listing.id)
+
 export default function ProfileScreen() {
   const { user, signOut } = useAuth()
   const navigation = useNavigation()
@@ -55,6 +65,36 @@ export default function ProfileScreen() {
   const [error, setError] = useState(null)
   const [profile, setProfile] = useState(null)
   const [listings, setListings] = useState([])
+  const [favoriteListings, setFavoriteListings] = useState([])
+  const [favoriteLoadingIds, setFavoriteLoadingIds] = useState(() => new Set())
+  const favoriteListingIds = useMemo(
+    () => new Set((favoriteListings ?? []).map((listing) => listing.id)),
+    [favoriteListings]
+  )
+
+  const refreshFavoriteListings = useCallback(async () => {
+    if (!user) {
+      setFavoriteListings([])
+      setFavoriteLoadingIds(new Set())
+      return
+    }
+
+    try {
+      const { data, error } = await supabase
+        .from('favorites')
+        .select(`listing:listing_id (${LISTING_FIELDS})`)
+        .eq('user_id', user.id)
+        .order('created_at', { ascending: false })
+
+      if (error) {
+        throw error
+      }
+
+      setFavoriteListings(mapFavoritesToListings(data))
+    } catch (refreshError) {
+      console.error('Error refreshing favorite listings', refreshError)
+    }
+  }, [user])
 
   useEffect(() => {
     let isMounted = true
@@ -63,6 +103,9 @@ export default function ProfileScreen() {
       if (!user) {
         if (isMounted) {
           setProfile(null)
+          setListings([])
+          setFavoriteListings([])
+          setFavoriteLoadingIds(new Set())
           setLoading(false)
         }
         return
@@ -76,6 +119,7 @@ export default function ProfileScreen() {
           { data: authData, error: authError },
           { data: profileData, error: profileError },
           { data: listingsData, error: listingsError },
+          { data: favoritesData, error: favoritesError },
         ] =
           await Promise.all([
             supabase.auth.getUser(),
@@ -86,11 +130,14 @@ export default function ProfileScreen() {
               .maybeSingle(),
             supabase
               .from('listings')
-              .select(
-                'id, title, description, price, make, model, year, mileage, fuel_type, transmission, doors, color, images, created_at'
-              )
+              .select(LISTING_FIELDS)
               .eq('user_id', user.id)
-              .order('created_at', { ascending: false })
+              .order('created_at', { ascending: false }),
+            supabase
+              .from('favorites')
+              .select(`listing:listing_id (${LISTING_FIELDS})`)
+              .eq('user_id', user.id)
+              .order('created_at', { ascending: false }),
           ])
 
         if (authError) {
@@ -103,6 +150,9 @@ export default function ProfileScreen() {
 
         if (listingsError) {
           throw listingsError
+        }
+        if (favoritesError) {
+          throw favoritesError
         }
 
         if (!isMounted) {
@@ -127,6 +177,7 @@ export default function ProfileScreen() {
           profileImageUrl: profileData?.profile_image_url || null,
         })
         setListings(Array.isArray(listingsData) ? listingsData : [])
+        setFavoriteListings(mapFavoritesToListings(favoritesData))
       } catch (fetchError) {
         console.error(fetchError)
         if (isMounted) {
@@ -146,6 +197,14 @@ export default function ProfileScreen() {
     }
   }, [user])
 
+  useEffect(() => {
+    const unsubscribe = subscribeToEvent(APP_EVENTS.FAVORITES_UPDATED, () => {
+      refreshFavoriteListings()
+    })
+
+    return unsubscribe
+  }, [refreshFavoriteListings])
+
   const avatarInitial = useMemo(() => {
     const fallbackName = profile?.name || user?.email || ''
     return fallbackName.trim().charAt(0).toUpperCase() || '?'
@@ -162,6 +221,138 @@ export default function ProfileScreen() {
       })
     },
     [navigation]
+  )
+
+  const handleToggleFavorite = useCallback(
+    async (listingId) => {
+      if (!user || favoriteLoadingIds.has(listingId)) {
+        return
+      }
+
+      const isFavorite = favoriteListingIds.has(listingId)
+
+      setFavoriteLoadingIds((prev) => {
+        const next = new Set(prev)
+        next.add(listingId)
+        return next
+      })
+
+      try {
+        const mutation = isFavorite
+          ? supabase
+              .from('favorites')
+              .delete()
+              .eq('user_id', user.id)
+              .eq('listing_id', listingId)
+          : supabase.from('favorites').insert({
+              user_id: user.id,
+              listing_id: listingId,
+            })
+
+        const { error: mutationError } = await mutation
+
+        if (mutationError) {
+          throw mutationError
+        }
+
+        setFavoriteListings((prev) =>
+          isFavorite ? prev.filter((listing) => listing.id !== listingId) : prev
+        )
+
+        emitEvent(APP_EVENTS.FAVORITES_UPDATED, {
+          listingId,
+          action: isFavorite ? 'removed' : 'added',
+        })
+      } catch (toggleError) {
+        console.error('Error updating favorites from profile', toggleError)
+      } finally {
+        setFavoriteLoadingIds((prev) => {
+          const next = new Set(prev)
+          next.delete(listingId)
+          return next
+        })
+      }
+    },
+    [favoriteListingIds, favoriteLoadingIds, user]
+  )
+
+  const renderListingCard = useCallback(
+    (listing, keyPrefix = 'listing', allowFavoriteToggle = false) => {
+      if (!listing?.id) {
+        return null
+      }
+
+      const hasImage = Array.isArray(listing.images) && listing.images.length > 0
+      const firstImage = hasImage ? listing.images[0] : null
+      const publishDate = listing.created_at
+        ? new Date(listing.created_at).toLocaleDateString('es-ES')
+        : 'fecha s/d'
+      const isFavorite = allowFavoriteToggle && favoriteListingIds.has(listing.id)
+      const isFavoriteLoading =
+        allowFavoriteToggle && favoriteLoadingIds.has(listing.id)
+
+      return (
+        <TouchableOpacity
+          key={`${keyPrefix}-${listing.id}`}
+          style={styles.listingCard}
+          onPress={() => handleListingPress(listing)}
+          activeOpacity={0.8}
+        >
+          <View style={styles.listingImageWrapper}>
+            {firstImage ? (
+              <Image
+                source={{ uri: firstImage }}
+                style={styles.listingImage}
+                resizeMode="cover"
+              />
+            ) : (
+              <View style={styles.listingImagePlaceholder}>
+                <Text style={styles.listingImagePlaceholderText}>Sin foto</Text>
+              </View>
+            )}
+          </View>
+          <View style={styles.listingInfo}>
+            <View style={styles.listingInfoHeader}>
+              <Text style={styles.listingTitle} numberOfLines={2}>
+                {listing.title}
+              </Text>
+              {allowFavoriteToggle ? (
+                <TouchableOpacity
+                  style={[
+                    styles.favoriteButton,
+                    isFavoriteLoading && styles.favoriteButtonDisabled,
+                  ]}
+                  onPress={() => handleToggleFavorite(listing.id)}
+                  disabled={isFavoriteLoading}
+                  hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+                >
+                  {isFavoriteLoading ? (
+                    <ActivityIndicator size="small" color={palette.textPrimary} />
+                  ) : (
+                    <Text
+                      style={[
+                        styles.favoriteIcon,
+                        isFavorite && styles.favoriteIconActive,
+                      ]}
+                    >
+                      {isFavorite ? '♥' : '♡'}
+                    </Text>
+                  )}
+                </TouchableOpacity>
+              ) : null}
+            </View>
+            <Text style={styles.listingPrice}>{formatPrice(listing.price)}</Text>
+            <Text style={styles.listingDate}>Publicado el {publishDate}</Text>
+          </View>
+        </TouchableOpacity>
+      )
+    },
+    [
+      favoriteListingIds,
+      favoriteLoadingIds,
+      handleListingPress,
+      handleToggleFavorite,
+    ]
   )
 
   const renderContent = () => {
@@ -219,38 +410,18 @@ export default function ProfileScreen() {
           {listings.length === 0 ? (
             <Text style={styles.emptyState}>Todavía no has publicado anuncios.</Text>
           ) : (
-            listings.map((listing) => (
-              <TouchableOpacity
-                key={listing.id}
-                style={styles.listingCard}
-                onPress={() => handleListingPress(listing)}
-                activeOpacity={0.8}
-              >
-                <View style={styles.listingImageWrapper}>
-                  {Array.isArray(listing.images) && listing.images.length > 0 ? (
-                    <Image
-                      source={{ uri: listing.images[0] }}
-                      style={styles.listingImage}
-                      resizeMode="cover"
-                    />
-                  ) : (
-                    <View style={styles.listingImagePlaceholder}>
-                      <Text style={styles.listingImagePlaceholderText}>Sin foto</Text>
-                    </View>
-                  )}
-                </View>
-                <View style={styles.listingInfo}>
-                  <Text style={styles.listingTitle}>{listing.title}</Text>
-                  <Text style={styles.listingPrice}>{formatPrice(listing.price)}</Text>
-                  <Text style={styles.listingDate}>
-                    Publicado el{' '}
-                    {listing.created_at
-                      ? new Date(listing.created_at).toLocaleDateString('es-ES')
-                      : 'fecha s/d'}
-                  </Text>
-                </View>
-              </TouchableOpacity>
-            ))
+            listings.map((listing) => renderListingCard(listing, 'own'))
+          )}
+        </View>
+
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>Tus favoritos</Text>
+          {favoriteListings.length === 0 ? (
+            <Text style={styles.emptyState}>Todavía no has marcado favoritos.</Text>
+          ) : (
+            favoriteListings.map((listing) =>
+              renderListingCard(listing, 'favorite', true)
+            )
           )}
         </View>
 
