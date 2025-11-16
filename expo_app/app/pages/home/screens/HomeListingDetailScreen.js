@@ -1,10 +1,11 @@
-import React, { useEffect, useMemo, useState } from 'react'
+import React, { useCallback, useEffect, useMemo, useState } from 'react'
 import {
   ActivityIndicator,
   Dimensions,
   Image,
   ScrollView,
   Text,
+  TouchableOpacity,
   View,
 } from 'react-native'
 import { useRoute } from '@react-navigation/native'
@@ -12,6 +13,8 @@ import { SafeAreaView } from 'react-native-safe-area-context'
 import { supabase } from '../../../util/supabase'
 import { homeListingDetailScreenStyles } from '../HomeStyles'
 import { palette } from '../../../theme/palette'
+import { useAuth } from '../../../context/AuthContext'
+import { APP_EVENTS, emitEvent, subscribeToEvent } from '../../../util/eventBus'
 
 const REQUIRED_FIELDS = [
   'description',
@@ -85,15 +88,20 @@ const ATTRIBUTE_LABELS = [
   { key: 'color', label: 'Color' },
 ]
 
+const FAVORITE_NOT_FOUND_CODES = new Set(['PGRST116', 'PGRST114'])
+
 export default function ListingDetailScreen() {
   const route = useRoute()
   const params = route.params ?? {}
   const listingId = params.listingId ?? params?.listing?.id ?? null
   const initialListing = params.listing ?? null
+  const { user } = useAuth()
 
   const [listing, setListing] = useState(initialListing)
   const [loading, setLoading] = useState(!hasRequiredFields(initialListing))
   const [error, setError] = useState(null)
+  const [isFavorite, setIsFavorite] = useState(false)
+  const [favoriteLoading, setFavoriteLoading] = useState(false)
 
   useEffect(() => {
     const shouldFetch = !hasRequiredFields(initialListing) && listingId
@@ -146,6 +154,104 @@ export default function ListingDetailScreen() {
     return `Publicado el ${formatDate(listing.created_at)}`
   }, [listing?.created_at])
 
+  useEffect(() => {
+    let isMounted = true
+
+    const fetchFavoriteStatus = async () => {
+      if (!user || !listingId) {
+        if (isMounted) {
+          setIsFavorite(false)
+          setFavoriteLoading(false)
+        }
+        return
+      }
+
+      if (isMounted) {
+        setFavoriteLoading(true)
+      }
+
+      try {
+        const { data, error: favoritesError } = await supabase
+          .from('favorites')
+          .select('id')
+          .eq('user_id', user.id)
+          .eq('listing_id', listingId)
+          .maybeSingle()
+
+        if (favoritesError && !FAVORITE_NOT_FOUND_CODES.has(favoritesError.code)) {
+          throw favoritesError
+        }
+
+        if (isMounted) {
+          setIsFavorite(Boolean(data))
+        }
+      } catch (favoriteStatusError) {
+        console.error('Error fetching favorite status (home detail)', favoriteStatusError)
+      } finally {
+        if (isMounted) {
+          setFavoriteLoading(false)
+        }
+      }
+    }
+
+    fetchFavoriteStatus()
+
+    return () => {
+      isMounted = false
+    }
+  }, [listingId, user])
+
+  useEffect(() => {
+    const unsubscribe = subscribeToEvent(APP_EVENTS.FAVORITES_UPDATED, (payload) => {
+      if (!payload || payload.listingId !== listingId) {
+        return
+      }
+
+      setIsFavorite(payload.action !== 'removed')
+    })
+
+    return unsubscribe
+  }, [listingId])
+
+  const handleToggleFavorite = useCallback(async () => {
+    if (!user || !listingId || favoriteLoading) {
+      return
+    }
+
+    setFavoriteLoading(true)
+
+    try {
+      const isCurrentlyFavorite = isFavorite
+      const mutation = isCurrentlyFavorite
+        ? supabase
+            .from('favorites')
+            .delete()
+            .eq('user_id', user.id)
+            .eq('listing_id', listingId)
+        : supabase.from('favorites').insert({
+            user_id: user.id,
+            listing_id: listingId,
+          })
+
+      const { error: mutationError } = await mutation
+
+      if (mutationError) {
+        throw mutationError
+      }
+
+      const nextFavoriteState = !isCurrentlyFavorite
+      setIsFavorite(nextFavoriteState)
+      emitEvent(APP_EVENTS.FAVORITES_UPDATED, {
+        listingId,
+        action: nextFavoriteState ? 'added' : 'removed',
+      })
+    } catch (toggleError) {
+      console.error('Error updating favorites from home detail', toggleError)
+    } finally {
+      setFavoriteLoading(false)
+    }
+  }, [favoriteLoading, isFavorite, listingId, user])
+
   return (
     <SafeAreaView style={styles.safeArea} edges={['left', 'right', 'bottom']}>
       <ScrollView
@@ -197,8 +303,40 @@ export default function ListingDetailScreen() {
             </View>
 
             <View style={styles.section}>
-              <Text style={styles.title}>{listing.title}</Text>
-              <Text style={styles.price}>{formatPrice(listing.price)}</Text>
+              <View style={styles.sectionHeader}>
+                <View style={styles.sectionHeaderText}>
+                  <Text style={styles.title}>{listing.title}</Text>
+                  <Text style={styles.price}>{formatPrice(listing.price)}</Text>
+                </View>
+                <TouchableOpacity
+                  accessibilityLabel={
+                    isFavorite ? 'Quitar de favoritos' : 'Agregar a favoritos'
+                  }
+                  accessibilityRole="button"
+                  style={[
+                    styles.favoriteButton,
+                    isFavorite && styles.favoriteButtonActive,
+                    (favoriteLoading || !user) && styles.favoriteButtonDisabled,
+                  ]}
+                  activeOpacity={0.8}
+                  onPress={handleToggleFavorite}
+                  disabled={favoriteLoading || !user}
+                  hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+                >
+                  {favoriteLoading ? (
+                    <ActivityIndicator size="small" color={palette.textPrimary} />
+                  ) : (
+                    <Text
+                      style={[
+                        styles.favoriteIcon,
+                        isFavorite && styles.favoriteIconActive,
+                      ]}
+                    >
+                      {isFavorite ? '♥' : '♡'}
+                    </Text>
+                  )}
+                </TouchableOpacity>
+              </View>
               {caption && <Text style={styles.caption}>{caption}</Text>}
             </View>
 
