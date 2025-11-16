@@ -15,6 +15,9 @@ import { profileScreenStyles } from '../profileStyles'
 
 const notFoundErrorCodes = new Set(['PGRST116', 'PGRST114'])
 
+const LISTING_FIELDS =
+  'id, title, description, price, make, model, year, mileage, fuel_type, transmission, doors, color, images, created_at'
+
 const extractName = (supabaseUser) => {
   if (!supabaseUser) {
     return null
@@ -55,6 +58,7 @@ export default function ProfileScreen() {
   const [error, setError] = useState(null)
   const [profile, setProfile] = useState(null)
   const [listings, setListings] = useState([])
+  const [favoriteListings, setFavoriteListings] = useState([])
 
   useEffect(() => {
     let isMounted = true
@@ -63,6 +67,8 @@ export default function ProfileScreen() {
       if (!user) {
         if (isMounted) {
           setProfile(null)
+          setListings([])
+          setFavoriteListings([])
           setLoading(false)
         }
         return
@@ -76,6 +82,7 @@ export default function ProfileScreen() {
           { data: authData, error: authError },
           { data: profileData, error: profileError },
           { data: listingsData, error: listingsError },
+          { data: favoritesData, error: favoritesError },
         ] =
           await Promise.all([
             supabase.auth.getUser(),
@@ -86,11 +93,14 @@ export default function ProfileScreen() {
               .maybeSingle(),
             supabase
               .from('listings')
-              .select(
-                'id, title, description, price, make, model, year, mileage, fuel_type, transmission, doors, color, images, created_at'
-              )
+              .select(LISTING_FIELDS)
               .eq('user_id', user.id)
-              .order('created_at', { ascending: false })
+              .order('created_at', { ascending: false }),
+            supabase
+              .from('favorites')
+              .select(`listing:listing_id (${LISTING_FIELDS})`)
+              .eq('user_id', user.id)
+              .order('created_at', { ascending: false }),
           ])
 
         if (authError) {
@@ -103,6 +113,9 @@ export default function ProfileScreen() {
 
         if (listingsError) {
           throw listingsError
+        }
+        if (favoritesError) {
+          throw favoritesError
         }
 
         if (!isMounted) {
@@ -127,6 +140,10 @@ export default function ProfileScreen() {
           profileImageUrl: profileData?.profile_image_url || null,
         })
         setListings(Array.isArray(listingsData) ? listingsData : [])
+        const favoriteListingData = (favoritesData ?? [])
+          .map((favorite) => favorite?.listing)
+          .filter((listing) => listing && listing.id)
+        setFavoriteListings(favoriteListingData)
       } catch (fetchError) {
         console.error(fetchError)
         if (isMounted) {
@@ -162,6 +179,49 @@ export default function ProfileScreen() {
       })
     },
     [navigation]
+  )
+
+  const renderListingCard = useCallback(
+    (listing, keyPrefix = 'listing') => {
+      if (!listing?.id) {
+        return null
+      }
+
+      const hasImage = Array.isArray(listing.images) && listing.images.length > 0
+      const firstImage = hasImage ? listing.images[0] : null
+      const publishDate = listing.created_at
+        ? new Date(listing.created_at).toLocaleDateString('es-ES')
+        : 'fecha s/d'
+
+      return (
+        <TouchableOpacity
+          key={`${keyPrefix}-${listing.id}`}
+          style={styles.listingCard}
+          onPress={() => handleListingPress(listing)}
+          activeOpacity={0.8}
+        >
+          <View style={styles.listingImageWrapper}>
+            {firstImage ? (
+              <Image
+                source={{ uri: firstImage }}
+                style={styles.listingImage}
+                resizeMode="cover"
+              />
+            ) : (
+              <View style={styles.listingImagePlaceholder}>
+                <Text style={styles.listingImagePlaceholderText}>Sin foto</Text>
+              </View>
+            )}
+          </View>
+          <View style={styles.listingInfo}>
+            <Text style={styles.listingTitle}>{listing.title}</Text>
+            <Text style={styles.listingPrice}>{formatPrice(listing.price)}</Text>
+            <Text style={styles.listingDate}>Publicado el {publishDate}</Text>
+          </View>
+        </TouchableOpacity>
+      )
+    },
+    [handleListingPress]
   )
 
   const renderContent = () => {
@@ -219,38 +279,16 @@ export default function ProfileScreen() {
           {listings.length === 0 ? (
             <Text style={styles.emptyState}>Todavía no has publicado anuncios.</Text>
           ) : (
-            listings.map((listing) => (
-              <TouchableOpacity
-                key={listing.id}
-                style={styles.listingCard}
-                onPress={() => handleListingPress(listing)}
-                activeOpacity={0.8}
-              >
-                <View style={styles.listingImageWrapper}>
-                  {Array.isArray(listing.images) && listing.images.length > 0 ? (
-                    <Image
-                      source={{ uri: listing.images[0] }}
-                      style={styles.listingImage}
-                      resizeMode="cover"
-                    />
-                  ) : (
-                    <View style={styles.listingImagePlaceholder}>
-                      <Text style={styles.listingImagePlaceholderText}>Sin foto</Text>
-                    </View>
-                  )}
-                </View>
-                <View style={styles.listingInfo}>
-                  <Text style={styles.listingTitle}>{listing.title}</Text>
-                  <Text style={styles.listingPrice}>{formatPrice(listing.price)}</Text>
-                  <Text style={styles.listingDate}>
-                    Publicado el{' '}
-                    {listing.created_at
-                      ? new Date(listing.created_at).toLocaleDateString('es-ES')
-                      : 'fecha s/d'}
-                  </Text>
-                </View>
-              </TouchableOpacity>
-            ))
+            listings.map((listing) => renderListingCard(listing, 'own'))
+          )}
+        </View>
+
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>Tus favoritos</Text>
+          {favoriteListings.length === 0 ? (
+            <Text style={styles.emptyState}>Todavía no has marcado favoritos.</Text>
+          ) : (
+            favoriteListings.map((listing) => renderListingCard(listing, 'favorite'))
           )}
         </View>
 
