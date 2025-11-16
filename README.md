@@ -58,8 +58,8 @@ npx expo start --tunnel
 ```
 
 **Variabili d’ambiente richieste:**
-- `EXPO_PUBLIC_SUPABASE_URL` – URL del progetto Supabase.
-- `EXPO_PUBLIC_SUPABASE_ANON_KEY` – chiave anonima con accesso pubblico alle tabelle `profiles` e `listings`.
+- `EXPO_PUBLIC_SUPABASE_URL`
+- `EXPO_PUBLIC_SUPABASE_ANON_KEY`
 
 **Come accedere all’app (URL o QR code Expo):**
 
