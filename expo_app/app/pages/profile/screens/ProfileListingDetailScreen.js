@@ -30,21 +30,21 @@ const formatPrice = (value) => {
   const numericValue = Number(value)
 
   if (Number.isFinite(numericValue)) {
-    return `€ ${numericValue.toLocaleString('it-IT')}`
+    return `€ ${numericValue.toLocaleString('es-ES')}`
   }
 
-  return value ?? 'Prezzo non disponibile'
+  return value ?? 'Precio no disponible'
 }
 
 const formatDate = (value) => {
   if (!value) {
-    return 'Data non disponibile'
+    return 'Fecha no disponible'
   }
 
   try {
-    return new Date(value).toLocaleDateString('it-IT')
+    return new Date(value).toLocaleDateString('es-ES')
   } catch {
-    return 'Data non disponibile'
+    return 'Fecha no disponible'
   }
 }
 
@@ -75,13 +75,13 @@ const hasRequiredFields = (listing) =>
 
 const ATTRIBUTE_LABELS = [
   { key: 'make', label: 'Marca' },
-  { key: 'model', label: 'Modello' },
-  { key: 'year', label: 'Anno' },
-  { key: 'mileage', label: 'Chilometraggio', suffix: ' km' },
-  { key: 'fuel_type', label: 'Carburante' },
-  { key: 'transmission', label: 'Cambio' },
-  { key: 'doors', label: 'Porte' },
-  { key: 'color', label: 'Colore' },
+  { key: 'model', label: 'Modelo' },
+  { key: 'year', label: 'Año' },
+  { key: 'mileage', label: 'Kilometraje', suffix: ' km' },
+  { key: 'fuel_type', label: 'Combustible' },
+  { key: 'transmission', label: 'Transmisión' },
+  { key: 'doors', label: 'Puertas' },
+  { key: 'color', label: 'Color' },
 ]
 
 export default function ListingDetailScreen() {
@@ -121,7 +121,7 @@ export default function ListingDetailScreen() {
 
       if (queryError) {
         console.error(queryError)
-        setError('Non è possibile caricare il veicolo in questo momento.')
+        setError('No es posible cargar el vehículo en este momento.')
       } else {
         setListing(data)
       }
@@ -142,7 +142,7 @@ export default function ListingDetailScreen() {
     if (!listing?.created_at) {
       return null
     }
-    return `Pubblicato il ${formatDate(listing.created_at)}`
+    return `Publicado el ${formatDate(listing.created_at)}`
   }, [listing?.created_at])
 
   return (
@@ -190,7 +190,7 @@ export default function ListingDetailScreen() {
                     { width: windowWidth - 32 },
                   ]}
                 >
-                  <Text style={styles.galleryPlaceholderText}>Nessuna immagine</Text>
+                  <Text style={styles.galleryPlaceholderText}>Sin imagen</Text>
                 </View>
               )}
             </View>
@@ -202,14 +202,14 @@ export default function ListingDetailScreen() {
             </View>
 
             <View style={styles.section}>
-              <Text style={styles.sectionTitle}>Descrizione</Text>
+              <Text style={styles.sectionTitle}>Descripción</Text>
               <Text style={styles.description}>
-                {listing.description?.trim() || 'Nessuna descrizione disponibile.'}
+                {listing.description?.trim() || 'No hay una descripción disponible.'}
               </Text>
             </View>
 
             <View style={styles.section}>
-              <Text style={styles.sectionTitle}>Specifiche tecniche</Text>
+              <Text style={styles.sectionTitle}>Especificaciones técnicas</Text>
               <View>
                 {ATTRIBUTE_LABELS.map(({ key, label, suffix }, index) => (
                   <View
@@ -221,7 +221,7 @@ export default function ListingDetailScreen() {
                   >
                     <Text style={styles.attributeLabel}>{label}</Text>
                     <Text style={styles.attributeValue}>
-                      {listing?.[key] ?? 'Dato non disponibile'}
+                      {listing?.[key] ?? 'Dato no disponible'}
                       {listing?.[key] != null && suffix ? suffix : ''}
                     </Text>
                   </View>
@@ -234,7 +234,7 @@ export default function ListingDetailScreen() {
         {!loading && !listing && !error && (
           <View style={styles.errorBox}>
             <Text style={styles.errorText}>
-              L'annuncio richiesto non è stato trovato.
+              El anuncio solicitado no se encontró.
             </Text>
           </View>
         )}
