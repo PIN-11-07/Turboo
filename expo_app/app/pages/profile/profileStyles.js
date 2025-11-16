@@ -136,10 +136,18 @@ export const profileScreenStyles = StyleSheet.create({
   listingInfo: {
     flex: 1,
   },
+  listingInfoHeader: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    justifyContent: 'space-between',
+  },
   listingTitle: {
+    flex: 1,
+    flexShrink: 1,
     fontSize: 16,
     fontWeight: '600',
     color: palette.textPrimary,
+    marginRight: 12,
   },
   listingPrice: {
     fontSize: 15,
@@ -151,6 +159,23 @@ export const profileScreenStyles = StyleSheet.create({
     fontSize: 13,
     color: palette.textMuted,
     marginTop: 4,
+  },
+  favoriteButton: {
+    paddingHorizontal: 6,
+    paddingVertical: 4,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginLeft: 12,
+  },
+  favoriteButtonDisabled: {
+    opacity: 0.6,
+  },
+  favoriteIcon: {
+    fontSize: 18,
+    color: palette.textPrimary,
+  },
+  favoriteIconActive: {
+    color: palette.danger,
   },
   signOutButton: {
     marginTop: 32,

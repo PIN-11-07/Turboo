@@ -15,7 +15,7 @@ import { supabase } from '../../../util/supabase'
 import { homeScreenStyles } from '../HomeStyles'
 import { palette } from '../../../theme/palette'
 import { useAuth } from '../../../context/AuthContext'
-import { APP_EVENTS, emitEvent } from '../../../util/eventBus'
+import { APP_EVENTS, emitEvent, subscribeToEvent } from '../../../util/eventBus'
 
 const PAGE_SIZE = 10
 
@@ -159,6 +159,33 @@ export default function HomeScreen() {
   useEffect(() => {
     fetchFavorites()
   }, [fetchFavorites])
+
+  useEffect(() => {
+    const handleFavoritesEvent = (payload) => {
+      const { listingId, action } = payload ?? {}
+
+      if (!listingId) {
+        return
+      }
+
+      setFavoriteIds((prev) => {
+        const next = new Set(prev)
+        if (action === 'removed') {
+          next.delete(listingId)
+        } else if (action === 'added') {
+          next.add(listingId)
+        }
+        return next
+      })
+    }
+
+    const unsubscribe = subscribeToEvent(
+      APP_EVENTS.FAVORITES_UPDATED,
+      handleFavoritesEvent
+    )
+
+    return unsubscribe
+  }, [])
 
   const handleToggleFavorite = useCallback(
     async (listingId) => {

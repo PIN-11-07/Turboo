@@ -12,7 +12,8 @@ import { SafeAreaView } from 'react-native-safe-area-context'
 import { useAuth } from '../../../context/AuthContext'
 import { supabase } from '../../../util/supabase'
 import { profileScreenStyles } from '../profileStyles'
-import { APP_EVENTS, subscribeToEvent } from '../../../util/eventBus'
+import { palette } from '../../../theme/palette'
+import { APP_EVENTS, emitEvent, subscribeToEvent } from '../../../util/eventBus'
 
 const notFoundErrorCodes = new Set(['PGRST116', 'PGRST114'])
 
@@ -65,10 +66,16 @@ export default function ProfileScreen() {
   const [profile, setProfile] = useState(null)
   const [listings, setListings] = useState([])
   const [favoriteListings, setFavoriteListings] = useState([])
+  const [favoriteLoadingIds, setFavoriteLoadingIds] = useState(() => new Set())
+  const favoriteListingIds = useMemo(
+    () => new Set((favoriteListings ?? []).map((listing) => listing.id)),
+    [favoriteListings]
+  )
 
   const refreshFavoriteListings = useCallback(async () => {
     if (!user) {
       setFavoriteListings([])
+      setFavoriteLoadingIds(new Set())
       return
     }
 
@@ -98,6 +105,7 @@ export default function ProfileScreen() {
           setProfile(null)
           setListings([])
           setFavoriteListings([])
+          setFavoriteLoadingIds(new Set())
           setLoading(false)
         }
         return
@@ -215,8 +223,61 @@ export default function ProfileScreen() {
     [navigation]
   )
 
+  const handleToggleFavorite = useCallback(
+    async (listingId) => {
+      if (!user || favoriteLoadingIds.has(listingId)) {
+        return
+      }
+
+      const isFavorite = favoriteListingIds.has(listingId)
+
+      setFavoriteLoadingIds((prev) => {
+        const next = new Set(prev)
+        next.add(listingId)
+        return next
+      })
+
+      try {
+        const mutation = isFavorite
+          ? supabase
+              .from('favorites')
+              .delete()
+              .eq('user_id', user.id)
+              .eq('listing_id', listingId)
+          : supabase.from('favorites').insert({
+              user_id: user.id,
+              listing_id: listingId,
+            })
+
+        const { error: mutationError } = await mutation
+
+        if (mutationError) {
+          throw mutationError
+        }
+
+        setFavoriteListings((prev) =>
+          isFavorite ? prev.filter((listing) => listing.id !== listingId) : prev
+        )
+
+        emitEvent(APP_EVENTS.FAVORITES_UPDATED, {
+          listingId,
+          action: isFavorite ? 'removed' : 'added',
+        })
+      } catch (toggleError) {
+        console.error('Error updating favorites from profile', toggleError)
+      } finally {
+        setFavoriteLoadingIds((prev) => {
+          const next = new Set(prev)
+          next.delete(listingId)
+          return next
+        })
+      }
+    },
+    [favoriteListingIds, favoriteLoadingIds, user]
+  )
+
   const renderListingCard = useCallback(
-    (listing, keyPrefix = 'listing') => {
+    (listing, keyPrefix = 'listing', allowFavoriteToggle = false) => {
       if (!listing?.id) {
         return null
       }
@@ -226,6 +287,9 @@ export default function ProfileScreen() {
       const publishDate = listing.created_at
         ? new Date(listing.created_at).toLocaleDateString('es-ES')
         : 'fecha s/d'
+      const isFavorite = allowFavoriteToggle && favoriteListingIds.has(listing.id)
+      const isFavoriteLoading =
+        allowFavoriteToggle && favoriteLoadingIds.has(listing.id)
 
       return (
         <TouchableOpacity
@@ -248,14 +312,47 @@ export default function ProfileScreen() {
             )}
           </View>
           <View style={styles.listingInfo}>
-            <Text style={styles.listingTitle}>{listing.title}</Text>
+            <View style={styles.listingInfoHeader}>
+              <Text style={styles.listingTitle} numberOfLines={2}>
+                {listing.title}
+              </Text>
+              {allowFavoriteToggle ? (
+                <TouchableOpacity
+                  style={[
+                    styles.favoriteButton,
+                    isFavoriteLoading && styles.favoriteButtonDisabled,
+                  ]}
+                  onPress={() => handleToggleFavorite(listing.id)}
+                  disabled={isFavoriteLoading}
+                  hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+                >
+                  {isFavoriteLoading ? (
+                    <ActivityIndicator size="small" color={palette.textPrimary} />
+                  ) : (
+                    <Text
+                      style={[
+                        styles.favoriteIcon,
+                        isFavorite && styles.favoriteIconActive,
+                      ]}
+                    >
+                      {isFavorite ? '♥' : '♡'}
+                    </Text>
+                  )}
+                </TouchableOpacity>
+              ) : null}
+            </View>
             <Text style={styles.listingPrice}>{formatPrice(listing.price)}</Text>
             <Text style={styles.listingDate}>Publicado el {publishDate}</Text>
           </View>
         </TouchableOpacity>
       )
     },
-    [handleListingPress]
+    [
+      favoriteListingIds,
+      favoriteLoadingIds,
+      handleListingPress,
+      handleToggleFavorite,
+    ]
   )
 
   const renderContent = () => {
@@ -322,7 +419,9 @@ export default function ProfileScreen() {
           {favoriteListings.length === 0 ? (
             <Text style={styles.emptyState}>Todavía no has marcado favoritos.</Text>
           ) : (
-            favoriteListings.map((listing) => renderListingCard(listing, 'favorite'))
+            favoriteListings.map((listing) =>
+              renderListingCard(listing, 'favorite', true)
+            )
           )}
         </View>
 
