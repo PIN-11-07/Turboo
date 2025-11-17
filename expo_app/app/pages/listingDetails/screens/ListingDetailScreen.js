@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react'
+import React from 'react'
 import {
   ActivityIndicator,
   Dimensions,
@@ -7,26 +7,11 @@ import {
   Text,
   View,
 } from 'react-native'
-import { useRoute } from '@react-navigation/native'
 import { SafeAreaView } from 'react-native-safe-area-context'
-import { supabase } from '../../../util/supabase'
 import { listingDetailScreenStyles } from '../ListingDetailStyles'
 import { palette } from '../../../theme/palette'
 import FavoriteButton from '../../../components/FavoriteButton'
-
-const REQUIRED_FIELDS = [
-  'description',
-  'make',
-  'model',
-  'year',
-  'mileage',
-  'fuel_type',
-  'transmission',
-  'doors',
-  'color',
-  'images',
-  'created_at',
-]
+import { useListingDetailScreen } from '../hooks/useListingDetailScreen'
 
 const formatPrice = (value) => {
   const numericValue = Number(value)
@@ -38,42 +23,7 @@ const formatPrice = (value) => {
   return value ?? 'Precio no disponible'
 }
 
-const formatDate = (value) => {
-  if (!value) {
-    return 'Fecha no disponible'
-  }
-
-  try {
-    return new Date(value).toLocaleDateString('es-ES')
-  } catch {
-    return 'Fecha no disponible'
-  }
-}
-
-const normalizeImages = (value) => {
-  if (Array.isArray(value)) {
-    return value.filter((uri) => typeof uri === 'string' && uri.trim().length > 0)
-  }
-
-  if (typeof value === 'string') {
-    try {
-      const parsed = JSON.parse(value)
-      return Array.isArray(parsed)
-        ? parsed.filter((uri) => typeof uri === 'string' && uri.trim().length > 0)
-        : []
-    } catch {
-      return []
-    }
-  }
-
-  return []
-}
-
 const windowWidth = Dimensions.get('window').width
-
-const hasRequiredFields = (listing) =>
-  listing &&
-  REQUIRED_FIELDS.every((field) => Object.prototype.hasOwnProperty.call(listing, field))
 
 const ATTRIBUTE_LABELS = [
   { key: 'make', label: 'Marca' },
@@ -87,64 +37,8 @@ const ATTRIBUTE_LABELS = [
 ]
 
 export default function ListingDetailScreen() {
-  const route = useRoute()
-  const params = route.params ?? {}
-  const listingId = params.listingId ?? params?.listing?.id ?? null
-  const initialListing = params.listing ?? null
-  const [listing, setListing] = useState(initialListing)
-  const [loading, setLoading] = useState(!hasRequiredFields(initialListing))
-  const [error, setError] = useState(null)
-
-  useEffect(() => {
-    const shouldFetch = !hasRequiredFields(initialListing) && listingId
-
-    if (!shouldFetch) {
-      return
-    }
-
-    let isMounted = true
-
-    const fetchListing = async () => {
-      setLoading(true)
-      setError(null)
-
-      const { data, error: queryError } = await supabase
-        .from('listings')
-        .select(
-          'id, title, description, price, make, model, year, mileage, fuel_type, transmission, doors, color, images, created_at'
-        )
-        .eq('id', listingId)
-        .maybeSingle()
-
-      if (!isMounted) {
-        return
-      }
-
-      if (queryError) {
-        console.error(queryError)
-        setError('No es posible cargar el vehículo en este momento.')
-      } else {
-        setListing(data)
-      }
-
-      setLoading(false)
-    }
-
-    fetchListing()
-
-    return () => {
-      isMounted = false
-    }
-  }, [initialListing, listingId])
-
-  const images = useMemo(() => normalizeImages(listing?.images), [listing?.images])
-
-  const caption = useMemo(() => {
-    if (!listing?.created_at) {
-      return null
-    }
-    return `Publicado el ${formatDate(listing.created_at)}`
-  }, [listing?.created_at])
+  const { listing, listingId, loading, error, images, caption } =
+    useListingDetailScreen()
 
   return (
     <SafeAreaView style={styles.safeArea} edges={['left', 'right', 'bottom']}>

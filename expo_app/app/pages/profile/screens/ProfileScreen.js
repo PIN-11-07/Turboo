@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react'
+import React, { useCallback } from 'react'
 import {
   ActivityIndicator,
   Image,
@@ -7,36 +7,10 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native'
-import { useFocusEffect, useNavigation } from '@react-navigation/native'
 import { SafeAreaView } from 'react-native-safe-area-context'
-import { useAuth } from '../../../context/AuthContext'
-import { supabase } from '../../../util/supabase'
 import { profileScreenStyles } from '../profileStyles'
 import FavoriteButton from '../../../components/FavoriteButton'
-
-const notFoundErrorCodes = new Set(['PGRST116', 'PGRST114'])
-
-const LISTING_FIELDS =
-  'id, title, description, price, make, model, year, mileage, fuel_type, transmission, doors, color, images, created_at'
-
-const extractName = (supabaseUser) => {
-  if (!supabaseUser) {
-    return null
-  }
-
-  const metadata =
-    supabaseUser.user_metadata ??
-    supabaseUser.raw_user_meta_data ??
-    supabaseUser.app_metadata ??
-    {}
-
-  return (
-    (typeof metadata.full_name === 'string' && metadata.full_name.trim()) ||
-    (typeof metadata.name === 'string' && metadata.name.trim()) ||
-    (typeof metadata.display_name === 'string' && metadata.display_name.trim()) ||
-    null
-  )
-}
+import { useProfileScreen } from '../hooks/useProfileScreen'
 
 const formatPrice = (value) => {
   const numericValue = Number(value)
@@ -52,166 +26,19 @@ const formatPrice = (value) => {
   return 'Precio a petición'
 }
 
-const mapFavoritesToListings = (favoritesData) =>
-  (favoritesData ?? [])
-    .map((favorite) => favorite?.listing)
-    .filter((listing) => listing && listing.id)
-
 export default function ProfileScreen() {
-  const { user, signOut } = useAuth()
-  const navigation = useNavigation()
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState(null)
-  const [profile, setProfile] = useState(null)
-  const [listings, setListings] = useState([])
-  const [favoriteListings, setFavoriteListings] = useState([])
-
-  const refreshFavoriteListings = useCallback(async () => {
-    if (!user) {
-      setFavoriteListings([])
-      return
-    }
-
-    try {
-      const { data, error } = await supabase
-        .from('favorites')
-        .select(`listing:listing_id (${LISTING_FIELDS})`)
-        .eq('user_id', user.id)
-        .order('created_at', { ascending: false })
-
-      if (error) {
-        throw error
-      }
-
-      setFavoriteListings(mapFavoritesToListings(data))
-    } catch (refreshError) {
-      console.error('Error refreshing favorite listings', refreshError)
-    }
-  }, [user])
-
-  useEffect(() => {
-    let isMounted = true
-
-    const fetchProfile = async () => {
-      if (!user) {
-        if (isMounted) {
-          setProfile(null)
-          setListings([])
-          setFavoriteListings([])
-          setLoading(false)
-        }
-        return
-      }
-
-      setLoading(true)
-      setError(null)
-
-      try {
-        const [
-          { data: authData, error: authError },
-          { data: profileData, error: profileError },
-          { data: listingsData, error: listingsError },
-          { data: favoritesData, error: favoritesError },
-        ] =
-          await Promise.all([
-            supabase.auth.getUser(),
-            supabase
-              .from('profiles')
-              .select('profile_image_url')
-              .eq('id', user.id)
-              .maybeSingle(),
-            supabase
-              .from('listings')
-              .select(LISTING_FIELDS)
-              .eq('user_id', user.id)
-              .order('created_at', { ascending: false }),
-            supabase
-              .from('favorites')
-              .select(`listing:listing_id (${LISTING_FIELDS})`)
-              .eq('user_id', user.id)
-              .order('created_at', { ascending: false }),
-          ])
-
-        if (authError) {
-          throw authError
-        }
-
-        if (profileError && !notFoundErrorCodes.has(profileError.code)) {
-          throw profileError
-        }
-
-        if (listingsError) {
-          throw listingsError
-        }
-        if (favoritesError) {
-          throw favoritesError
-        }
-
-        if (!isMounted) {
-          return
-        }
-
-        const authUser = authData?.user ?? null
-
-        const name =
-          extractName(authUser) ||
-          extractName(user) ||
-          null
-
-        const mail =
-          (typeof authUser?.email === 'string' && authUser.email.trim()) ||
-          (typeof user?.email === 'string' && user.email.trim()) ||
-          null
-
-        setProfile({
-          name,
-          mail,
-          profileImageUrl: profileData?.profile_image_url || null,
-        })
-        setListings(Array.isArray(listingsData) ? listingsData : [])
-        setFavoriteListings(mapFavoritesToListings(favoritesData))
-      } catch (fetchError) {
-        console.error(fetchError)
-        if (isMounted) {
-          setError('No es posible cargar el perfil. Inténtalo de nuevo más tarde.')
-        }
-      } finally {
-        if (isMounted) {
-          setLoading(false)
-        }
-      }
-    }
-
-    fetchProfile()
-
-    return () => {
-      isMounted = false
-    }
-  }, [user])
-
-  useFocusEffect(
-    useCallback(() => {
-      refreshFavoriteListings()
-    }, [refreshFavoriteListings])
-  )
-
-  const avatarInitial = useMemo(() => {
-    const fallbackName = profile?.name || user?.email || ''
-    return fallbackName.trim().charAt(0).toUpperCase() || '?'
-  }, [profile?.name, user?.email])
-
-  const handleListingPress = useCallback(
-    (listing) => {
-      if (!listing?.id) {
-        return
-      }
-      navigation.navigate('ListingDetail', {
-        listingId: listing.id,
-        listing,
-      })
-    },
-    [navigation]
-  )
+  const {
+    user,
+    signOut,
+    loading,
+    error,
+    profile,
+    listings,
+    favoriteListings,
+    avatarInitial,
+    handleListingPress,
+    handleFavoriteRemoval,
+  } = useProfileScreen()
 
   const renderListingCard = useCallback(
     (listing, keyPrefix = 'listing', allowFavoriteToggle = false) => {
@@ -227,9 +54,7 @@ export default function ProfileScreen() {
 
       const handleFavoriteChange = (nextValue) => {
         if (!nextValue) {
-          setFavoriteListings((prev) =>
-            prev.filter((favorite) => favorite.id !== listing.id)
-          )
+          handleFavoriteRemoval(listing.id)
         }
       }
 
@@ -245,7 +70,7 @@ export default function ProfileScreen() {
               <Image
                 source={{ uri: firstImage }}
                 style={styles.listingImage}
-                resizeMode="cover\"
+                resizeMode="cover"
               />
             ) : (
               <View style={styles.listingImagePlaceholder}>
@@ -261,7 +86,7 @@ export default function ProfileScreen() {
               {allowFavoriteToggle ? (
                 <FavoriteButton
                   listingId={listing.id}
-                  variant="list\"
+                  variant="list"
                   initialIsFavorite
                   fetchOnMount={false}
                   onStatusChange={handleFavoriteChange}
@@ -274,7 +99,7 @@ export default function ProfileScreen() {
         </TouchableOpacity>
       )
     },
-    [handleListingPress]
+    [handleFavoriteRemoval, handleListingPress]
   )
 
   const renderContent = () => {

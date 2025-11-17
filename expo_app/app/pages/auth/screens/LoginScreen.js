@@ -1,52 +1,23 @@
-import React, { useState } from 'react'
+import React from 'react'
 import { View, Text, TextInput, TouchableOpacity } from 'react-native'
-import { useAuth } from '../../../context/AuthContext'
 import { LinearGradient } from 'expo-linear-gradient'
 import { loginScreenStyles } from '../AuthStyles'
+import { useLoginScreen } from '../hooks/useLoginScreen'
 
 export default function LoginScreen() {
-  const { signIn, signUp } = useAuth()
-  const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
-  const [name, setName] = useState('')
-  const [error, setError] = useState(null)
-  const [message, setMessage] = useState(null)
-  const [isSignup, setIsSignup] = useState(false)
-
-  const handleSubmit = async () => {
-    setError(null)
-    setMessage(null)
-
-    if (isSignup) {
-      const trimmedName = name.trim()
-      if (!trimmedName) {
-        setError('Ingresa tu nombre para completar el registro.')
-        return
-      }
-      const { error } = await signUp(email, password, trimmedName)
-      if (error) {
-        setError(error.message)
-      } else {
-        setMessage(
-          '¡Registro exitoso! Revisa tu correo electrónico para confirmar tu cuenta.'
-        )
-        setIsSignup(false)
-        setPassword('')
-        setName('')
-      }
-      return
-    }
-
-    const { error } = await signIn(email, password)
-    if (error) setError(error.message)
-  }
-
-  const toggleAuthMode = () => {
-    setError(null)
-    setMessage(null)
-    setName('')
-    setIsSignup((prev) => !prev)
-  }
+  const {
+    email,
+    setEmail,
+    password,
+    setPassword,
+    name,
+    setName,
+    error,
+    message,
+    isSignup,
+    handleSubmit,
+    toggleAuthMode,
+  } = useLoginScreen()
 
   return (
     <LinearGradient colors={['#4C7EFF', '#6AD7F2']} style={styles.container}>
