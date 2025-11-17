@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useFocusEffect, useNavigation } from '@react-navigation/native'
-import { useAuth } from '../../../context/AuthContext'
-import { supabase } from '../../../util/supabase'
+import { useAuth } from '../../context/AuthContext'
+import { supabase } from '../../util/supabase'
 
 const notFoundErrorCodes = new Set(['PGRST116', 'PGRST114'])
 

@@ -1,8 +1,8 @@
 import React from 'react'
 import { View, Text, TextInput, TouchableOpacity } from 'react-native'
 import { LinearGradient } from 'expo-linear-gradient'
-import { loginScreenStyles } from '../AuthStyles'
-import { useLoginScreen } from '../hooks/useLoginScreen'
+import { loginScreenStyles } from './AuthStyles'
+import { useLoginScreen } from './useLoginScreen'
 
 export default function LoginScreen() {
   const {

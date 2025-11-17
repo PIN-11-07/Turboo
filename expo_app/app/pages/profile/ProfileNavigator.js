@@ -1,7 +1,7 @@
 import React from 'react'
 import { createNativeStackNavigator } from '@react-navigation/native-stack'
-import ProfileScreen from './screens/ProfileScreen'
-import ListingDetailScreen from '../listingDetails/screens/ListingDetailScreen'
+import ProfileScreen from './ProfileScreen'
+import ListingDetailScreen from '../listingDetails/ListingDetailScreen'
 import { palette } from '../../theme/palette'
 
 const Stack = createNativeStackNavigator()

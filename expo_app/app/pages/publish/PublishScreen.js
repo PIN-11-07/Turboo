@@ -10,8 +10,8 @@ import {
   View,
 } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
-import { publishScreenStyles } from '../PublishStyles'
-import { usePublishScreen } from '../hooks/usePublishScreen'
+import { publishScreenStyles } from './PublishStyles'
+import { usePublishScreen } from './usePublishScreen'
 
 const MAKE_OPTIONS = [
   'Alfa Romeo',

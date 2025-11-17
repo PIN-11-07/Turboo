@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react'
-import { useAuth } from '../../../context/AuthContext'
-import { supabase } from '../../../util/supabase'
+import { useAuth } from '../../context/AuthContext'
+import { supabase } from '../../util/supabase'
 
 const REQUIRED_FIELDS = [
   'title',

@@ -8,10 +8,10 @@ import {
   View,
 } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
-import { listingDetailScreenStyles } from '../ListingDetailStyles'
-import { palette } from '../../../theme/palette'
-import FavoriteButton from '../../../components/FavoriteButton'
-import { useListingDetailScreen } from '../hooks/useListingDetailScreen'
+import { listingDetailScreenStyles } from './ListingDetailStyles'
+import { palette } from '../../theme/palette'
+import FavoriteButton from '../../components/FavoriteButton'
+import { useListingDetailScreen } from './useListingDetailScreen'
 
 const formatPrice = (value) => {
   const numericValue = Number(value)

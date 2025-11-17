@@ -11,10 +11,10 @@ import {
 } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { useNavigation } from '@react-navigation/native'
-import { homeScreenStyles } from '../HomeStyles'
-import { palette } from '../../../theme/palette'
-import FavoriteButton from '../../../components/FavoriteButton'
-import { useHomeScreen } from '../hooks/useHomeScreen'
+import { homeScreenStyles } from './HomeStyles'
+import { palette } from '../../theme/palette'
+import FavoriteButton from '../../components/FavoriteButton'
+import { useHomeScreen } from './useHomeScreen'
 
 const formatPrice = (value) => {
   const numericValue = Number(value)

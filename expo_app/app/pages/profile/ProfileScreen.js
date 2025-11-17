@@ -8,9 +8,9 @@ import {
   View,
 } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
-import { profileScreenStyles } from '../profileStyles'
-import FavoriteButton from '../../../components/FavoriteButton'
-import { useProfileScreen } from '../hooks/useProfileScreen'
+import { profileScreenStyles } from './profileStyles'
+import FavoriteButton from '../../components/FavoriteButton'
+import { useProfileScreen } from './useProfileScreen'
 
 const formatPrice = (value) => {
   const numericValue = Number(value)
