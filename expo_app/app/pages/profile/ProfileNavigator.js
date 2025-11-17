@@ -1,7 +1,7 @@
 import React from 'react'
 import { createNativeStackNavigator } from '@react-navigation/native-stack'
-import ProfileScreen from './screens/ProfileScreen'
-import ProfileListingDetailScreen from './screens/ProfileListingDetailScreen'
+import ProfileScreen from './ProfileScreen'
+import ListingDetailScreen from '../listingDetails/ListingDetailScreen'
 import { palette } from '../../theme/palette'
 
 const Stack = createNativeStackNavigator()
@@ -33,8 +33,8 @@ export default function ProfileNavigator() {
         options={{ headerShown: false }}
       />
       <Stack.Screen
-        name="ProfileListingDetail"
-        component={ProfileListingDetailScreen}
+        name="ListingDetail"
+        component={ListingDetailScreen}
         options={{ title: 'Detalles del vehículo' }}
       />
     </Stack.Navigator>

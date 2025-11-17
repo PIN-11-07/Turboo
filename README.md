@@ -1,69 +1,64 @@
 # Turboo
 
 ## 1. Project Introduction
-**Project name:** Turboo
 
-**Purpose and main capabilities:** mobile marketplace used to publish and browse car listings. Users can authenticate with Supabase, scroll through the feed, publish their own vehicles and manage their profile.
+**Purpose and main capabilities:** 
+mobile marketplace used to publish and browse car listings. Users can authenticate with Supabase, scroll through the feed, publish their own vehicles and manage their profile.
 
-**Technology stack:**
-- React Native 0.81 + React 19 via Expo 54
-- Supabase (email/password Auth + Postgres + JSON storage for images)
-- React Navigation 7 (bottom tabs + native stacks)
-- AsyncStorage for session persistence + Expo Secure Store plugin
+**Technology stack:** 
+- React Native 0.81 + React 19 via Expo 54 
+- Supabase (email/password Auth + Postgres + JSON storage for images) 
+- React Navigation 7 (bottom tabs + native stacks) 
+- AsyncStorage for session persistence + Expo Secure Store plugin 
 - Docker (Node 20 image) for the containerized development environment
 
-**General prerequisites:**
-- Docker and Docker Compose installed
-- Supabase account with an existing project (URL + anon key)
+**General prerequisites:** 
+- Docker and Docker Compose installed 
+- Supabase account with an existing project (URL + anon key) 
 - Expo Go app on a physical device if you want to test through the QR code
 
 ---
 
 ## 2. Run the Project Locally with Docker
 
-1. Clone the repository and enter the folder:
-```bash
+1.  Clone the repository and enter the folder:
+
+``` bash
 git clone https://github.com/PIN-11-07/Turboo.git
 cd Turboo
 ```
 
-2. Environment variables  
-Add the keys to `.env` (do not commit this file):
-- SUPABASE_URL
-- ANON_KEY
+2.  Environment variables\
+    Add the keys to `.env` (do not commit this file):
 
-You can grab the project keys (Anon/public key) in the Supabase dashboard:
-https://supabase.com/dashboard/project/jmkgjqutxrtrmvoeesim
+-   SUPABASE_URL
+-   ANON_KEY
 
-3. Build the Docker image (installs dependencies inside the container):
-```bash
+3.  Build the Docker image:
+
+``` bash
 docker compose build
 ```
 
-4. Start the services in the background:
-```bash
+4.  Start the services:
+
+``` bash
 docker compose up -d
 ```
 
-5. Enter the `expo` container used for development:
-```bash
+5.  Enter the `expo` container:
+
+``` bash
 docker compose exec expo bash
 ```
 
-6. Inside the container run:
-```bash
+6.  Inside the container:
+
+``` bash
 npm i
 apt-get update -y && apt-get upgrade -y
 npx expo start --tunnel
 ```
-
-**Required environment variables:**
-- `EXPO_PUBLIC_SUPABASE_URL`
-- `EXPO_PUBLIC_SUPABASE_ANON_KEY`
-
-**How to access the app (Expo URL or QR code):**
-1. Start the dev server: `npx expo start --tunnel`.
-2. Open http://localhost:<8081-8090> for Expo DevTools or scan the QR code displayed in the terminal with the Expo Go app to run the app in real time.
 
 ---
 
@@ -78,11 +73,11 @@ Turboo/
     ├── App.js
     ├── app/
     │   ├── components/
-    │   │   └── PlaceHolder.js
+    │   │   └── FavoriteButton.js
     │   ├── context/
     │   │   └── AuthContext.js
     │   ├── hooks/
-    │   │   └── PlaceHolder.js
+    │   │   └── ...
     │   ├── navigation/
     │   │   ├── AppNavigator.js
     │   │   ├── AuthNavigator.js
@@ -91,31 +86,29 @@ Turboo/
     │   │   ├── auth/
     │   │   │   ├── AuthNavigator.js
     │   │   │   ├── AuthStyles.js
-    │   │   │   ├── components/
     │   │   │   └── screens/
     │   │   │       └── LoginScreen.js
     │   │   ├── home/
     │   │   │   ├── HomeNavigator.js
     │   │   │   ├── HomeStyles.js
-    │   │   │   ├── components/
     │   │   │   └── screens/
-    │   │   │       ├── HomeListingDetailScreen.js
     │   │   │       └── HomeScreen.js
+    │   │   ├── listingDetails/
+    │   │   │   ├── ListingDetailStyles.js
+    │   │   │   └── screens/
+    │   │   │       └── ListingDetailScreen.js
     │   │   ├── profile/
     │   │   │   ├── ProfileNavigator.js
-    │   │   │   ├── components/
     │   │   │   ├── profileStyles.js
     │   │   │   └── screens/
-    │   │   │       ├── ProfileListingDetailScreen.js
     │   │   │       └── ProfileScreen.js
     │   │   └── publish
     │   │       ├── PublishNavigator.js
     │   │       ├── PublishStyles.js
-    │   │       ├── components/
     │   │       └── screens/
     │   │           └── PublishScreen.js
     │   ├── services/
-    │   │   └── PlaceHolder.js
+    │   │   └── ...
     │   ├── theme/
     │   │   └── palette.js
     │   └── util/
@@ -137,8 +130,7 @@ Turboo/
 - `app/components`: reusable UI components.
 - `app/context`: global providers; `AuthContext` wraps the Supabase client and exposes the session.
 - `app/navigation`: React Navigation configuration (`RootNavigator`, `AppNavigator`, `AuthNavigator`).
-- `app/pages/<feature>`: feature-based structure; every folder groups `screens`, `components`, and a style file (`FeatureStyles.js`).
-- `app/services`: shared wrappers for service/data utilities (e.g., `placeholderService`).
+- `app/pages/<page>`: feature-based structure; every folder groups `screens` and a style file (`<Page>Styles.js`).
 - `app/theme`: shared design tokens such as the color palette.
 - `app/util`: infrastructure helpers (`supabase.js` instantiates the client with AsyncStorage).
 - `assets`: icons, splash art and favicons used by Expo (`app.json` describes how they are used).
@@ -159,6 +151,7 @@ Turboo/
 ---
 
 ## 4. Application Features
+
 ### a) Authentication
 - **Login/signup flow:** users authenticate or register from `LoginScreen` with email/password; sign-up optionally accepts a full name and requires email confirmation.
 - **Technologies:** Supabase Auth (`@supabase/supabase-js`), React Context (`AuthContext`), `expo-linear-gradient` for the UI.
@@ -168,126 +161,125 @@ Turboo/
 ### b) Navigation
 - **Library:** React Navigation 7 (`@react-navigation/native`, `@react-navigation/native-stack`, `@react-navigation/bottom-tabs`).
 - **Navigator structure:** a themed `NavigationContainer` (custom palette) wraps `AppNavigator` (tabs for Home, Publish, Profile) and the related stacks (`HomeNavigator`, `PublishNavigator`, `ProfileNavigator`).
-- **Routing rules:** every feature exposes its own stack with consistent headers; `Home` and `Profile` push detailed listing screens (`ListingDetail` / `ProfileListingDetail`).
+- **Routing rules:** every feature exposes its own stack with consistent headers; `Home` e `Profile` aprono la stessa schermata di dettaglio (`ListingDetail`) ospitata in `app/pages/listingDetails`.
 - **Deep linking:** not configured; navigation happens through internal React Navigation routes.
 
-### c) Other key features
-#### Listings feed (Home)
+### c) Listings feed (Home)
 - **Description:** `HomeScreen` shows a feed of active listings fetched from Supabase, with client-side search, pull-to-refresh, endless scroll and resilient loading/error states.
-- **Main components:** `app/pages/home/screens/HomeScreen.js`, `HomeListingDetailScreen.js`, styles inside `HomeStyles.js`.
+- **Main components:** `app/pages/home/screens/HomeScreen.js`, `app/pages/listingDetails/screens/ListingDetailScreen.js`, styles in `HomeStyles.js` + `ListingDetailStyles.js`.
 - **APIs used:** Supabase `listings` (`select`, `eq('is_active', true)`, sorting/pagination with `created_at` + `id` cursors) and `FlatList` for infinite scroll.
 - **Limitations/notes:** the feed shows only the first available image; if the images array is stringified it gets normalized in the detail screen.
 
-#### Listing publication
+## d) Listing publication
 - **Description:** `PublishScreen` offers a validated form for creating listings (required fields, numeric sanitization, brand/fuel/transmission pickers) and writes them to Supabase.
 - **Main components:** `app/pages/publish/screens/PublishScreen.js`, `PublishStyles.js`.
 - **APIs used:** `supabase.from('listings').insert`, custom validation helpers and in-memory selectors.
 - **Limitations/notes:** there is no media upload; the `images` field must be maintained manually (there is no UI to upload pictures).
 
-#### Profile and listing management
-- **Description:** `ProfileScreen` fetches user data (`auth.getUser`, `profiles` table for avatars) and lists published listings, allowing navigation to an internal detail screen per listing.
-- **Main components:** `app/pages/profile/screens/ProfileScreen.js`, `ProfileListingDetailScreen.js`, `profileStyles.js`.
+### e) Profile and listing management
+- **Description:** `ProfileScreen` fetches user data (`auth.getUser`, `profiles` table for avatars) and lists published listings, allowing navigation to the shared detail screen.
+- **Main components:** `app/pages/profile/screens/ProfileScreen.js`, `app/pages/listingDetails/screens/ListingDetailScreen.js`, `profileStyles.js`.
 - **APIs used:** Supabase `profiles` (avatar) and `listings` filtered by `user_id`, plus Supabase Auth to fetch metadata (name, email).
 - **Limitations/notes:** no profile editing or media management on the client. Logging out calls `supabase.auth.signOut` directly.
 
-#### App-wide event bus
-- **Description:** `app/util/eventBus.js` shares an in-memory event bus (based on `Map` + `Set`) so features can communicate without introducing Redux or third-party libs; the instance lives as long as the app stays in memory.
-- **Main APIs:**
-  - `APP_EVENTS`: registry with supported event identifiers (`FAVORITES_UPDATED` is the first one and can be expanded with badges, notifications, etc.).
-  - `emitEvent(eventName, payload)`: notifies all registered listeners; callback exceptions are caught so the UI thread is not blocked.
-  - `subscribeToEvent(eventName, callback)`: registers a listener and returns a cleanup function to call from `useEffect`/`useFocusEffect` to avoid memory leaks.
-- **Current flow:** `HomeScreen` emits `APP_EVENTS.FAVORITES_UPDATED` whenever a listing is added/removed from favorites; `ProfileScreen` listens to the same event and calls `refreshFavoriteListings`, keeping the *Tus favoritos* section in sync even if the tab was already mounted.
-- **Future usage:** the same bus can connect more screens (tab badges, local notifications, detail view refresh). To add a new case define a constant in `APP_EVENTS`, emit events via `emitEvent` and subscribe where needed with `subscribeToEvent`.
+### f) Favorites
+- **Description:** Users can mark any listing with a heart icon from the feed, detail views or the *Tus favoritos* section; the choice is stored in the `public.favorites` table and follows the user across sessions.
+- **UX details:** buttons show a spinner while the Supabase mutation runs, disable automatically when the session is missing and stay in sync when navigating between tabs.
+- **Data flow:** all screens rely on a shared cache that mirrors `favorites` so toggling one heart immediately updates the other mounted buttons without extra API calls.
 
 ---
 
-Below is the updated README section that now includes the `favorites` table and its role within the system.
+## 5. Components
+### FavoriteButton (`app/components/FavoriteButton.js`)
+- **Responsibility:** renders the heart icon, loads the initial favorite status, sends Supabase mutations (`insert`/`delete`) and handles optimistic updates while keeping errors isolated per button.
+- **Shared cache:** keeps a `Map` keyed by listing + user; listeners subscribe/unsubscribe so every mounted button reacts instantly to status changes.
+- **Variants & props:** `variant="detail\" | "overlay\" | "list\"` tweaks layout to match each screen; `initialIsFavorite`, `fetchOnMount`, `onStatusChange`, `hitSlop` and style overrides cover more advanced cases (e.g., removing an item from *Tus favoritos* when it gets unhearted).
 
 ---
 
-## 5. Database Structure
+## 6. Database Structure
 
-**List of tables:**
+### Tables
 
-* `auth.users` (managed by Supabase, stores credentials and metadata)
-* `public.listings`
-* `public.profiles`
-* `public.favorites`
+-   auth.users
+-   public.listings
+-   public.profiles
+-   public.favorites
 
----
+------------------------------------------------------------------------
 
-### **Table `public.listings`**
+### public.listings
 
-| Field         | Type (Supabase) | Description                                                  |
-| ------------- | ---------------- | ----------------------------------------------------------- |
-| `id`          | `uuid` PK        | Listing identifier.                                         |
-| `user_id`     | `uuid` FK        | Points to `auth.users.id`, i.e. the listing owner.          |
-| `title`       | `text`           | Marketing title shown in the feed.                          |
-| `description` | `text`           | Extended vehicle description.                               |
-| `price`       | `numeric`        | Price in euro; formatted on the client.                     |
-| `make`        | `text`           | Brand (values come from `MAKE_OPTIONS`).                    |
-| `model`       | `text`           | Specific model.                                             |
-| `year`        | `int4`           | Vehicle year.                                               |
-| `mileage`     | `int4`           | Total mileage.                                              |
-| `fuel_type`   | `text`           | Fuel type.                                                  |
-| `transmission` | `text`          | Transmission (Manual/Automatic).                            |
-| `doors`       | `int2`           | Number of doors.                                            |
-| `color`       | `text`           | Declared color.                                             |
-| `location`    | `text`           | City or province shown for the listing.                     |
-| `images`      | `jsonb`          | Array with image URLs/URIs.                                 |
-| `is_active`   | `boolean`        | Flag used to keep the listing visible in the feed.          |
-| `created_at`  | `timestamptz`    | Creation timestamp.                                         |
+  Field          Type                      Description
+  -------------- ------------------------- -----------------------
+  id             uuid PK                   Listing identifier
+  user_id        uuid FK → auth.users.id   Owner
+  title          text                      Title
+  description    text                      Description
+  price          numeric(12,2)             ≥ 0
+  make           text                      Brand
+  model          text                      Model
+  year           int4                      1900 → current_year+1
+  mileage        int4                      ≥ 0
+  fuel_type      text                      Fuel type
+  transmission   text                      Transmission
+  doors          int4                      Doors
+  color          text                      Color
+  location       text                      Location
+  images         jsonb                     Array of URLs
+  is_active      boolean                   Visibility flag
+  created_at     timestamptz               Timestamp
 
----
+**RLS:**\
+- Select allowed only when is_active = true\
+- Insert / update / delete: only owner (auth.uid() = user_id)
 
-### **Table `public.profiles`**
+------------------------------------------------------------------------
 
-| Field              | Type      | Description                        |
-| ------------------ | --------- | ---------------------------------- |
-| `id`               | `uuid` PK | Mirrors `auth.users.id`.           |
-| `profile_image_url`| `text`    | Avatar displayed in `ProfileScreen`.|
+### public.profiles
 
----
+  Field               Type      Description
+  ------------------- --------- -----------------------
+  id                  uuid PK   Mirrors auth.users.id
+  full_name           text      Synced from metadata
+  profile_image_url   text      Avatar
 
-### **Table `public.favorites`**
+**Triggers:**\
+- Create profile on user creation\
+- Sync full_name on metadata update
 
-This table represents the “user bookmarked a listing” relationship. It connects `profiles` with `listings`.
+**RLS:**\
+- Users can view/update only their own profile
 
-| Field        | Type                       | Description                           |
-| ------------ | -------------------------- | ------------------------------------- |
-| `id`         | `bigint` PK                | Internal identifier.                  |
-| `user_id`    | `uuid` FK → `profiles.id`  | User who marked the favorite.         |
-| `listing_id` | `uuid` FK → `listings.id`  | Listing that was favorited.           |
-| `created_at` | `timestamptz`              | Timestamp of the favorite action.     |
+------------------------------------------------------------------------
 
-**Key characteristics:**
+### public.favorites
 
-* `unique (user_id, listing_id)` prevents duplicates so a user can favorite a listing only once.
-* `on delete cascade` on both relations: removing a user or listing also removes the related favorites.
-* RLS enabled: each user can read, add and remove only their own favorites.
+  Field        Type                    Description
+  ------------ ----------------------- -------------------
+  id           bigint PK               Internal id
+  user_id      uuid FK → profiles.id   User
+  listing_id   uuid FK → listings.id   Favorited listing
+  created_at   timestamptz             Timestamp
 
----
+**Properties:**\
+- unique(user_id, listing_id)\
+- Cascades on delete\
+- RLS: users can select/insert/delete only their own favorites; update
+disabled
+
+------------------------------------------------------------------------
 
 ## Relationships
 
-* `listings.user_id` → `auth.users.id` (1:N)
-* `profiles.id` ↔ `auth.users.id` (1:1)
-* `profiles.id` ↔ `listings.user_id` (indirect 1:N)
-* `favorites.user_id` → `profiles.id` (1:N)
-* `favorites.listing_id` → `listings.id` (N:1)
+-   auth.users.id → profiles.id (1:1)\
+-   auth.users.id → listings.user_id (1:N)\
+-   profiles.id → favorites.user_id (1:N)\
+-   listings.id → favorites.listing_id (N:1)
 
 ---
 
-## DB ↔ App feature mapping
-
-* `listings` powers the Home feed, detail page and profile-owned listings.
-* `profiles` provides user avatars.
-* `favorites` stores every favorite entry.
-* `auth.users` handles authentication, email and display name.
-
----
-
-## 6. Useful Commands
+## 7. Useful Commands
 **Docker commands:**
 - `docker compose build expo` – builds the Expo image based on Node 20.
 - `docker compose up -d expo` – starts the container in the background.
@@ -309,7 +301,7 @@ This table represents the “user bookmarked a listing” relationship. It conne
 
 ---
 
-## 7. TO DO
+## 8. TO DO
 ### Sprint 1
 - [x] Publish vehicles  
 - [x] Vehicle detail sheet  
