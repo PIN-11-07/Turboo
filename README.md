@@ -1,69 +1,64 @@
 # Turboo
 
 ## 1. Project Introduction
-**Project name:** Turboo
 
-**Purpose and main capabilities:** mobile marketplace used to publish and browse car listings. Users can authenticate with Supabase, scroll through the feed, publish their own vehicles and manage their profile.
+**Purpose and main capabilities:** 
+mobile marketplace used to publish and browse car listings. Users can authenticate with Supabase, scroll through the feed, publish their own vehicles and manage their profile.
 
-**Technology stack:**
-- React Native 0.81 + React 19 via Expo 54
-- Supabase (email/password Auth + Postgres + JSON storage for images)
-- React Navigation 7 (bottom tabs + native stacks)
-- AsyncStorage for session persistence + Expo Secure Store plugin
+**Technology stack:** 
+- React Native 0.81 + React 19 via Expo 54 
+- Supabase (email/password Auth + Postgres + JSON storage for images) 
+- React Navigation 7 (bottom tabs + native stacks) 
+- AsyncStorage for session persistence + Expo Secure Store plugin 
 - Docker (Node 20 image) for the containerized development environment
 
-**General prerequisites:**
-- Docker and Docker Compose installed
-- Supabase account with an existing project (URL + anon key)
+**General prerequisites:** 
+- Docker and Docker Compose installed 
+- Supabase account with an existing project (URL + anon key) 
 - Expo Go app on a physical device if you want to test through the QR code
 
 ---
 
 ## 2. Run the Project Locally with Docker
 
-1. Clone the repository and enter the folder:
-```bash
+1.  Clone the repository and enter the folder:
+
+``` bash
 git clone https://github.com/PIN-11-07/Turboo.git
 cd Turboo
 ```
 
-2. Environment variables  
-Add the keys to `.env` (do not commit this file):
-- SUPABASE_URL
-- ANON_KEY
+2.  Environment variables\
+    Add the keys to `.env` (do not commit this file):
 
-You can grab the project keys (Anon/public key) in the Supabase dashboard:
-https://supabase.com/dashboard/project/jmkgjqutxrtrmvoeesim
+-   SUPABASE_URL
+-   ANON_KEY
 
-3. Build the Docker image (installs dependencies inside the container):
-```bash
+3.  Build the Docker image:
+
+``` bash
 docker compose build
 ```
 
-4. Start the services in the background:
-```bash
+4.  Start the services:
+
+``` bash
 docker compose up -d
 ```
 
-5. Enter the `expo` container used for development:
-```bash
+5.  Enter the `expo` container:
+
+``` bash
 docker compose exec expo bash
 ```
 
-6. Inside the container run:
-```bash
+6.  Inside the container:
+
+``` bash
 npm i
 apt-get update -y && apt-get upgrade -y
 npx expo start --tunnel
 ```
-
-**Required environment variables:**
-- `EXPO_PUBLIC_SUPABASE_URL`
-- `EXPO_PUBLIC_SUPABASE_ANON_KEY`
-
-**How to access the app (Expo URL or QR code):**
-1. Start the dev server: `npx expo start --tunnel`.
-2. Open http://localhost:<8081-8090> for Expo DevTools or scan the QR code displayed in the terminal with the Expo Go app to run the app in real time.
 
 ---
 
@@ -156,6 +151,7 @@ Turboo/
 ---
 
 ## 4. Application Features
+
 ### a) Authentication
 - **Login/signup flow:** users authenticate or register from `LoginScreen` with email/password; sign-up optionally accepts a full name and requires email confirmation.
 - **Technologies:** Supabase Auth (`@supabase/supabase-js`), React Context (`AuthContext`), `expo-linear-gradient` for the UI.
@@ -203,83 +199,83 @@ Turboo/
 
 ## 6. Database Structure
 
-**List of tables:**
+### Tables
 
-* `auth.users` (managed by Supabase, stores credentials and metadata)
-* `public.listings`
-* `public.profiles`
-* `public.favorites`
+-   auth.users
+-   public.listings
+-   public.profiles
+-   public.favorites
 
----
+------------------------------------------------------------------------
 
-### **Table `public.listings`**
+### public.listings
 
-| Field         | Type (Supabase) | Description                                                  |
-| ------------- | ---------------- | ----------------------------------------------------------- |
-| `id`          | `uuid` PK        | Listing identifier.                                         |
-| `user_id`     | `uuid` FK        | Points to `auth.users.id`, i.e. the listing owner.          |
-| `title`       | `text`           | Marketing title shown in the feed.                          |
-| `description` | `text`           | Extended vehicle description.                               |
-| `price`       | `numeric`        | Price in euro; formatted on the client.                     |
-| `make`        | `text`           | Brand (values come from `MAKE_OPTIONS`).                    |
-| `model`       | `text`           | Specific model.                                             |
-| `year`        | `int4`           | Vehicle year.                                               |
-| `mileage`     | `int4`           | Total mileage.                                              |
-| `fuel_type`   | `text`           | Fuel type.                                                  |
-| `transmission` | `text`          | Transmission (Manual/Automatic).                            |
-| `doors`       | `int2`           | Number of doors.                                            |
-| `color`       | `text`           | Declared color.                                             |
-| `location`    | `text`           | City or province shown for the listing.                     |
-| `images`      | `jsonb`          | Array with image URLs/URIs.                                 |
-| `is_active`   | `boolean`        | Flag used to keep the listing visible in the feed.          |
-| `created_at`  | `timestamptz`    | Creation timestamp.                                         |
+  Field          Type                      Description
+  -------------- ------------------------- -----------------------
+  id             uuid PK                   Listing identifier
+  user_id        uuid FK → auth.users.id   Owner
+  title          text                      Title
+  description    text                      Description
+  price          numeric(12,2)             ≥ 0
+  make           text                      Brand
+  model          text                      Model
+  year           int4                      1900 → current_year+1
+  mileage        int4                      ≥ 0
+  fuel_type      text                      Fuel type
+  transmission   text                      Transmission
+  doors          int4                      Doors
+  color          text                      Color
+  location       text                      Location
+  images         jsonb                     Array of URLs
+  is_active      boolean                   Visibility flag
+  created_at     timestamptz               Timestamp
 
----
+**RLS:**\
+- Select allowed only when is_active = true\
+- Insert / update / delete: only owner (auth.uid() = user_id)
 
-### **Table `public.profiles`**
+------------------------------------------------------------------------
 
-| Field              | Type      | Description                        |
-| ------------------ | --------- | ---------------------------------- |
-| `id`               | `uuid` PK | Mirrors `auth.users.id`.           |
-| `profile_image_url`| `text`    | Avatar displayed in `ProfileScreen`.|
+### public.profiles
 
----
+  Field               Type      Description
+  ------------------- --------- -----------------------
+  id                  uuid PK   Mirrors auth.users.id
+  full_name           text      Synced from metadata
+  profile_image_url   text      Avatar
 
-### **Table `public.favorites`**
+**Triggers:**\
+- Create profile on user creation\
+- Sync full_name on metadata update
 
-This table represents the “user bookmarked a listing” relationship. It connects `profiles` with `listings`.
+**RLS:**\
+- Users can view/update only their own profile
 
-| Field        | Type                       | Description                           |
-| ------------ | -------------------------- | ------------------------------------- |
-| `id`         | `bigint` PK                | Internal identifier.                  |
-| `user_id`    | `uuid` FK → `profiles.id`  | User who marked the favorite.         |
-| `listing_id` | `uuid` FK → `listings.id`  | Listing that was favorited.           |
-| `created_at` | `timestamptz`              | Timestamp of the favorite action.     |
+------------------------------------------------------------------------
 
-**Key characteristics:**
+### public.favorites
 
-* `unique (user_id, listing_id)` prevents duplicates so a user can favorite a listing only once.
-* `on delete cascade` on both relations: removing a user or listing also removes the related favorites.
-* RLS enabled: each user can read, add and remove only their own favorites.
+  Field        Type                    Description
+  ------------ ----------------------- -------------------
+  id           bigint PK               Internal id
+  user_id      uuid FK → profiles.id   User
+  listing_id   uuid FK → listings.id   Favorited listing
+  created_at   timestamptz             Timestamp
 
----
+**Properties:**\
+- unique(user_id, listing_id)\
+- Cascades on delete\
+- RLS: users can select/insert/delete only their own favorites; update
+disabled
+
+------------------------------------------------------------------------
 
 ## Relationships
 
-* `listings.user_id` → `auth.users.id` (1:N)
-* `profiles.id` ↔ `auth.users.id` (1:1)
-* `profiles.id` ↔ `listings.user_id` (indirect 1:N)
-* `favorites.user_id` → `profiles.id` (1:N)
-* `favorites.listing_id` → `listings.id` (N:1)
-
----
-
-## DB ↔ App feature mapping
-
-* `listings` powers the Home feed, detail page and profile-owned listings.
-* `profiles` provides user avatars.
-* `favorites` stores every favorite entry.
-* `auth.users` handles authentication, email and display name.
+-   auth.users.id → profiles.id (1:1)\
+-   auth.users.id → listings.user_id (1:N)\
+-   profiles.id → favorites.user_id (1:N)\
+-   listings.id → favorites.listing_id (N:1)
 
 ---
 
