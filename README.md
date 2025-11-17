@@ -135,8 +135,7 @@ Turboo/
 - `app/components`: reusable UI components.
 - `app/context`: global providers; `AuthContext` wraps the Supabase client and exposes the session.
 - `app/navigation`: React Navigation configuration (`RootNavigator`, `AppNavigator`, `AuthNavigator`).
-- `app/pages/<feature>`: feature-based structure; every folder groups `screens`, `components`, and a style file (`FeatureStyles.js`).
-- `app/services`: shared wrappers for service/data utilities (e.g., `placeholderService`).
+- `app/pages/<page>`: feature-based structure; every folder groups `screens` and a style file (`<Page>Styles.js`).
 - `app/theme`: shared design tokens such as the color palette.
 - `app/util`: infrastructure helpers (`supabase.js` instantiates the client with AsyncStorage).
 - `assets`: icons, splash art and favicons used by Expo (`app.json` describes how they are used).
