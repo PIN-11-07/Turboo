@@ -97,13 +97,15 @@ Turboo/
     │   │   │   ├── HomeNavigator.js
     │   │   │   ├── HomeStyles.js
     │   │   │   └── screens/
-    │   │   │       ├── HomeListingDetailScreen.js
     │   │   │       └── HomeScreen.js
+    │   │   ├── listingDetails/
+    │   │   │   ├── ListingDetailStyles.js
+    │   │   │   └── screens/
+    │   │   │       └── ListingDetailScreen.js
     │   │   ├── profile/
     │   │   │   ├── ProfileNavigator.js
     │   │   │   ├── profileStyles.js
     │   │   │   └── screens/
-    │   │   │       ├── ProfileListingDetailScreen.js
     │   │   │       └── ProfileScreen.js
     │   │   └── publish
     │   │       ├── PublishNavigator.js
@@ -164,12 +166,12 @@ Turboo/
 ### b) Navigation
 - **Library:** React Navigation 7 (`@react-navigation/native`, `@react-navigation/native-stack`, `@react-navigation/bottom-tabs`).
 - **Navigator structure:** a themed `NavigationContainer` (custom palette) wraps `AppNavigator` (tabs for Home, Publish, Profile) and the related stacks (`HomeNavigator`, `PublishNavigator`, `ProfileNavigator`).
-- **Routing rules:** every feature exposes its own stack with consistent headers; `Home` and `Profile` push detailed listing screens (`ListingDetail` / `ProfileListingDetail`).
+- **Routing rules:** every feature exposes its own stack with consistent headers; `Home` e `Profile` aprono la stessa schermata di dettaglio (`ListingDetail`) ospitata in `app/pages/listingDetails`.
 - **Deep linking:** not configured; navigation happens through internal React Navigation routes.
 
 ### c) Listings feed (Home)
 - **Description:** `HomeScreen` shows a feed of active listings fetched from Supabase, with client-side search, pull-to-refresh, endless scroll and resilient loading/error states.
-- **Main components:** `app/pages/home/screens/HomeScreen.js`, `HomeListingDetailScreen.js`, styles inside `HomeStyles.js`.
+- **Main components:** `app/pages/home/screens/HomeScreen.js`, `app/pages/listingDetails/screens/ListingDetailScreen.js`, styles in `HomeStyles.js` + `ListingDetailStyles.js`.
 - **APIs used:** Supabase `listings` (`select`, `eq('is_active', true)`, sorting/pagination with `created_at` + `id` cursors) and `FlatList` for infinite scroll.
 - **Limitations/notes:** the feed shows only the first available image; if the images array is stringified it gets normalized in the detail screen.
 
@@ -180,8 +182,8 @@ Turboo/
 - **Limitations/notes:** there is no media upload; the `images` field must be maintained manually (there is no UI to upload pictures).
 
 ### e) Profile and listing management
-- **Description:** `ProfileScreen` fetches user data (`auth.getUser`, `profiles` table for avatars) and lists published listings, allowing navigation to an internal detail screen per listing.
-- **Main components:** `app/pages/profile/screens/ProfileScreen.js`, `ProfileListingDetailScreen.js`, `profileStyles.js`.
+- **Description:** `ProfileScreen` fetches user data (`auth.getUser`, `profiles` table for avatars) and lists published listings, allowing navigation to the shared detail screen.
+- **Main components:** `app/pages/profile/screens/ProfileScreen.js`, `app/pages/listingDetails/screens/ListingDetailScreen.js`, `profileStyles.js`.
 - **APIs used:** Supabase `profiles` (avatar) and `listings` filtered by `user_id`, plus Supabase Auth to fetch metadata (name, email).
 - **Limitations/notes:** no profile editing or media management on the client. Logging out calls `supabase.auth.signOut` directly.
 

@@ -10,7 +10,7 @@ import {
 import { useRoute } from '@react-navigation/native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { supabase } from '../../../util/supabase'
-import { profileListingDetailScreenStyles } from '../profileStyles'
+import { listingDetailScreenStyles } from '../ListingDetailStyles'
 import { palette } from '../../../theme/palette'
 import FavoriteButton from '../../../components/FavoriteButton'
 
@@ -156,7 +156,7 @@ export default function ListingDetailScreen() {
       >
         {loading && (
           <View style={styles.loader}>
-            <ActivityIndicator size="large" color="#0B5FFF" />
+            <ActivityIndicator size="large" color={palette.accent} />
           </View>
         )}
 
@@ -249,4 +249,4 @@ export default function ListingDetailScreen() {
   )
 }
 
-const styles = profileListingDetailScreenStyles
+const styles = listingDetailScreenStyles

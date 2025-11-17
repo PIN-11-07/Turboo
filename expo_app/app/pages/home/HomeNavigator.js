@@ -1,7 +1,7 @@
 import React from 'react'
 import { createNativeStackNavigator } from '@react-navigation/native-stack'
 import HomeScreen from './screens/HomeScreen'
-import HomeListingDetailScreen from './screens/HomeListingDetailScreen'
+import ListingDetailScreen from '../listingDetails/screens/ListingDetailScreen'
 import { palette } from '../../theme/palette'
 
 const Stack = createNativeStackNavigator()
@@ -34,7 +34,7 @@ export default function HomeNavigator() {
       />
       <Stack.Screen
         name="ListingDetail"
-        component={HomeListingDetailScreen}
+        component={ListingDetailScreen}
         options={{ title: 'Detalles del vehículo' }}
       />
     </Stack.Navigator>

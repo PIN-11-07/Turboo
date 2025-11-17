@@ -205,7 +205,7 @@ export default function ProfileScreen() {
       if (!listing?.id) {
         return
       }
-      navigation.navigate('ProfileListingDetail', {
+      navigation.navigate('ListingDetail', {
         listingId: listing.id,
         listing,
       })
