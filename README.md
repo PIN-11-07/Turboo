@@ -78,11 +78,11 @@ Turboo/
     ├── App.js
     ├── app/
     │   ├── components/
-    │   │   └── PlaceHolder.js
+    │   │   └── FavoriteButton.js
     │   ├── context/
     │   │   └── AuthContext.js
     │   ├── hooks/
-    │   │   └── PlaceHolder.js
+    │   │   └── ...
     │   ├── navigation/
     │   │   ├── AppNavigator.js
     │   │   ├── AuthNavigator.js
@@ -91,19 +91,16 @@ Turboo/
     │   │   ├── auth/
     │   │   │   ├── AuthNavigator.js
     │   │   │   ├── AuthStyles.js
-    │   │   │   ├── components/
     │   │   │   └── screens/
     │   │   │       └── LoginScreen.js
     │   │   ├── home/
     │   │   │   ├── HomeNavigator.js
     │   │   │   ├── HomeStyles.js
-    │   │   │   ├── components/
     │   │   │   └── screens/
     │   │   │       ├── HomeListingDetailScreen.js
     │   │   │       └── HomeScreen.js
     │   │   ├── profile/
     │   │   │   ├── ProfileNavigator.js
-    │   │   │   ├── components/
     │   │   │   ├── profileStyles.js
     │   │   │   └── screens/
     │   │   │       ├── ProfileListingDetailScreen.js
@@ -111,11 +108,10 @@ Turboo/
     │   │   └── publish
     │   │       ├── PublishNavigator.js
     │   │       ├── PublishStyles.js
-    │   │       ├── components/
     │   │       └── screens/
     │   │           └── PublishScreen.js
     │   ├── services/
-    │   │   └── PlaceHolder.js
+    │   │   └── ...
     │   ├── theme/
     │   │   └── palette.js
     │   └── util/
@@ -171,37 +167,40 @@ Turboo/
 - **Routing rules:** every feature exposes its own stack with consistent headers; `Home` and `Profile` push detailed listing screens (`ListingDetail` / `ProfileListingDetail`).
 - **Deep linking:** not configured; navigation happens through internal React Navigation routes.
 
-### c) Other key features
-#### Listings feed (Home)
+### c) Listings feed (Home)
 - **Description:** `HomeScreen` shows a feed of active listings fetched from Supabase, with client-side search, pull-to-refresh, endless scroll and resilient loading/error states.
 - **Main components:** `app/pages/home/screens/HomeScreen.js`, `HomeListingDetailScreen.js`, styles inside `HomeStyles.js`.
 - **APIs used:** Supabase `listings` (`select`, `eq('is_active', true)`, sorting/pagination with `created_at` + `id` cursors) and `FlatList` for infinite scroll.
 - **Limitations/notes:** the feed shows only the first available image; if the images array is stringified it gets normalized in the detail screen.
 
-#### Listing publication
+## d) Listing publication
 - **Description:** `PublishScreen` offers a validated form for creating listings (required fields, numeric sanitization, brand/fuel/transmission pickers) and writes them to Supabase.
 - **Main components:** `app/pages/publish/screens/PublishScreen.js`, `PublishStyles.js`.
 - **APIs used:** `supabase.from('listings').insert`, custom validation helpers and in-memory selectors.
 - **Limitations/notes:** there is no media upload; the `images` field must be maintained manually (there is no UI to upload pictures).
 
-#### Profile and listing management
+### e) Profile and listing management
 - **Description:** `ProfileScreen` fetches user data (`auth.getUser`, `profiles` table for avatars) and lists published listings, allowing navigation to an internal detail screen per listing.
 - **Main components:** `app/pages/profile/screens/ProfileScreen.js`, `ProfileListingDetailScreen.js`, `profileStyles.js`.
 - **APIs used:** Supabase `profiles` (avatar) and `listings` filtered by `user_id`, plus Supabase Auth to fetch metadata (name, email).
 - **Limitations/notes:** no profile editing or media management on the client. Logging out calls `supabase.auth.signOut` directly.
 
-#### Favorite button component
-- **Description:** `app/components/FavoriteButton.js` encapsulates the UI and Supabase logic to read/toggle favorites, so every screen can drop the same heart button without duplicating API calls or wiring up an event bus.
-- **Internal helpers:** it keeps an in-memory cache (per listing + user) and shares updates with all mounted buttons so their states stay in sync; it also exposes props such as `variant`, `initialIsFavorite`, `fetchOnMount` and `onStatusChange` for screen-specific needs.
-- **Usage:** home cards, detail screens and the profile favorites list all render `<FavoriteButton listingId={...} />` with the preferred variant; callbacks are optional and allow parents to react when the status changes (e.g., removing an item from `Tus favoritos`).
+### f) Favorites
+- **Description:** Users can mark any listing with a heart icon from the feed, detail views or the *Tus favoritos* section; the choice is stored in the `public.favorites` table and follows the user across sessions.
+- **UX details:** buttons show a spinner while the Supabase mutation runs, disable automatically when the session is missing and stay in sync when navigating between tabs.
+- **Data flow:** all screens rely on a shared cache that mirrors `favorites` so toggling one heart immediately updates the other mounted buttons without extra API calls.
 
 ---
 
-Below is the updated README section that now includes the `favorites` table and its role within the system.
+## 5. Components
+### FavoriteButton (`app/components/FavoriteButton.js`)
+- **Responsibility:** renders the heart icon, loads the initial favorite status, sends Supabase mutations (`insert`/`delete`) and handles optimistic updates while keeping errors isolated per button.
+- **Shared cache:** keeps a `Map` keyed by listing + user; listeners subscribe/unsubscribe so every mounted button reacts instantly to status changes.
+- **Variants & props:** `variant="detail\" | "overlay\" | "list\"` tweaks layout to match each screen; `initialIsFavorite`, `fetchOnMount`, `onStatusChange`, `hitSlop` and style overrides cover more advanced cases (e.g., removing an item from *Tus favoritos* when it gets unhearted).
 
 ---
 
-## 5. Database Structure
+## 6. Database Structure
 
 **List of tables:**
 
@@ -283,7 +282,7 @@ This table represents the “user bookmarked a listing” relationship. It conne
 
 ---
 
-## 6. Useful Commands
+## 7. Useful Commands
 **Docker commands:**
 - `docker compose build expo` – builds the Expo image based on Node 20.
 - `docker compose up -d expo` – starts the container in the background.
@@ -305,7 +304,7 @@ This table represents the “user bookmarked a listing” relationship. It conne
 
 ---
 
-## 7. TO DO
+## 8. TO DO
 ### Sprint 1
 - [x] Publish vehicles  
 - [x] Vehicle detail sheet  
