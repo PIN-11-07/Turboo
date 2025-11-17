@@ -14,8 +14,7 @@ import { useNavigation } from '@react-navigation/native'
 import { supabase } from '../../../util/supabase'
 import { homeScreenStyles } from '../HomeStyles'
 import { palette } from '../../../theme/palette'
-import { useAuth } from '../../../context/AuthContext'
-import { APP_EVENTS, emitEvent, subscribeToEvent } from '../../../util/eventBus'
+import FavoriteButton from '../../../components/FavoriteButton'
 
 const PAGE_SIZE = 10
 
@@ -34,7 +33,6 @@ const getMainImage = (images) =>
 
 export default function HomeScreen() {
   const navigation = useNavigation()
-  const { user } = useAuth()
   const [listings, setListings] = useState([])
   const [initialLoading, setInitialLoading] = useState(true)
   const [refreshing, setRefreshing] = useState(false)
@@ -42,12 +40,6 @@ export default function HomeScreen() {
   const [hasMore, setHasMore] = useState(true)
   const [error, setError] = useState(null)
   const [searchQuery, setSearchQuery] = useState('')
-  const [favoriteIds, setFavoriteIds] = useState(() => new Set())
-  const [favoriteLoadingIds, setFavoriteLoadingIds] = useState(() => new Set())
-  const favoritesRenderData = useMemo(
-    () => ({ favoriteIds, favoriteLoadingIds }),
-    [favoriteIds, favoriteLoadingIds]
-  )
 
   const fetchListings = useCallback(async ({ cursor, refresh } = {}) => {
     if (refresh) {
@@ -133,124 +125,11 @@ export default function HomeScreen() {
     fetchListings()
   }, [fetchListings])
 
-  const fetchFavorites = useCallback(async () => {
-    if (!user) {
-      setFavoriteIds(new Set())
-      return
-    }
-
-    try {
-      const { data, error: favoritesError } = await supabase
-        .from('favorites')
-        .select('listing_id')
-        .eq('user_id', user.id)
-
-      if (favoritesError) {
-        throw favoritesError
-      }
-
-      const listingIds = (data ?? []).map((favorite) => favorite.listing_id)
-      setFavoriteIds(new Set(listingIds))
-    } catch (favoritesFetchError) {
-      console.error('Error fetching favorites', favoritesFetchError)
-    }
-  }, [user])
-
-  useEffect(() => {
-    fetchFavorites()
-  }, [fetchFavorites])
-
-  useEffect(() => {
-    const handleFavoritesEvent = (payload) => {
-      const { listingId, action } = payload ?? {}
-
-      if (!listingId) {
-        return
-      }
-
-      setFavoriteIds((prev) => {
-        const next = new Set(prev)
-        if (action === 'removed') {
-          next.delete(listingId)
-        } else if (action === 'added') {
-          next.add(listingId)
-        }
-        return next
-      })
-    }
-
-    const unsubscribe = subscribeToEvent(
-      APP_EVENTS.FAVORITES_UPDATED,
-      handleFavoritesEvent
-    )
-
-    return unsubscribe
-  }, [])
-
-  const handleToggleFavorite = useCallback(
-    async (listingId) => {
-      if (!user || favoriteLoadingIds.has(listingId)) {
-        return
-      }
-
-      const isAlreadyFavorite = favoriteIds.has(listingId)
-
-      setFavoriteLoadingIds((prev) => {
-        const next = new Set(prev)
-        next.add(listingId)
-        return next
-      })
-
-      try {
-        const mutation = isAlreadyFavorite
-          ? supabase
-              .from('favorites')
-              .delete()
-              .eq('user_id', user.id)
-              .eq('listing_id', listingId)
-          : supabase.from('favorites').insert({
-              user_id: user.id,
-              listing_id: listingId,
-            })
-
-        const { error: mutationError } = await mutation
-
-        if (mutationError) {
-          throw mutationError
-        }
-
-        setFavoriteIds((prev) => {
-          const next = new Set(prev)
-          if (isAlreadyFavorite) {
-            next.delete(listingId)
-          } else {
-            next.add(listingId)
-          }
-          return next
-        })
-        emitEvent(APP_EVENTS.FAVORITES_UPDATED, {
-          listingId,
-          action: isAlreadyFavorite ? 'removed' : 'added',
-        })
-      } catch (toggleError) {
-        console.error('Error updating favorites', toggleError)
-      } finally {
-        setFavoriteLoadingIds((prev) => {
-          const next = new Set(prev)
-          next.delete(listingId)
-          return next
-        })
-      }
-    },
-    [favoriteIds, favoriteLoadingIds, user]
-  )
-
   const handleRefresh = useCallback(() => {
     if (!refreshing) {
       fetchListings({ refresh: true })
-      fetchFavorites()
     }
-  }, [fetchFavorites, fetchListings, refreshing])
+  }, [fetchListings, refreshing])
 
   const handleLoadMore = useCallback(() => {
     if (searchQuery.trim()) {
@@ -271,9 +150,6 @@ export default function HomeScreen() {
   const renderListing = useCallback(
     ({ item }) => {
       const mainImage = getMainImage(item.images)
-      const isFavorite = favoriteIds.has(item.id)
-      const isFavoriteLoading = favoriteLoadingIds.has(item.id)
-
       return (
         <TouchableOpacity
           style={styles.card}
@@ -293,34 +169,7 @@ export default function HomeScreen() {
                 <Text style={styles.cardImagePlaceholderText}>Sin foto</Text>
               </View>
             )}
-            <TouchableOpacity
-              accessibilityLabel={
-                isFavorite ? 'Quitar de favoritos' : 'Agregar a favoritos'
-              }
-              accessibilityRole="button"
-              activeOpacity={0.8}
-              style={[
-                styles.favoriteButton,
-                isFavorite && styles.favoriteButtonActive,
-                isFavoriteLoading && styles.favoriteButtonDisabled,
-              ]}
-              onPress={() => handleToggleFavorite(item.id)}
-              disabled={isFavoriteLoading}
-              hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
-            >
-              {isFavoriteLoading ? (
-                <ActivityIndicator size="small" color={palette.textPrimary} />
-              ) : (
-                <Text
-                  style={[
-                    styles.favoriteIcon,
-                    isFavorite && styles.favoriteIconActive,
-                  ]}
-                >
-                  {isFavorite ? '♥' : '♡'}
-                </Text>
-              )}
-            </TouchableOpacity>
+            <FavoriteButton listingId={item.id} variant="overlay" />
           </View>
           <View style={styles.cardContent}>
             <View style={styles.cardHeader}>
@@ -351,7 +200,7 @@ export default function HomeScreen() {
         </TouchableOpacity>
       )
     },
-    [favoriteIds, favoriteLoadingIds, handleToggleFavorite, navigation]
+    [navigation]
   )
 
   const listFooter = useCallback(() => {
@@ -391,7 +240,6 @@ export default function HomeScreen() {
           data={filteredListings}
           keyExtractor={(item) => item.id.toString()}
           renderItem={renderListing}
-          extraData={favoritesRenderData}
           contentContainerStyle={
             filteredListings.length === 0 ? styles.emptyList : styles.listContent
           }

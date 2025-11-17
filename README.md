@@ -190,14 +190,10 @@ Turboo/
 - **APIs used:** Supabase `profiles` (avatar) and `listings` filtered by `user_id`, plus Supabase Auth to fetch metadata (name, email).
 - **Limitations/notes:** no profile editing or media management on the client. Logging out calls `supabase.auth.signOut` directly.
 
-#### App-wide event bus
-- **Description:** `app/util/eventBus.js` shares an in-memory event bus (based on `Map` + `Set`) so features can communicate without introducing Redux or third-party libs; the instance lives as long as the app stays in memory.
-- **Main APIs:**
-  - `APP_EVENTS`: registry with supported event identifiers (`FAVORITES_UPDATED` is the first one and can be expanded with badges, notifications, etc.).
-  - `emitEvent(eventName, payload)`: notifies all registered listeners; callback exceptions are caught so the UI thread is not blocked.
-  - `subscribeToEvent(eventName, callback)`: registers a listener and returns a cleanup function to call from `useEffect`/`useFocusEffect` to avoid memory leaks.
-- **Current flow:** `HomeScreen` emits `APP_EVENTS.FAVORITES_UPDATED` whenever a listing is added/removed from favorites; `ProfileScreen` listens to the same event and calls `refreshFavoriteListings`, keeping the *Tus favoritos* section in sync even if the tab was already mounted.
-- **Future usage:** the same bus can connect more screens (tab badges, local notifications, detail view refresh). To add a new case define a constant in `APP_EVENTS`, emit events via `emitEvent` and subscribe where needed with `subscribeToEvent`.
+#### Favorite button component
+- **Description:** `app/components/FavoriteButton.js` encapsulates the UI and Supabase logic to read/toggle favorites, so every screen can drop the same heart button without duplicating API calls or wiring up an event bus.
+- **Internal helpers:** it keeps an in-memory cache (per listing + user) and shares updates with all mounted buttons so their states stay in sync; it also exposes props such as `variant`, `initialIsFavorite`, `fetchOnMount` and `onStatusChange` for screen-specific needs.
+- **Usage:** home cards, detail screens and the profile favorites list all render `<FavoriteButton listingId={...} />` with the preferred variant; callbacks are optional and allow parents to react when the status changes (e.g., removing an item from `Tus favoritos`).
 
 ---
 

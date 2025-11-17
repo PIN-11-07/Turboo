@@ -7,13 +7,12 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native'
-import { useNavigation } from '@react-navigation/native'
+import { useFocusEffect, useNavigation } from '@react-navigation/native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { useAuth } from '../../../context/AuthContext'
 import { supabase } from '../../../util/supabase'
 import { profileScreenStyles } from '../profileStyles'
-import { palette } from '../../../theme/palette'
-import { APP_EVENTS, emitEvent, subscribeToEvent } from '../../../util/eventBus'
+import FavoriteButton from '../../../components/FavoriteButton'
 
 const notFoundErrorCodes = new Set(['PGRST116', 'PGRST114'])
 
@@ -66,16 +65,10 @@ export default function ProfileScreen() {
   const [profile, setProfile] = useState(null)
   const [listings, setListings] = useState([])
   const [favoriteListings, setFavoriteListings] = useState([])
-  const [favoriteLoadingIds, setFavoriteLoadingIds] = useState(() => new Set())
-  const favoriteListingIds = useMemo(
-    () => new Set((favoriteListings ?? []).map((listing) => listing.id)),
-    [favoriteListings]
-  )
 
   const refreshFavoriteListings = useCallback(async () => {
     if (!user) {
       setFavoriteListings([])
-      setFavoriteLoadingIds(new Set())
       return
     }
 
@@ -105,7 +98,6 @@ export default function ProfileScreen() {
           setProfile(null)
           setListings([])
           setFavoriteListings([])
-          setFavoriteLoadingIds(new Set())
           setLoading(false)
         }
         return
@@ -197,13 +189,11 @@ export default function ProfileScreen() {
     }
   }, [user])
 
-  useEffect(() => {
-    const unsubscribe = subscribeToEvent(APP_EVENTS.FAVORITES_UPDATED, () => {
+  useFocusEffect(
+    useCallback(() => {
       refreshFavoriteListings()
-    })
-
-    return unsubscribe
-  }, [refreshFavoriteListings])
+    }, [refreshFavoriteListings])
+  )
 
   const avatarInitial = useMemo(() => {
     const fallbackName = profile?.name || user?.email || ''
@@ -223,59 +213,6 @@ export default function ProfileScreen() {
     [navigation]
   )
 
-  const handleToggleFavorite = useCallback(
-    async (listingId) => {
-      if (!user || favoriteLoadingIds.has(listingId)) {
-        return
-      }
-
-      const isFavorite = favoriteListingIds.has(listingId)
-
-      setFavoriteLoadingIds((prev) => {
-        const next = new Set(prev)
-        next.add(listingId)
-        return next
-      })
-
-      try {
-        const mutation = isFavorite
-          ? supabase
-              .from('favorites')
-              .delete()
-              .eq('user_id', user.id)
-              .eq('listing_id', listingId)
-          : supabase.from('favorites').insert({
-              user_id: user.id,
-              listing_id: listingId,
-            })
-
-        const { error: mutationError } = await mutation
-
-        if (mutationError) {
-          throw mutationError
-        }
-
-        setFavoriteListings((prev) =>
-          isFavorite ? prev.filter((listing) => listing.id !== listingId) : prev
-        )
-
-        emitEvent(APP_EVENTS.FAVORITES_UPDATED, {
-          listingId,
-          action: isFavorite ? 'removed' : 'added',
-        })
-      } catch (toggleError) {
-        console.error('Error updating favorites from profile', toggleError)
-      } finally {
-        setFavoriteLoadingIds((prev) => {
-          const next = new Set(prev)
-          next.delete(listingId)
-          return next
-        })
-      }
-    },
-    [favoriteListingIds, favoriteLoadingIds, user]
-  )
-
   const renderListingCard = useCallback(
     (listing, keyPrefix = 'listing', allowFavoriteToggle = false) => {
       if (!listing?.id) {
@@ -287,9 +224,14 @@ export default function ProfileScreen() {
       const publishDate = listing.created_at
         ? new Date(listing.created_at).toLocaleDateString('es-ES')
         : 'fecha s/d'
-      const isFavorite = allowFavoriteToggle && favoriteListingIds.has(listing.id)
-      const isFavoriteLoading =
-        allowFavoriteToggle && favoriteLoadingIds.has(listing.id)
+
+      const handleFavoriteChange = (nextValue) => {
+        if (!nextValue) {
+          setFavoriteListings((prev) =>
+            prev.filter((favorite) => favorite.id !== listing.id)
+          )
+        }
+      }
 
       return (
         <TouchableOpacity
@@ -303,7 +245,7 @@ export default function ProfileScreen() {
               <Image
                 source={{ uri: firstImage }}
                 style={styles.listingImage}
-                resizeMode="cover"
+                resizeMode="cover\"
               />
             ) : (
               <View style={styles.listingImagePlaceholder}>
@@ -317,28 +259,13 @@ export default function ProfileScreen() {
                 {listing.title}
               </Text>
               {allowFavoriteToggle ? (
-                <TouchableOpacity
-                  style={[
-                    styles.favoriteButton,
-                    isFavoriteLoading && styles.favoriteButtonDisabled,
-                  ]}
-                  onPress={() => handleToggleFavorite(listing.id)}
-                  disabled={isFavoriteLoading}
-                  hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
-                >
-                  {isFavoriteLoading ? (
-                    <ActivityIndicator size="small" color={palette.textPrimary} />
-                  ) : (
-                    <Text
-                      style={[
-                        styles.favoriteIcon,
-                        isFavorite && styles.favoriteIconActive,
-                      ]}
-                    >
-                      {isFavorite ? '♥' : '♡'}
-                    </Text>
-                  )}
-                </TouchableOpacity>
+                <FavoriteButton
+                  listingId={listing.id}
+                  variant="list\"
+                  initialIsFavorite
+                  fetchOnMount={false}
+                  onStatusChange={handleFavoriteChange}
+                />
               ) : null}
             </View>
             <Text style={styles.listingPrice}>{formatPrice(listing.price)}</Text>
@@ -347,12 +274,7 @@ export default function ProfileScreen() {
         </TouchableOpacity>
       )
     },
-    [
-      favoriteListingIds,
-      favoriteLoadingIds,
-      handleListingPress,
-      handleToggleFavorite,
-    ]
+    [handleListingPress]
   )
 
   const renderContent = () => {
