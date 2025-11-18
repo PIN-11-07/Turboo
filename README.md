@@ -170,7 +170,7 @@ Turboo/
 - **APIs used:** Supabase `listings` (`select`, `eq('is_active', true)`, sorting/pagination with `created_at` + `id` cursors) and `FlatList` for infinite scroll.
 - **Limitations/notes:** the feed shows only the first available image; if the images array is stringified it gets normalized in the detail screen.
 
-## d) Listing publication
+### d) Listing publication
 - **Description:** `PublishScreen` offers a validated form for creating listings (required fields, numeric sanitization, brand/fuel/transmission pickers) and writes them to Supabase.
 - **Main components:** `app/pages/publish/screens/PublishScreen.js`, `PublishStyles.js`.
 - **APIs used:** `supabase.from('listings').insert`, custom validation helpers and in-memory selectors.
@@ -199,87 +199,98 @@ Turboo/
 
 ## 6. Database Structure
 
-**List of tables:**
+**Tables in Supabase:**
 
-* `auth.users`
+* `auth.users` (managed by Supabase Auth)
 * `public.listings`
 * `public.profiles`
 * `public.favorites`
+
+Row Level Security (RLS) is enabled on every public table described below.
 
 ---
 
 ### **Table `public.listings`**
 
-| Field          | Type (Supabase) | Description                                       |
-| -------------- | --------------- | ------------------------------------------------- |
-| `id`           | `uuid` PK       | Listing identifier.                               |
-| `user_id`      | `uuid` FK       | References `auth.users.id`. Owner of the listing. |
-| `title`        | `text`          | Title shown in the feed.                          |
-| `description`  | `text`          | Full description.                                 |
-| `price`        | `numeric(12,2)` | Price in euro. Validated to be ≥ 0.               |
-| `make`         | `text`          | Brand.                                            |
-| `model`        | `text`          | Model.                                            |
-| `year`         | `int4`          | Year between 1900 and max(current year + 1).      |
-| `mileage`      | `int4`          | Mileage in km; must be ≥ 0.                       |
-| `fuel_type`    | `text`          | Fuel type.                                        |
-| `transmission` | `text`          | Transmission type.                                |
-| `doors`        | `int4`          | Number of doors.                                  |
-| `color`        | `text`          | Vehicle color.                                    |
-| `images`       | `jsonb`         | Array of image URLs (default `[]`).               |
-| `location`     | `text`          | City/area for the listing.                        |
-| `is_active`    | `boolean`       | Visibility flag (only active listings shown).     |
-| `created_at`   | `timestamptz`   | Insert timestamp.                                 |
+| Field          | Type (Supabase) | Constraints / Default                                   | Description                                       |
+| -------------- | --------------- | ------------------------------------------------------- | ------------------------------------------------- |
+| `id`           | `uuid`          | PK, `default gen_random_uuid()`                         | Listing identifier.                               |
+| `user_id`      | `uuid`          | FK → `auth.users.id`, `not null`, `on delete cascade`   | Owner of the listing.                             |
+| `title`        | `text`          | `not null`                                              | Title shown in feed and detail.                   |
+| `description`  | `text`          |                                                         | Optional long description.                        |
+| `price`        | `numeric(12,2)` | `not null`, `check price >= 0`                          | Price in euro.                                    |
+| `make`         | `text`          | `not null`                                              | Brand.                                            |
+| `model`        | `text`          | `not null`                                              | Model.                                            |
+| `year`         | `int4`          | `check year between 1900 and current year + 1`          | Model year validation.                            |
+| `mileage`      | `int4`          | `check mileage >= 0`                                    | Mileage in km.                                    |
+| `fuel_type`    | `text`          |                                                         | Fuel type (benzina, diesel, EV, …).               |
+| `transmission` | `text`          |                                                         | Transmission (manuale/automatica).                |
+| `doors`        | `int4`          |                                                         | Number of doors.                                  |
+| `color`        | `text`          |                                                         | Vehicle color.                                    |
+| `images`       | `jsonb`         | `default '[]'::jsonb`                                   | Array of image URLs.                              |
+| `location`     | `text`          |                                                         | City/area for the vehicle.                        |
+| `is_active`    | `boolean`       | `not null default true`                                 | Visibility flag; only active listings are shown.  |
+| `created_at`   | `timestamptz`   | `not null default now()`                                | Creation timestamp.                               |
 
-**RLS policies applied:**
+**RLS policies:**
 
-* Public read of active listings: `is_active = true`
-* Insert, update, delete allowed only for the owner (`auth.uid() = user_id`)
+1. `Read active listings` → everyone can `SELECT` only where `is_active = true`.
+2. `Insert own listing` → `INSERT` allowed when `auth.uid() = user_id`.
+3. `Update own listing` → `UPDATE` allowed only to owners.
+4. `Delete own listing` → `DELETE` allowed only to owners.
 
 ---
 
 ### **Table `public.profiles`**
 
-| Field               | Type      | Description                  |
-| ------------------- | --------- | ---------------------------- |
-| `id`                | `uuid` PK | Mirrors `auth.users.id`.     |
-| `full_name`         | `text`    | Synced from user metadata.   |
-| `profile_image_url` | `text`    | Synced avatar from metadata. |
+| Field               | Type      | Constraints / Default                                | Description                                    |
+| ------------------- | --------- | ---------------------------------------------------- | ---------------------------------------------- |
+| `id`                | `uuid`    | PK, FK → `auth.users.id`, `on delete cascade`        | Mirrors the auth user ID.                      |
+| `full_name`         | `text`    |                                                      | Synced from Supabase Auth metadata.            |
+| `profile_image_url` | `text`    |                                                      | Avatar URL from metadata.                      |
+| `created_at`        | `timestamptz` | `default timezone('utc', now())`                  | Automatic creation timestamp.                  |
+| `updated_at`        | `timestamptz` | `default timezone('utc', now())`                  | Updated by trigger on every profile change.    |
 
-**Triggers:**
+**Functions & triggers:**
 
-* On user creation → auto-create profile with `full_name` and `avatar_url`.
-* On user update → auto-sync `full_name` if metadata or avatar change.
+* `handle_profile_timestamp` + trigger `on_profile_updated` → refreshes `updated_at` before each update.
+* `handle_new_user` + trigger `on_auth_user_created` → auto-inserts a profile when a new auth user is created.
+* `sync_user_name` + trigger `on_auth_user_updated` → keeps `full_name` and `profile_image_url` in sync with metadata.
 
 **RLS policies:**
 
-* Public read for everyone (`USING (true)`) so listings can show the seller metadata.
-* Updates allowed only for the owner (`auth.uid() = id`); inserts happen via trigger.
+1. `Profiles are publicly readable` → `SELECT` allowed for anyone.
+2. `Users can update their own profile` → `UPDATE` allowed only when `auth.uid() = id`.
+3. `Insert only via trigger` → manual `INSERT` blocked (`WITH CHECK (false)`), so only the trigger can create rows.
 
 ---
 
 ### **Table `public.favorites`**
 
-| Field        | Type                    | Description                  |
-| ------------ | ----------------------- | ---------------------------- |
-| `id`         | `bigint` PK             | Internal identifier.         |
-| `user_id`    | `uuid` FK → profiles.id | User who marked the listing. |
-| `listing_id` | `uuid` FK → listings.id | Favorited listing.           |
-| `created_at` | `timestamptz`           | Timestamp of insertion.      |
+| Field        | Type                    | Constraints / Default                             | Description                      |
+| ------------ | ----------------------- | ------------------------------------------------- | -------------------------------- |
+| `id`         | `bigint`                | PK, generated identity                             | Internal identifier.             |
+| `user_id`    | `uuid`                  | FK → `public.profiles.id`, `not null`, cascade     | User who favorited the listing.  |
+| `listing_id` | `uuid`                  | FK → `public.listings.id`, `not null`, cascade     | Favorited listing.               |
+| `created_at` | `timestamptz`           | `not null default now()`                           | Timestamp of insertion.          |
 
-**Properties:**
+Additional constraints: `unique (user_id, listing_id)` enforces one favorite per listing per user.
 
-* `unique (user_id, listing_id)`
-* Cascades on user or listing deletion
-* RLS policies → users can only read/insert/delete their own favorites; updates disabled
+**RLS policies:**
+
+1. `Users can select their favorites` → `SELECT` only when `auth.uid() = user_id`.
+2. `Users can insert their favorites` → `INSERT` allowed only for the current user.
+3. `Users can delete their favorites` → `DELETE` allowed only for the owner.
+4. `Disable update on favorites` → `UPDATE` explicitly disabled.
 
 ---
 
-## Relationships
+### Relationships
 
-* `auth.users.id` → `profiles.id` (1:1)
-* `auth.users.id` → `listings.user_id` (1:N)
-* `profiles.id` → `favorites.user_id` (1:N)
-* `listings.id` → `favorites.listing_id` (N:1)
+* `auth.users.id` → `public.profiles.id` (1:1, synchronized via triggers)
+* `auth.users.id` → `public.listings.user_id` (1:N, cascades on delete)
+* `public.profiles.id` → `public.favorites.user_id` (1:N)
+* `public.listings.id` → `public.favorites.listing_id` (N:1)
 
 ---
 
@@ -294,12 +305,6 @@ Turboo/
 **Expo commands:**
 - `npx expo start --tunnel` – starts the dev server and generates a QR code reachable from different networks.
 - `npx expo start --localhost --android/ios/web` – target-specific launches from the container or host machine.
-
-**Relevant npm scripts (`expo_app/package.json`):**
-- `npm run start` – alias for `expo start`.
-- `npm run android` – starts Metro and launches the app on an Android emulator/device.
-- `npm run ios` – launches the app on the iOS simulator.
-- `npm run web` – runs the Expo web build.
 
 ---
 
