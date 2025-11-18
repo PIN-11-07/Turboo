@@ -14,6 +14,7 @@ const REQUIRED_FIELDS = [
   'color',
   'images',
   'created_at',
+  'user_id',
 ]
 
 const hasRequiredFields = (listing) =>
@@ -59,6 +60,7 @@ export const useListingDetailScreen = () => {
   const [listing, setListing] = useState(initialListing)
   const [loading, setLoading] = useState(!hasRequiredFields(initialListing))
   const [error, setError] = useState(null)
+  const [sellerName, setSellerName] = useState(null)
 
   useEffect(() => {
     const shouldFetch = !hasRequiredFields(initialListing) && listingId
@@ -76,7 +78,7 @@ export const useListingDetailScreen = () => {
       const { data, error: queryError } = await supabase
         .from('listings')
         .select(
-          'id, title, description, price, make, model, year, mileage, fuel_type, transmission, doors, color, images, created_at'
+          'id, title, description, price, make, model, year, mileage, fuel_type, transmission, doors, color, images, created_at, user_id'
         )
         .eq('id', listingId)
         .maybeSingle()
@@ -111,6 +113,44 @@ export const useListingDetailScreen = () => {
     return `Publicado el ${formatDate(listing.created_at)}`
   }, [listing?.created_at])
 
+  useEffect(() => {
+    if (!listing?.user_id) {
+      setSellerName(null)
+      return
+    }
+
+    let isMounted = true
+    setSellerName(null)
+
+    const fetchSellerName = async () => {
+      const { data, error: sellerError } = await supabase
+        .from('profiles')
+        .select('full_name')
+        .eq('id', listing.user_id)
+        .maybeSingle()
+
+      if (!isMounted) {
+        return
+      }
+
+      if (sellerError) {
+        console.error(sellerError)
+        setSellerName(null)
+        return
+      }
+
+      const normalizedName =
+        typeof data?.full_name === 'string' ? data.full_name.trim() : ''
+      setSellerName(normalizedName || null)
+    }
+
+    fetchSellerName()
+
+    return () => {
+      isMounted = false
+    }
+  }, [listing?.user_id])
+
   return {
     listing,
     listingId,
@@ -118,5 +158,6 @@ export const useListingDetailScreen = () => {
     error,
     images,
     caption,
+    sellerName,
   }
 }

@@ -177,7 +177,7 @@ Turboo/
 - **Limitations/notes:** there is no media upload; the `images` field must be maintained manually (there is no UI to upload pictures).
 
 ### e) Profile and listing management
-- **Description:** `ProfileScreen` fetches user data (`auth.getUser`, `profiles` table for avatars) and lists published listings, allowing navigation to the shared detail screen.
+- **Description:** `ProfileScreen` fetches user data (`auth.getUser`, `profiles` table for avatars) and lists published listings, allowing navigation to the shared detail screen. La scheda `ListingDetail` mostra anche nome e immagine del venditore pescandoli dalla tabella `profiles`, ora leggibile da tutti per poter esporre questi metadati.
 - **Main components:** `app/pages/profile/screens/ProfileScreen.js`, `app/pages/listingDetails/screens/ListingDetailScreen.js`, `profileStyles.js`.
 - **APIs used:** Supabase `profiles` (avatar) and `listings` filtered by `user_id`, plus Supabase Auth to fetch metadata (name, email).
 - **Limitations/notes:** no profile editing or media management on the client. Logging out calls `supabase.auth.signOut` directly.
@@ -199,83 +199,87 @@ Turboo/
 
 ## 6. Database Structure
 
-### Tables
+**List of tables:**
 
--   auth.users
--   public.listings
--   public.profiles
--   public.favorites
+* `auth.users`
+* `public.listings`
+* `public.profiles`
+* `public.favorites`
 
-------------------------------------------------------------------------
+---
 
-### public.listings
+### **Table `public.listings`**
 
-  Field          Type                      Description
-  -------------- ------------------------- -----------------------
-  id             uuid PK                   Listing identifier
-  user_id        uuid FK → auth.users.id   Owner
-  title          text                      Title
-  description    text                      Description
-  price          numeric(12,2)             ≥ 0
-  make           text                      Brand
-  model          text                      Model
-  year           int4                      1900 → current_year+1
-  mileage        int4                      ≥ 0
-  fuel_type      text                      Fuel type
-  transmission   text                      Transmission
-  doors          int4                      Doors
-  color          text                      Color
-  location       text                      Location
-  images         jsonb                     Array of URLs
-  is_active      boolean                   Visibility flag
-  created_at     timestamptz               Timestamp
+| Field          | Type (Supabase) | Description                                       |
+| -------------- | --------------- | ------------------------------------------------- |
+| `id`           | `uuid` PK       | Listing identifier.                               |
+| `user_id`      | `uuid` FK       | References `auth.users.id`. Owner of the listing. |
+| `title`        | `text`          | Title shown in the feed.                          |
+| `description`  | `text`          | Full description.                                 |
+| `price`        | `numeric(12,2)` | Price in euro. Validated to be ≥ 0.               |
+| `make`         | `text`          | Brand.                                            |
+| `model`        | `text`          | Model.                                            |
+| `year`         | `int4`          | Year between 1900 and max(current year + 1).      |
+| `mileage`      | `int4`          | Mileage in km; must be ≥ 0.                       |
+| `fuel_type`    | `text`          | Fuel type.                                        |
+| `transmission` | `text`          | Transmission type.                                |
+| `doors`        | `int4`          | Number of doors.                                  |
+| `color`        | `text`          | Vehicle color.                                    |
+| `images`       | `jsonb`         | Array of image URLs (default `[]`).               |
+| `location`     | `text`          | City/area for the listing.                        |
+| `is_active`    | `boolean`       | Visibility flag (only active listings shown).     |
+| `created_at`   | `timestamptz`   | Insert timestamp.                                 |
 
-**RLS:**\
-- Select allowed only when is_active = true\
-- Insert / update / delete: only owner (auth.uid() = user_id)
+**RLS policies applied:**
 
-------------------------------------------------------------------------
+* Public read of active listings: `is_active = true`
+* Insert, update, delete allowed only for the owner (`auth.uid() = user_id`)
 
-### public.profiles
+---
 
-  Field               Type      Description
-  ------------------- --------- -----------------------
-  id                  uuid PK   Mirrors auth.users.id
-  full_name           text      Synced from metadata
-  profile_image_url   text      Avatar
+### **Table `public.profiles`**
 
-**Triggers:**\
-- Create profile on user creation\
-- Sync full_name on metadata update
+| Field               | Type      | Description                  |
+| ------------------- | --------- | ---------------------------- |
+| `id`                | `uuid` PK | Mirrors `auth.users.id`.     |
+| `full_name`         | `text`    | Synced from user metadata.   |
+| `profile_image_url` | `text`    | Synced avatar from metadata. |
 
-**RLS:**\
-- Users can view/update only their own profile
+**Triggers:**
 
-------------------------------------------------------------------------
+* On user creation → auto-create profile with `full_name` and `avatar_url`.
+* On user update → auto-sync `full_name` if metadata or avatar change.
 
-### public.favorites
+**RLS policies:**
 
-  Field        Type                    Description
-  ------------ ----------------------- -------------------
-  id           bigint PK               Internal id
-  user_id      uuid FK → profiles.id   User
-  listing_id   uuid FK → listings.id   Favorited listing
-  created_at   timestamptz             Timestamp
+* Public read for everyone (`USING (true)`) so listings can show the seller metadata.
+* Updates allowed only for the owner (`auth.uid() = id`); inserts happen via trigger.
 
-**Properties:**\
-- unique(user_id, listing_id)\
-- Cascades on delete\
-- RLS: users can select/insert/delete only their own favorites; update
-disabled
+---
 
-------------------------------------------------------------------------
+### **Table `public.favorites`**
+
+| Field        | Type                    | Description                  |
+| ------------ | ----------------------- | ---------------------------- |
+| `id`         | `bigint` PK             | Internal identifier.         |
+| `user_id`    | `uuid` FK → profiles.id | User who marked the listing. |
+| `listing_id` | `uuid` FK → listings.id | Favorited listing.           |
+| `created_at` | `timestamptz`           | Timestamp of insertion.      |
+
+**Properties:**
+
+* `unique (user_id, listing_id)`
+* Cascades on user or listing deletion
+* RLS policies → users can only read/insert/delete their own favorites; updates disabled
+
+---
 
 ## Relationships
 
--   auth.users.id → profiles.id (1:1)\
--   auth.users.id → listings.user_id (1:N)\
--   profiles.id → favorites.user_id (1:N)\
--   listings.id → favorites.listing_id (N:1)
+* `auth.users.id` → `profiles.id` (1:1)
+* `auth.users.id` → `listings.user_id` (1:N)
+* `profiles.id` → `favorites.user_id` (1:N)
+* `listings.id` → `favorites.listing_id` (N:1)
 
 ---
 
@@ -296,8 +300,6 @@ disabled
 - `npm run android` – starts Metro and launches the app on an Android emulator/device.
 - `npm run ios` – launches the app on the iOS simulator.
 - `npm run web` – runs the Expo web build.
-
-**Database migration commands:**
 
 ---
 

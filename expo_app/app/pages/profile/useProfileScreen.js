@@ -6,7 +6,7 @@ import { supabase } from '../../util/supabase'
 const notFoundErrorCodes = new Set(['PGRST116', 'PGRST114'])
 
 const LISTING_FIELDS =
-  'id, title, description, price, make, model, year, mileage, fuel_type, transmission, doors, color, images, created_at'
+  'id, user_id, title, description, price, make, model, year, mileage, fuel_type, transmission, doors, color, images, created_at'
 
 const extractName = (supabaseUser) => {
   if (!supabaseUser) {

@@ -100,6 +100,15 @@ export const listingDetailScreenStyles = StyleSheet.create({
     lineHeight: 22,
     color: palette.textSecondary,
   },
+  sellerName: {
+    fontSize: 16,
+    color: palette.textPrimary,
+    fontWeight: '600',
+  },
+  sellerNamePlaceholder: {
+    color: palette.textMuted,
+    fontWeight: '500',
+  },
   attributeRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',

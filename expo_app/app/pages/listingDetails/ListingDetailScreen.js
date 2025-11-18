@@ -37,7 +37,7 @@ const ATTRIBUTE_LABELS = [
 ]
 
 export default function ListingDetailScreen() {
-  const { listing, listingId, loading, error, images, caption } =
+  const { listing, listingId, loading, error, images, caption, sellerName } =
     useListingDetailScreen()
 
   return (
@@ -105,6 +105,18 @@ export default function ListingDetailScreen() {
               <Text style={styles.sectionTitle}>Descripción</Text>
               <Text style={styles.description}>
                 {listing.description?.trim() || 'No hay una descripción disponible.'}
+              </Text>
+            </View>
+
+            <View style={styles.section}>
+              <Text style={styles.sectionTitle}>Vendedor</Text>
+              <Text
+                style={[
+                  styles.sellerName,
+                  !sellerName && styles.sellerNamePlaceholder,
+                ]}
+              >
+                {sellerName ?? 'Información no disponible'}
               </Text>
             </View>
 

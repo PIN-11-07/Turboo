@@ -26,7 +26,7 @@ export const useHomeScreen = () => {
         const baseQuery = supabase
           .from('listings')
           .select(
-            'id, title, description, price, make, model, year, mileage, fuel_type, transmission, doors, color, location, images, created_at'
+            'id, user_id, title, description, price, make, model, year, mileage, fuel_type, transmission, doors, color, location, images, created_at'
           )
           .eq('is_active', true)
           .order('created_at', { ascending: false })
