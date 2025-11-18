@@ -21,44 +21,43 @@ mobile marketplace used to publish and browse car listings. Users can authentica
 
 ## 2. Run the Project Locally with Docker
 
-1.  Clone the repository and enter the folder:
+1. **Windows only:** open WSL from PowerShell/CMD:
+    ```powershell
+    wsl
+    ```
 
-``` bash
-git clone https://github.com/PIN-11-07/Turboo.git
-cd Turboo
-```
+2. Clone the repository and change into the folder:
+    ```bash
+    git clone https://github.com/PIN-11-07/Turboo.git
+    cd Turboo
+    ```
 
-2.  Environment variables\
+3. Environment variables  
     Add the keys to `.env` (do not commit this file):
+    - `SUPABASE_URL`
+    - `ANON_KEY`
 
--   SUPABASE_URL
--   ANON_KEY
+4. Build the Docker image:
+    ```bash
+    docker compose build
+    ```
 
-3.  Build the Docker image:
+5. Start the services:
+    ```bash
+    docker compose up -d
+    ```
 
-``` bash
-docker compose build
-```
+6. Enter the `expo` container:
+    ```bash
+    docker compose exec expo bash
+    ```
 
-4.  Start the services:
-
-``` bash
-docker compose up -d
-```
-
-5.  Enter the `expo` container:
-
-``` bash
-docker compose exec expo bash
-```
-
-6.  Inside the container:
-
-``` bash
-npm i
-apt-get update -y && apt-get upgrade -y
-npx expo start --tunnel
-```
+7. Inside the container:
+    ```bash
+    npm i
+    apt-get update -y && apt-get upgrade -y
+    npx expo start --tunnel
+    ```
 
 ---
 
