@@ -21,10 +21,11 @@ mobile marketplace used to publish and browse car listings. Users can authentica
 
 ## 2. Run the Project Locally with Docker
 
-1. **Windows only:** open WSL from PowerShell/CMD:
-    ```powershell
-    wsl
-    ```
+> [!NOTE]
+> **Windows only.** Open WSL from PowerShell or CMD:
+> ```powershell
+> wsl
+> ```
 
 2. Clone the repository and change into the folder:
     ```bash
