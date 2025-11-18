@@ -22,7 +22,7 @@ mobile marketplace used to publish and browse car listings. Users can authentica
 ## 2. Run the Project Locally with Docker
 
 > [!NOTE]
-> **Windows only.** Open WSL from PowerShell or CMD:
+> 1. **Windows only.** Open WSL from PowerShell or CMD:
 > ```powershell
 > wsl
 > ```
