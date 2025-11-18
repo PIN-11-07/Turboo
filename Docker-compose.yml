@@ -16,7 +16,6 @@ services:
     # Monta il codice locale nel container (hot reload)
     volumes:
       - ./expo_app:/usr/src/expo_app
-      - /usr/src/app/node_modules
 
     # Variabili d'ambiente
     environment:
