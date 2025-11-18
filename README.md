@@ -238,11 +238,11 @@ Row Level Security (RLS) is enabled on every public table described below.
 
 ### **Table `public.profiles`**
 
-| Field               | Type      | Constraints / Default                                | Description                                    |
-| ------------------- | --------- | ---------------------------------------------------- | ---------------------------------------------- |
-| `id`                | `uuid`    | PK, FK → `auth.users.id`, `on delete cascade`        | Mirrors the auth user ID.                      |
-| `full_name`         | `text`    |                                                      | Synced from Supabase Auth metadata.            |
-| `profile_image_url` | `text`    |                                                      | Avatar URL from metadata.                      |
+| Field               | Type          | Constraints / Default                             | Description                                    |
+| ------------------- | ---------     | --------------------------------------------------| ---------------------------------------------- |
+| `id`                | `uuid`        | PK, FK → `auth.users.id`, `on delete cascade`     | Mirrors the auth user ID.                      |
+| `full_name`         | `text`        |                                                   | Synced from Supabase Auth metadata.            |
+| `profile_image_url` | `text`        |                                                   | Avatar URL from metadata.                      |
 | `created_at`        | `timestamptz` | `default timezone('utc', now())`                  | Automatic creation timestamp.                  |
 | `updated_at`        | `timestamptz` | `default timezone('utc', now())`                  | Updated by trigger on every profile change.    |
 
@@ -262,8 +262,8 @@ Row Level Security (RLS) is enabled on every public table described below.
 
 ### **Table `public.favorites`**
 
-| Field        | Type                    | Constraints / Default                             | Description                      |
-| ------------ | ----------------------- | ------------------------------------------------- | -------------------------------- |
+| Field        | Type                    | Constraints / Default                              | Description                      |
+| ------------ | ----------------------- | -------------------------------------------------  | -------------------------------- |
 | `id`         | `bigint`                | PK, generated identity                             | Internal identifier.             |
 | `user_id`    | `uuid`                  | FK → `public.profiles.id`, `not null`, cascade     | User who favorited the listing.  |
 | `listing_id` | `uuid`                  | FK → `public.listings.id`, `not null`, cascade     | Favorited listing.               |
