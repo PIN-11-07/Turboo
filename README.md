@@ -86,27 +86,22 @@ Turboo/
     │   │   ├── auth/
     │   │   │   ├── AuthNavigator.js
     │   │   │   ├── AuthStyles.js
-    │   │   │   └── screens/
-    │   │   │       └── LoginScreen.js
+    │   │   │   └── LoginScreen.js
     │   │   ├── home/
     │   │   │   ├── HomeNavigator.js
     │   │   │   ├── HomeStyles.js
-    │   │   │   └── screens/
-    │   │   │       └── HomeScreen.js
+    │   │   │   └── HomeScreen.js
     │   │   ├── listingDetails/
     │   │   │   ├── ListingDetailStyles.js
-    │   │   │   └── screens/
-    │   │   │       └── ListingDetailScreen.js
+    │   │   │   └── ListingDetailScreen.js
     │   │   ├── profile/
     │   │   │   ├── ProfileNavigator.js
     │   │   │   ├── profileStyles.js
-    │   │   │   └── screens/
-    │   │   │       └── ProfileScreen.js
+    │   │   │   └── ProfileScreen.js
     │   │   └── publish
     │   │       ├── PublishNavigator.js
     │   │       ├── PublishStyles.js
-    │   │       └── screens/
-    │   │           └── PublishScreen.js
+    │   │       └── PublishScreen.js
     │   ├── services/
     │   │   └── ...
     │   ├── theme/
