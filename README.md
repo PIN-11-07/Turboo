@@ -57,7 +57,7 @@ docker compose exec expo bash
 ``` bash
 npm i
 apt-get update -y && apt-get upgrade -y
-npx expo start --tunnel
+npx expo start --host tunnel
 ```
 
 ---
