@@ -215,22 +215,22 @@ Row Level Security (RLS) is enabled on every public table described below.
 | Field          | Type (Supabase) | Constraints / Default                                   | Description                                       |
 | -------------- | --------------- | ------------------------------------------------------- | ------------------------------------------------- |
 | `id`           | `uuid`          | PK, `default gen_random_uuid()`                         | Listing identifier.                               |
-| `user_id`      | `uuid`          | FK → `auth.users.id`, `not null`, `on delete cascade`   | Owner of the listing.                             |
-| `title`        | `text`          | `not null`                                              | Title shown in feed and detail.                   |
-| `description`  | `text`          |                                                         | Optional long description.                        |
-| `price`        | `numeric(12,2)` | `not null`, `check price >= 0`                          | Price in euro.                                    |
-| `make`         | `text`          | `not null`                                              | Brand.                                            |
-| `model`        | `text`          | `not null`                                              | Model.                                            |
-| `year`         | `int4`          | `check year between 1900 and current year + 1`          | Model year validation.                            |
-| `mileage`      | `int4`          | `check mileage >= 0`                                    | Mileage in km.                                    |
-| `fuel_type`    | `text`          |                                                         | Fuel type (benzina, diesel, EV, …).               |
-| `transmission` | `text`          |                                                         | Transmission (manuale/automatica).                |
-| `doors`        | `int4`          |                                                         | Number of doors.                                  |
-| `color`        | `text`          |                                                         | Vehicle color.                                    |
+| `user_id`      | `uuid`          | FK → `auth.users.id`, `not null`, `on delete cascade`   | Owner of the listing.                           |
+| `title`        | `text`          | `not null`                                              | Title shown in feed and detail.                            |
+| `description`  | `text`          |                                                         | Optional long description.                       |
+| `price`        | `numeric(12,2)` | `not null`, `check price >= 0`                          | Price in euro.                              |
+| `make`         | `text`          | `not null`                                              | Brand.                             |
+| `model`        | `text`          | `not null`                                              | Model.                             |
+| `year`         | `int4`          | `check year between 1900 and current year + 1`          | Model year validation.                        |
+| `mileage`      | `int4`          | `check mileage >= 0`                                    | Mileage in km.                                |
+| `fuel_type`    | `text`          |                                                         | Fuel type (benzina, diesel, EV, …).                            |
+| `transmission` | `text`          |                                                         | Transmission (manuale/automatica).                       |
+| `doors`        | `int4`          |                                                         | Number of doors.                             |
+| `color`        | `text`          |                                                         | Vehicle color.                             |
 | `images`       | `jsonb`         | `default '[]'::jsonb`                                   | Array of image URLs.                              |
-| `location`     | `text`          |                                                         | City/area for the vehicle.                        |
-| `is_active`    | `boolean`       | `not null default true`                                 | Visibility flag; only active listings are shown.  |
-| `created_at`   | `timestamptz`   | `not null default now()`                                | Creation timestamp.                               |
+| `location`     | `text`          |                                                         | City/area for the vehicle.                           |
+| `is_active`    | `boolean`       | `not null default true`                                 | Visibility flag; only active listings are shown.                |
+| `created_at`   | `timestamptz`   | `not null default now()`                                | Creation timestamp.                         |
 
 **RLS policies:**
 
