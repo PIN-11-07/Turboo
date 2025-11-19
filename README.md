@@ -72,8 +72,8 @@ mobile marketplace used to publish and browse car listings. Users can authentica
    - List every dashboard change you expect: database schema, RLS policies, triggers, functions, storage buckets, authentication settings, or Edge Functions.  
    - Prepare SQL snippets or detailed UI steps for each change and save them under `SQL → Shared snippets` so they are reproducible by the team.
    - When updating an existing table choose one of these approaches and save the snippet accordingly:
-     - Re-create the table from scratch and store the new SQL using the same command name as the original plus a version suffix (e.g., `listings table 2`).
-     - Run an `ALTER TABLE …` migration, then update the original creation snippet so that, if executed today, it would build the table exactly as it currently exists, even if that was not the command originally executed.
+     1. Re-create the table from scratch and store the new SQL using the same command name as the original plus a version suffix (e.g., `listings table 2`).
+     2. Run an `ALTER TABLE …` migration, then update the original creation snippet so that, if executed today, it would build the table exactly as it currently exists, even if that was not the command originally executed.
 
 5. **Document Database Structure Changes**  
    - After editing Supabase, update Section 6 (“Database Structure”) for each touched entity.  
