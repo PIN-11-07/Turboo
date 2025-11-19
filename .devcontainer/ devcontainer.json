@@ -1,0 +1,40 @@
+{
+  "name": "Expo Dev Environment",
+
+  "dockerComposeFile": [
+    "./docker-compose.yml"
+  ],
+
+  "service": "expo",
+  "workspaceFolder": "/usr/src/expo_app",
+
+  "features": {
+    "ghcr.io/devcontainers/features/docker-in-docker:2": {}
+  },
+
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "ms-vscode.vscode-typescript-next",
+        "dbaeumer.vscode-eslint",
+        "esbenp.prettier-vscode"
+      ],
+      "settings": {
+        "editor.formatOnSave": true
+      }
+    }
+  },
+
+  "forwardPorts": [
+    8081,
+    8082,
+    8090,
+    19000,
+    19001,
+    19002
+  ],
+
+  "remoteUser": "root",
+
+  "postCreateCommand": "npm install"
+}

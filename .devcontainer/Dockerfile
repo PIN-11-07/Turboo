@@ -17,7 +17,7 @@ RUN apt-get update && apt-get install -y \
   && rm -rf /var/lib/apt/lists/*
 
 # Copia il codice del progetto (cartella app)
-COPY ./expo_app /usr/src/expo_app
+COPY ../expo_app /usr/src/expo_app
 
 # Espone le porte usate da Expo e Metro
 EXPOSE 8081
