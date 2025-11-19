@@ -73,7 +73,7 @@ mobile marketplace used to publish and browse car listings. Users can authentica
    - Prepare SQL snippets or detailed UI steps for each change and save them under `SQL → Shared snippets` so they are reproducible by the team; add comments in the snippet description if future runs require manual tweaks or additional context.
    - When updating an existing table choose one of these approaches and save the snippet accordingly:
      1. Re-create the table from scratch and store the new SQL using the same command name as the original plus a version suffix (e.g., `listings table 2`). Expect to re-run every SQL snippet in order afterward, effectively rebuilding the full database.
-     2. Run an `ALTER TABLE …` migration, then update the original creation snippet so that, if executed today, it would build the table exactly as it currently exists, even if that was not the command originally executed.
+     2. Change an existing table with an SQL snippet, then update the original creation snippet so that, if executed today, it would build the table exactly as it currently exists, even if that was not the command originally executed.
 
 5. **Document Database Structure Changes**  
    - After editing Supabase, update Section 6 (“Database Structure”) for each touched entity.  
