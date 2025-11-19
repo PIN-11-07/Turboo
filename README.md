@@ -92,13 +92,7 @@ mobile marketplace used to publish and browse car listings. Users can authentica
    - If you consult an external AI attach the README.
 
 8. **Describe the Feature in the README**  
-   - Add a block under “Application Features” using:
-     ```markdown
-     ### Feature name
-     - **Description:** user-facing behavior and value.
-     - **APIs used:** Supabase calls, hooks, external SDKs.
-     - **Limitations/notes:** constraints, edge cases, follow-up work.
-     ```
+   - Add a block under “Application Features” describing the new feature.
 
 9. **Update the TO DO List**  
    - Mark items as complete.
