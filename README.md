@@ -76,7 +76,7 @@ mobile marketplace used to publish and browse car listings. Users can authentica
      2. Change an existing table with an SQL snippet, then update the original creation snippet so that, if executed today, it would build the table exactly as it currently exists, even if that was not the command originally executed.
 
 5. **Document Database Structure Changes**  
-   - After editing Supabase, update Section 6 (“Database Structure”) for each touched entity.  
+   - After editing Supabase, update Section “Database Structure” for each touched entity.  
    - Refresh the Markdown table (fields, types, constraints, descriptions), rewrite the **Functions & triggers** subsection, and update the **RLS policies** list with the exact rules now in place.  
    - Amend the Relationships list whenever foreign keys change, and never leave placeholder rows—use the same formatting seen in the existing tables.
 
