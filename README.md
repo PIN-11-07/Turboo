@@ -17,8 +17,6 @@ mobile marketplace used to publish and browse car listings. Users can authentica
 - Supabase account with an existing project (URL + anon key) 
 - Expo Go app on a physical device if you want to test through the QR code
 
----
-
 ## 2. Run the Project Locally with Docker
 
 > [!NOTE]
@@ -60,9 +58,55 @@ mobile marketplace used to publish and browse car listings. Users can authentica
     npx expo start --tunnel
     ```
 
----
+## 3. Workflow for New Features
 
-## 3. Project Structure
+1. **Sync Main Branch**  
+   - Run `git checkout main && git pull origin main` to ensure you start from the latest code.  
+   - Resolve local changes first so future merges stay clean.
+
+2. **Create a Dedicated Branch**  
+
+3. **Publish the Branch Early**  
+
+4. **Assess Supabase Configuration Impact**  
+   - List every dashboard change you expect: database schema, RLS policies, triggers, functions, storage buckets, authentication settings, or Edge Functions.  
+   - Prepare SQL snippets or detailed UI steps for each change and save them under `SQL → Shared snippets` so they are reproducible by the team.
+
+5. **Document Database Structure Changes**  
+   - After editing Supabase, update Section 6 (“Database Structure”) for each touched entity.  
+   - Refresh the Markdown table (fields, types, constraints, descriptions), rewrite the **Functions & triggers** subsection, and update the **RLS policies** list with the exact rules now in place.  
+   - Amend the Relationships list whenever foreign keys change, and never leave placeholder rows—use the same formatting seen in the existing tables.
+
+6. **Scaffold New App Pages (or Shared Components)**  
+   - When a feature introduces a page, create `app/pages/<feature>/` with:
+     ```text
+     app/pages/<feature>/
+     ├── <Feature>Navigator.js
+     ├── <Feature>Styles.js
+     └── <Feature>Screen.js
+     ```
+   - When you only need a reusable UI element, place it under `app/components/` (e.g., `app/components/<ComponentName>.js` . Keep shared components free of feature-specific dependencies so they stay portable across pages.
+
+7. **Write the Code with Approved Assistants**  
+   - Prefer the Codex extension inside VS Code: it usually follow all the proyect rules.
+   - If you consult an external AI attach the README.
+
+8. **Describe the Feature in the README**  
+   - Add a block under “Application Features” using:
+     ```markdown
+     ### Feature name
+     - **Description:** user-facing behavior and value.
+     - **APIs used:** Supabase calls, hooks, external SDKs.
+     - **Limitations/notes:** constraints, edge cases, follow-up work.
+     ```
+
+9. **Update the TO DO List**  
+   - Mark items as complete.
+
+10. **Open the Pull Request**  
+    - Open a PR summarizing the changes.
+
+## 4. Project Structure
 **Main folder tree:**
 ```text
 Turboo/
@@ -143,9 +187,7 @@ Turboo/
 - `app/util/supabase.js` – client initialization and session management.
 - `app/navigation/RootNavigator.js` – navigation entry point and authentication guard.
 
----
-
-## 4. Application Features
+## 5. Application Features
 
 ### a) Authentication
 - **Login/signup flow:** users authenticate or register from `LoginScreen` with email/password; sign-up optionally accepts a full name and requires email confirmation.
@@ -161,19 +203,16 @@ Turboo/
 
 ### c) Listings feed (Home)
 - **Description:** `HomeScreen` shows a feed of active listings fetched from Supabase, with client-side search, pull-to-refresh, endless scroll and resilient loading/error states.
-- **Main components:** `app/pages/home/screens/HomeScreen.js`, `app/pages/listingDetails/screens/ListingDetailScreen.js`, styles in `HomeStyles.js` + `ListingDetailStyles.js`.
 - **APIs used:** Supabase `listings` (`select`, `eq('is_active', true)`, sorting/pagination with `created_at` + `id` cursors) and `FlatList` for infinite scroll.
 - **Limitations/notes:** the feed shows only the first available image; if the images array is stringified it gets normalized in the detail screen.
 
 ### d) Listing publication
 - **Description:** `PublishScreen` offers a validated form for creating listings (required fields, numeric sanitization, brand/fuel/transmission pickers) and writes them to Supabase.
-- **Main components:** `app/pages/publish/screens/PublishScreen.js`, `PublishStyles.js`.
 - **APIs used:** `supabase.from('listings').insert`, custom validation helpers and in-memory selectors.
 - **Limitations/notes:** there is no media upload; the `images` field must be maintained manually (there is no UI to upload pictures).
 
 ### e) Profile and listing management
 - **Description:** `ProfileScreen` fetches user data (`auth.getUser`, `profiles` table for avatars) and lists published listings, allowing navigation to the shared detail screen. La scheda `ListingDetail` mostra anche nome e immagine del venditore pescandoli dalla tabella `profiles`, ora leggibile da tutti per poter esporre questi metadati.
-- **Main components:** `app/pages/profile/screens/ProfileScreen.js`, `app/pages/listingDetails/screens/ListingDetailScreen.js`, `profileStyles.js`.
 - **APIs used:** Supabase `profiles` (avatar) and `listings` filtered by `user_id`, plus Supabase Auth to fetch metadata (name, email).
 - **Limitations/notes:** no profile editing or media management on the client. Logging out calls `supabase.auth.signOut` directly.
 
@@ -182,17 +221,13 @@ Turboo/
 - **UX details:** buttons show a spinner while the Supabase mutation runs, disable automatically when the session is missing and stay in sync when navigating between tabs.
 - **Data flow:** all screens rely on a shared cache that mirrors `favorites` so toggling one heart immediately updates the other mounted buttons without extra API calls.
 
----
-
-## 5. Components
+## 6. Components
 ### FavoriteButton (`app/components/FavoriteButton.js`)
 - **Responsibility:** renders the heart icon, loads the initial favorite status, sends Supabase mutations (`insert`/`delete`) and handles optimistic updates while keeping errors isolated per button.
 - **Shared cache:** keeps a `Map` keyed by listing + user; listeners subscribe/unsubscribe so every mounted button reacts instantly to status changes.
 - **Variants & props:** `variant="detail\" | "overlay\" | "list\"` tweaks layout to match each screen; `initialIsFavorite`, `fetchOnMount`, `onStatusChange`, `hitSlop` and style overrides cover more advanced cases (e.g., removing an item from *Tus favoritos* when it gets unhearted).
 
----
-
-## 6. Database Structure
+## 7. Database Structure
 
 **Tables in Supabase:**
 
@@ -287,9 +322,7 @@ Additional constraints: `unique (user_id, listing_id)` enforces one favorite per
 * `public.profiles.id` → `public.favorites.user_id` (1:N)
 * `public.listings.id` → `public.favorites.listing_id` (N:1)
 
----
-
-## 7. Useful Commands
+## 8. Useful Commands
 **Docker commands:**
 - `docker compose build expo` – builds the Expo image based on Node 20.
 - `docker compose up -d expo` – starts the container in the background.
@@ -301,9 +334,7 @@ Additional constraints: `unique (user_id, listing_id)` enforces one favorite per
 - `npx expo start --tunnel` – starts the dev server and generates a QR code reachable from different networks.
 - `npx expo start --localhost --android/ios/web` – target-specific launches from the container or host machine.
 
----
-
-## 8. TO DO
+## 9. TO DO
 ### Sprint 1
 - [x] Publish vehicles  
 - [x] Vehicle detail sheet  
