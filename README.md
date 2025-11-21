@@ -16,42 +16,32 @@ mobile marketplace used to publish and browse car listings. Users can authentica
 - Docker and Docker Compose installed 
 - Supabase account with an existing project (URL + anon key) 
 - Expo Go app on a physical device if you want to test through the QR code
-
 ## 2. Run the Project Locally with Docker
 
 > [!NOTE]
-> 1. **Windows only.** Open WSL from PowerShell or CMD:
+> **Windows only:** open WSL from PowerShell or CMD:
 > ```powershell
 > wsl
 > ```
 
-2. Clone the repository and change into the folder:
+1. Clone the repository and change into the folder:
     ```bash
     git clone https://github.com/PIN-11-07/Turboo.git
     cd Turboo
     ```
-
-3. Environment variables  
-    Add the keys to `.env` (do not commit this file):
-    - `SUPABASE_URL`
-    - `ANON_KEY`
-
-4. Build the Docker image:
+2. Build the Docker image:
     ```bash
     docker compose build
     ```
-
-5. Start the services:
+3. Start the services:
     ```bash
     docker compose up -d
     ```
-
-6. Enter the `expo` container:
+4. Enter the `expo` container:
     ```bash
     docker compose exec expo bash
     ```
-
-7. Inside the container:
+5. Inside the container run:
     ```bash
     npm i
     apt-get update -y && apt-get upgrade -y
