@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { supabase } from '../../util/supabase'
+import { useSearch } from '../../hooks/useSearch'
 
 const PAGE_SIZE = 10
 
@@ -10,7 +11,9 @@ export const useHomeScreen = () => {
   const [loadingMore, setLoadingMore] = useState(false)
   const [hasMore, setHasMore] = useState(true)
   const [error, setError] = useState(null)
-  const [searchQuery, setSearchQuery] = useState('')
+
+  // Initialize advanced search functionality
+  const search = useSearch(listings)
 
   const fetchListings = useCallback(
     async ({ cursor, refresh } = {}) => {
@@ -76,28 +79,8 @@ export const useHomeScreen = () => {
     fetchListings()
   }, [fetchListings])
 
-  const filteredListings = useMemo(() => {
-    const normalizedQuery = searchQuery.trim().toLowerCase()
-
-    if (!normalizedQuery) {
-      return listings
-    }
-
-    return listings.filter((listing) => {
-      const searchableFields = [
-        listing.title,
-        listing.make,
-        listing.model,
-        listing.description,
-        listing.location,
-      ]
-        .filter(Boolean)
-        .join(' ')
-        .toLowerCase()
-
-      return searchableFields.includes(normalizedQuery)
-    })
-  }, [listings, searchQuery])
+  // Use advanced search exclusively
+  const filteredListings = search.filteredListings
 
   const handleRefresh = useCallback(() => {
     if (!refreshing) {
@@ -106,7 +89,8 @@ export const useHomeScreen = () => {
   }, [fetchListings, refreshing])
 
   const handleLoadMore = useCallback(() => {
-    if (searchQuery.trim()) {
+    // Disable load more when using search or filters
+    if (search.searchText.trim() || search.showFilters) {
       return
     }
 
@@ -120,7 +104,8 @@ export const useHomeScreen = () => {
     initialLoading,
     listings,
     loadingMore,
-    searchQuery,
+    search.searchText,
+    search.showFilters,
   ])
 
   return {
@@ -131,9 +116,8 @@ export const useHomeScreen = () => {
     loadingMore,
     hasMore,
     error,
-    searchQuery,
-    setSearchQuery,
     handleRefresh,
     handleLoadMore,
+    search,
   }
 }
