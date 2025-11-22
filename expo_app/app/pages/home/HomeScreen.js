@@ -10,11 +10,12 @@ import {
   View,
 } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
-import { useNavigation } from '@react-navigation/native'
+ 
 import { homeScreenStyles } from './HomeStyles'
 import { palette } from '../../theme/palette'
 import FavoriteButton from '../../components/FavoriteButton'
 import { useHomeScreen } from './useHomeScreen'
+import { useNavigation } from '@react-navigation/native'
 
 const formatPrice = (value) => {
   const numericValue = Number(value)
@@ -26,8 +27,7 @@ const formatPrice = (value) => {
   return value ?? '-'
 }
 
-const getMainImage = (images) =>
-  Array.isArray(images) && images.length > 0 ? images[0] : null
+const getMainImage = (images) => (Array.isArray(images) && images.length > 0 ? images[0] : null)
 
 export default function HomeScreen() {
   const navigation = useNavigation()
@@ -42,6 +42,8 @@ export default function HomeScreen() {
     handleRefresh,
     handleLoadMore,
   } = useHomeScreen()
+
+  // Compact link to Recommendations screen (keeps home compact)
 
   const renderListing = useCallback(
     ({ item }) => {
@@ -76,21 +78,13 @@ export default function HomeScreen() {
               {item.make} {item.model} • {item.year}
             </Text>
             <View style={styles.cardBadgeRow}>
-              <Text style={styles.cardBadge}>
-                {item.mileage ? `${item.mileage} km` : 'km s/d'}
-              </Text>
-              {item.fuel_type ? (
-                <Text style={styles.cardBadge}>{item.fuel_type}</Text>
-              ) : null}
-              {item.transmission ? (
-                <Text style={styles.cardBadge}>{item.transmission}</Text>
-              ) : null}
+              <Text style={styles.cardBadge}>{item.mileage ? `${item.mileage} km` : 'km s/d'}</Text>
+              {item.fuel_type ? <Text style={styles.cardBadge}>{item.fuel_type}</Text> : null}
+              {item.transmission ? <Text style={styles.cardBadge}>{item.transmission}</Text> : null}
             </View>
             <View style={styles.cardFooter}>
               <Text style={styles.cardLocation}>{item.location}</Text>
-              <Text style={styles.cardMeta}>
-                {item.doors ? `${item.doors} puertas` : item.color || 'Detalles s/d'}
-              </Text>
+              <Text style={styles.cardMeta}>{item.doors ? `${item.doors} puertas` : item.color || 'Detalles s/d'}</Text>
             </View>
           </View>
         </TouchableOpacity>
@@ -98,6 +92,8 @@ export default function HomeScreen() {
     },
     [navigation]
   )
+
+  
 
   const listFooter = useCallback(() => {
     if (!loadingMore) {
@@ -130,26 +126,27 @@ export default function HomeScreen() {
               clearButtonMode="while-editing"
             />
           </View>
+          <TouchableOpacity
+            style={styles.recommendButton}
+            activeOpacity={0.85}
+            onPress={() => navigation.navigate('Recommendations')}
+          >
+            <Text style={styles.recommendButtonText}>Para ti</Text>
+          </TouchableOpacity>
           {error && <Text style={styles.errorText}>{error}</Text>}
         </View>
+        
+
         <FlatList
           data={filteredListings}
           keyExtractor={(item) => item.id.toString()}
           renderItem={renderListing}
-          contentContainerStyle={
-            filteredListings.length === 0 ? styles.emptyList : styles.listContent
-          }
-          ListEmptyComponent={
-            !initialLoading && (
-              <View style={styles.emptyState}>
-                <Text style={styles.emptyText}>
-                  {searchQuery
-                    ? 'Ningún anuncio coincide con tu búsqueda.'
-                    : 'No hay anuncios disponibles en este momento.'}
-                </Text>
-              </View>
-            )
-          }
+          contentContainerStyle={filteredListings.length === 0 ? styles.emptyList : styles.listContent}
+          ListEmptyComponent={!initialLoading && (
+            <View style={styles.emptyState}>
+              <Text style={styles.emptyText}>{searchQuery ? 'Ningún anuncio coincide con tu búsqueda.' : 'No hay anuncios disponibles en este momento.'}</Text>
+            </View>
+          )}
           ListFooterComponent={listFooter}
           onEndReached={handleLoadMore}
           onEndReachedThreshold={0.5}
