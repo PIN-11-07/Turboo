@@ -1,4 +1,4 @@
-import React from 'react'
+import React from 'react';
 import {
   ActivityIndicator,
   KeyboardAvoidingView,
@@ -8,10 +8,14 @@ import {
   TextInput,
   TouchableOpacity,
   View,
-} from 'react-native'
-import { SafeAreaView } from 'react-native-safe-area-context'
-import { publishScreenStyles } from './PublishStyles'
-import { usePublishScreen } from './usePublishScreen'
+  Image,
+  Alert,
+} from 'react-native';
+import * as ImagePicker from 'expo-image-picker';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { publishScreenStyles as styles } from './PublishStyles';
+import { usePublishScreen } from './usePublishScreen';
+import ImageAnalysisButton from '../../components/ImageAnalisisButton';
 
 const MAKE_OPTIONS = [
   'Alfa Romeo',
@@ -38,22 +42,11 @@ const MAKE_OPTIONS = [
   'Toyota',
   'Volkswagen',
   'Volvo',
-]
+];
 
-const FUEL_OPTIONS = [
-  'Gasolina',
-  'Diesel',
-  'Hibrido',
-  'Electrico',
-  'GLP',
-  'GNC',
-]
+const FUEL_OPTIONS = ['Gasolina', 'Diesel', 'Hibrido', 'Electrico', 'GLP', 'GNC'];
 
-const TRANSMISSION_OPTIONS = [
-  'Manual',
-  'Automatica',
-  'Semiautomatica',
-]
+const TRANSMISSION_OPTIONS = ['Manual', 'Automatica', 'Semiautomatica'];
 
 export default function PublishScreen() {
   const {
@@ -67,12 +60,61 @@ export default function PublishScreen() {
     togglePicker,
     handleOptionSelect,
     handleSubmit,
-  } = usePublishScreen()
+    image,
+    setImage,
+  } = usePublishScreen();
+
+  const handleAnalysisComplete = (data) => {
+    handleChange('make', data.make || '');
+    handleChange('model', data.model || '');
+    handleChange('year', data.year ? String(data.year).replace(/[^0-9]/g, '') : '');
+    handleChange('color', data.color || '');
+    if (data.body_type) handleChange('body_type', data.body_type);
+    if (data.condition) handleChange('condition', data.condition);
+  };
+
+  const pickImageFromGallery = async () => {
+    const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+
+    if (status !== 'granted') {
+      Alert.alert('Permission needed', 'We need gallery permission.');
+      return;
+    }
+
+    const result = await ImagePicker.launchImageLibraryAsync({
+      allowsEditing: true,
+      aspect: [4, 3],
+      quality: 1,
+    });
+
+    if (!result.canceled) {
+      const uri = result.assets ? result.assets[0].uri : result.uri;
+      setImage(uri);
+    }
+  };
+
+  const takePhoto = async () => {
+    const { status } = await ImagePicker.requestCameraPermissionsAsync();
+
+    if (status !== 'granted') {
+      Alert.alert('Permission needed', 'We need camera permission.');
+      return;
+    }
+
+    const result = await ImagePicker.launchCameraAsync({
+      allowsEditing: true,
+      aspect: [4, 3],
+      quality: 1,
+    });
+
+    if (!result.canceled) {
+      const uri = result.assets ? result.assets[0].uri : result.uri;
+      setImage(uri);
+    }
+  };
 
   const renderOptionList = (field, options) => {
-    if (activePicker !== field) {
-      return null
-    }
+    if (activePicker !== field) return null;
 
     return (
       <View style={styles.optionList}>
@@ -88,8 +130,8 @@ export default function PublishScreen() {
           ))}
         </ScrollView>
       </View>
-    )
-  }
+    );
+  };
 
   return (
     <SafeAreaView style={styles.safeArea} edges={['top']}>
@@ -97,207 +139,197 @@ export default function PublishScreen() {
         style={styles.container}
         behavior={Platform.OS === 'ios' ? 'padding' : undefined}
       >
-        <ScrollView
-          contentContainerStyle={styles.scrollContent}
-          keyboardShouldPersistTaps="handled"
-        >
-          <Text style={styles.title}>Publica tu vehiculo</Text>
+        <ScrollView contentContainerStyle={styles.scrollContent}>
+          <Text style={styles.title}>SELL A CAR</Text>
 
-          {!isAuthenticated ? (
-            <View style={styles.infoBox}>
-              <Text style={styles.infoText}>
-                Inicia sesion para poder publicar tus anuncios.
-              </Text>
+          {image ? (
+            <View style={styles.imageContainer}>
+              <Image source={{ uri: image }} style={styles.previewImage} resizeMode="cover" />
+
+              <TouchableOpacity style={styles.removeImageButton} onPress={() => setImage(null)}>
+                <Text style={styles.removeImageX}>X</Text>
+              </TouchableOpacity>
             </View>
-          ) : null}
-
-          <View style={styles.fieldGroup}>
-            <Text style={styles.label}>Titulo *</Text>
-            <TextInput
-              style={styles.input}
-              placeholder="Introduce un titulo atractivo"
-              value={form.title}
-              onChangeText={(text) => handleChange('title', text)}
-              editable={!submitting && isAuthenticated}
-            />
-          </View>
-
-          <View style={styles.fieldGroup}>
-            <Text style={styles.label}>Descripcion *</Text>
-            <TextInput
-              style={[styles.input, styles.multilineInput]}
-              placeholder="Describe el vehiculo (estado, extras, historial...)"
-              value={form.description}
-              onChangeText={(text) => handleChange('description', text)}
-              editable={!submitting && isAuthenticated}
-              multiline
-              numberOfLines={4}
-              textAlignVertical="top"
-            />
-          </View>
-
-          <View style={styles.row}>
-            <View style={styles.rowItem}>
-              <Text style={styles.label}>Precio (€) *</Text>
-              <TextInput
-                style={styles.input}
-                placeholder="Ej. 12500"
-                value={form.price}
-                onChangeText={(text) => handleChange('price', text)}
-                keyboardType="numeric"
-                editable={!submitting && isAuthenticated}
-              />
-            </View>
-
-            <View style={styles.rowItem}>
-              <Text style={styles.label}>Anio *</Text>
-              <TextInput
-                style={styles.input}
-                placeholder="Ej. 2018"
-                value={form.year}
-                onChangeText={(text) => handleChange('year', text)}
-                keyboardType="numeric"
-                editable={!submitting && isAuthenticated}
-              />
-            </View>
-          </View>
-
-          <View style={styles.row}>
-            <View style={styles.rowItem}>
-              <Text style={styles.label}>Kilometraje *</Text>
-              <TextInput
-                style={styles.input}
-                placeholder="Ej. 95000"
-                value={form.mileage}
-                onChangeText={(text) => handleChange('mileage', text)}
-                keyboardType="numeric"
-                editable={!submitting && isAuthenticated}
-              />
-            </View>
-
-            <View style={styles.rowItem}>
-              <Text style={styles.label}>Puertas *</Text>
-              <TextInput
-                style={styles.input}
-                placeholder="Ej. 5"
-                value={form.doors}
-                onChangeText={(text) => handleChange('doors', text)}
-                keyboardType="numeric"
-                editable={!submitting && isAuthenticated}
-              />
-            </View>
-          </View>
-
-          <View style={styles.fieldGroup}>
-            <Text style={styles.label}>Marca *</Text>
-            <TouchableOpacity
-              style={styles.selector}
-              onPress={() => togglePicker('make')}
-              disabled={submitting || !isAuthenticated}
-              activeOpacity={0.7}
-            >
-              <Text style={form.make ? styles.selectorValue : styles.selectorPlaceholder}>
-                {form.make || 'Selecciona una marca'}
-              </Text>
-            </TouchableOpacity>
-            {renderOptionList('make', MAKE_OPTIONS)}
-          </View>
-
-          <View style={styles.fieldGroup}>
-            <Text style={styles.label}>Modelo *</Text>
-            <TextInput
-              style={styles.input}
-              placeholder="Ej. Golf, 500, Fiesta..."
-              value={form.model}
-              onChangeText={(text) => handleChange('model', text)}
-              editable={!submitting && isAuthenticated}
-            />
-          </View>
-
-          <View style={styles.fieldGroup}>
-            <Text style={styles.label}>Combustible *</Text>
-            <TouchableOpacity
-              style={styles.selector}
-              onPress={() => togglePicker('fuel_type')}
-              disabled={submitting || !isAuthenticated}
-              activeOpacity={0.7}
-            >
-              <Text style={form.fuel_type ? styles.selectorValue : styles.selectorPlaceholder}>
-                {form.fuel_type || 'Selecciona un tipo de combustible'}
-              </Text>
-            </TouchableOpacity>
-            {renderOptionList('fuel_type', FUEL_OPTIONS)}
-          </View>
-
-          <View style={styles.fieldGroup}>
-            <Text style={styles.label}>Transmision *</Text>
-            <TouchableOpacity
-              style={styles.selector}
-              onPress={() => togglePicker('transmission')}
-              disabled={submitting || !isAuthenticated}
-              activeOpacity={0.7}
-            >
-              <Text
-                style={form.transmission ? styles.selectorValue : styles.selectorPlaceholder}
+          ) : (
+            <>
+              <TouchableOpacity
+                style={styles.photoButton}
+                activeOpacity={0.7}
+                onPress={takePhoto}
               >
-                {form.transmission || 'Selecciona una transmision'}
-              </Text>
-            </TouchableOpacity>
-            {renderOptionList('transmission', TRANSMISSION_OPTIONS)}
-          </View>
+                <Text style={styles.photoButtonPlus}>+</Text>
+                <Text style={styles.photoButtonText}>Take picture</Text>
+              </TouchableOpacity>
 
-          <View style={styles.fieldGroup}>
-            <Text style={styles.label}>Color *</Text>
-            <TextInput
-              style={styles.input}
-              placeholder="Ej. Azul metalizado"
-              value={form.color}
-              onChangeText={(text) => handleChange('color', text)}
-              editable={!submitting && isAuthenticated}
-            />
-          </View>
+              <TouchableOpacity
+                style={styles.photoButton}
+                activeOpacity={0.7}
+                onPress={pickImageFromGallery}
+              >
+                <Text style={styles.photoButtonPlus}>+</Text>
+                <Text style={styles.photoButtonText}>Add from gallery</Text>
+              </TouchableOpacity>
+            </>
+          )}
 
-          <View style={styles.fieldGroup}>
-            <Text style={styles.label}>Ubicacion *</Text>
-            <TextInput
-              style={styles.input}
-              placeholder="Ciudad o provincia"
-              value={form.location}
-              onChangeText={(text) => handleChange('location', text)}
-              editable={!submitting && isAuthenticated}
-            />
-          </View>
+          <ImageAnalysisButton
+            style={{ width: '100%' }}
+            imageUri={image}
+            onAnalysisComplete={handleAnalysisComplete}
+            onDescriptionGenerated={(text) => handleChange('description', text)}
+          />
 
-          {error ? (
+          <Text style={styles.tipText}>
+            Professional and good photos will catch buyer attention! Try to take great pictures from
+            all sides.
+          </Text>
+
+          <Text style={styles.sectionTitle}>Car information</Text>
+
+          <Text style={styles.label}>Title</Text>
+          <TextInput
+            style={styles.input}
+            placeholder="Great condition, low mileage..."
+            placeholderTextColor="#888"
+            value={form.title}
+            onChangeText={(t) => handleChange('title', t)}
+          />
+
+          <Text style={styles.label}>Brand</Text>
+          <TouchableOpacity style={styles.selector} onPress={() => togglePicker('make')}>
+            <Text style={form.make ? styles.selectorValue : styles.selectorPlaceholder}>
+              {form.make || 'Select your brand'}
+            </Text>
+          </TouchableOpacity>
+          {renderOptionList('make', MAKE_OPTIONS)}
+
+          <Text style={styles.label}>Model</Text>
+          <TextInput
+            style={styles.input}
+            placeholder="Golf, A3, Fiesta..."
+            placeholderTextColor="#888"
+            value={form.model}
+            onChangeText={(t) => handleChange('model', t)}
+          />
+
+          <Text style={styles.label}>Year</Text>
+          <TextInput
+            style={styles.input}
+            placeholder="2018"
+            placeholderTextColor="#888"
+            value={form.year}
+            keyboardType="numeric"
+            maxLength={4}
+            onChangeText={(t) => handleChange('year', t.replace(/[^0-9]/g, ''))}
+          />
+
+          <Text style={styles.label}>Price</Text>
+          <TextInput
+            style={styles.input}
+            placeholder="Price in EUR"
+            placeholderTextColor="#888"
+            value={form.price}
+            keyboardType="numeric"
+            onChangeText={(t) => handleChange('price', t)}
+          />
+
+          <Text style={styles.label}>Body color</Text>
+          <TextInput
+            style={styles.input}
+            placeholder="Black, silver, blue..."
+            placeholderTextColor="#888"
+            value={form.color}
+            onChangeText={(t) => handleChange('color', t)}
+          />
+
+          <Text style={styles.label}>Mileage</Text>
+          <TextInput
+            style={styles.input}
+            placeholder="Mileage in KM"
+            placeholderTextColor="#888"
+            keyboardType="numeric"
+            value={form.mileage}
+            onChangeText={(t) => handleChange('mileage', t)}
+          />
+
+          <Text style={styles.label}>Fuel type</Text>
+          <TouchableOpacity style={styles.selector} onPress={() => togglePicker('fuel_type')}>
+            <Text style={form.fuel_type ? styles.selectorValue : styles.selectorPlaceholder}>
+              {form.fuel_type || 'Select fuel type'}
+            </Text>
+          </TouchableOpacity>
+          {renderOptionList('fuel_type', FUEL_OPTIONS)}
+
+          <Text style={styles.label}>Transmission</Text>
+          <TouchableOpacity style={styles.selector} onPress={() => togglePicker('transmission')}>
+            <Text style={form.transmission ? styles.selectorValue : styles.selectorPlaceholder}>
+              {form.transmission || 'Manual or automatic'}
+            </Text>
+          </TouchableOpacity>
+          {renderOptionList('transmission', TRANSMISSION_OPTIONS)}
+
+          <Text style={styles.label}>Doors</Text>
+          <TextInput
+            style={styles.input}
+            placeholder="3 / 5"
+            placeholderTextColor="#888"
+            keyboardType="numeric"
+            value={form.doors}
+            onChangeText={(t) => handleChange('doors', t)}
+          />
+
+          <Text style={styles.label}>Location</Text>
+          <TextInput
+            style={styles.input}
+            placeholder="City or province"
+            placeholderTextColor="#888"
+            value={form.location}
+            onChangeText={(t) => handleChange('location', t)}
+          />
+
+          <Text style={styles.label}>Story</Text>
+          <TextInput
+            style={[styles.input, styles.multiline]}
+            placeholder="Tell us about your car"
+            placeholderTextColor="#888"
+            multiline
+            numberOfLines={5}
+            value={form.description}
+            onChangeText={(t) => handleChange('description', t)}
+          />
+
+          <TouchableOpacity style={styles.tagsButton}>
+            <Text style={styles.tagsText}>Add tags</Text>
+            <Text style={styles.chevron}>{'>'}</Text>
+          </TouchableOpacity>
+
+          {error && (
             <View style={styles.feedbackBoxError}>
               <Text style={styles.feedbackText}>{error}</Text>
             </View>
-          ) : null}
+          )}
 
-          {successMessage ? (
+          {successMessage && (
             <View style={styles.feedbackBoxSuccess}>
               <Text style={styles.feedbackText}>{successMessage}</Text>
             </View>
-          ) : null}
+          )}
 
           <TouchableOpacity
-            style={[styles.submitButton, (!isAuthenticated || submitting) && styles.submitDisabled]}
+            style={[styles.postButton, submitting && styles.submitDisabled]}
             onPress={handleSubmit}
-            disabled={!isAuthenticated || submitting}
-            activeOpacity={0.8}
+            disabled={submitting}
           >
             {submitting ? (
-              <ActivityIndicator color="#FFFFFF" />
+              <ActivityIndicator color="#000" />
             ) : (
-              <Text style={styles.submitText}>Publicar anuncio</Text>
+              <Text style={styles.postButtonText}>Post your vehicle</Text>
             )}
           </TouchableOpacity>
 
-          <View style={styles.bottomSpacing} />
+          <View style={{ height: 40 }} />
         </ScrollView>
       </KeyboardAvoidingView>
     </SafeAreaView>
-  )
+  );
 }
-
-const styles = publishScreenStyles
