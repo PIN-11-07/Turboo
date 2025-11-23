@@ -1,4 +1,4 @@
-import React from 'react'
+import React from 'react';
 import {
   ActivityIndicator,
   KeyboardAvoidingView,
@@ -9,29 +9,46 @@ import {
   TouchableOpacity,
   View,
   Image,
-  Alert
-} from 'react-native'
-import * as ImagePicker from 'expo-image-picker'
-import { SafeAreaView } from 'react-native-safe-area-context'
-import { publishScreenStyles as styles } from './PublishStyles'
-import { usePublishScreen } from './usePublishScreen'
+  Alert,
+} from 'react-native';
+import * as ImagePicker from 'expo-image-picker';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { publishScreenStyles as styles } from './PublishStyles';
+import { usePublishScreen } from './usePublishScreen';
+import ImageAnalysisButton from '../../components/ImageAnalisisButton';
 
 const MAKE_OPTIONS = [
-  'Alfa Romeo', 'Audi', 'BMW', 'Citroen', 'Cupra', 'Dacia', 'Fiat', 'Ford', 'Hyundai',
-  'Jeep', 'Kia', 'Mazda', 'Mercedes-Benz', 'Mini', 'Nissan', 'Opel', 'Peugeot',
-  'Renault', 'Seat', 'Skoda', 'Tesla', 'Toyota', 'Volkswagen', 'Volvo'
-]
+  'Alfa Romeo',
+  'Audi',
+  'BMW',
+  'Citroen',
+  'Cupra',
+  'Dacia',
+  'Fiat',
+  'Ford',
+  'Hyundai',
+  'Jeep',
+  'Kia',
+  'Mazda',
+  'Mercedes-Benz',
+  'Mini',
+  'Nissan',
+  'Opel',
+  'Peugeot',
+  'Renault',
+  'Seat',
+  'Skoda',
+  'Tesla',
+  'Toyota',
+  'Volkswagen',
+  'Volvo',
+];
 
-const FUEL_OPTIONS = [
-  'Gasolina', 'Diesel', 'Hibrido', 'Electrico', 'GLP', 'GNC'
-]
+const FUEL_OPTIONS = ['Gasolina', 'Diesel', 'Hibrido', 'Electrico', 'GLP', 'GNC'];
 
-const TRANSMISSION_OPTIONS = [
-  'Manual', 'Automatica', 'Semiautomatica'
-]
+const TRANSMISSION_OPTIONS = ['Manual', 'Automatica', 'Semiautomatica'];
 
 export default function PublishScreen() {
-
   const {
     form,
     activePicker,
@@ -45,60 +62,64 @@ export default function PublishScreen() {
     handleSubmit,
     image,
     setImage,
-  } = usePublishScreen()
+  } = usePublishScreen();
 
-  // ------ GALERÍA ------
+  const handleAnalysisComplete = (data) => {
+    handleChange('make', data.make || '');
+    handleChange('model', data.model || '');
+    handleChange('year', data.year ? String(data.year).replace(/[^0-9]/g, '') : '');
+    handleChange('color', data.color || '');
+    if (data.body_type) handleChange('body_type', data.body_type);
+    if (data.condition) handleChange('condition', data.condition);
+  };
+
   const pickImageFromGallery = async () => {
-    const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync()
+    const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
 
     if (status !== 'granted') {
-      Alert.alert('Permission needed', 'We need gallery permission.')
-      return
+      Alert.alert('Permission needed', 'We need gallery permission.');
+      return;
     }
 
     const result = await ImagePicker.launchImageLibraryAsync({
       allowsEditing: true,
       aspect: [4, 3],
       quality: 1,
-    })
-
-    console.log("GALLERY RESULT:", result)
+    });
 
     if (!result.canceled) {
-      const uri = result.assets ? result.assets[0].uri : result.uri
-      setImage(uri)
+      const uri = result.assets ? result.assets[0].uri : result.uri;
+      setImage(uri);
     }
-  }
+  };
 
   const takePhoto = async () => {
-    const { status } = await ImagePicker.requestCameraPermissionsAsync()
+    const { status } = await ImagePicker.requestCameraPermissionsAsync();
 
     if (status !== 'granted') {
-      Alert.alert('Permission needed', 'We need camera permission.')
-      return
+      Alert.alert('Permission needed', 'We need camera permission.');
+      return;
     }
 
     const result = await ImagePicker.launchCameraAsync({
       allowsEditing: true,
       aspect: [4, 3],
       quality: 1,
-    })
-
-    console.log("CAMERA RESULT:", result)
+    });
 
     if (!result.canceled) {
-      const uri = result.assets ? result.assets[0].uri : result.uri
-      setImage(uri)
+      const uri = result.assets ? result.assets[0].uri : result.uri;
+      setImage(uri);
     }
-  }
+  };
 
   const renderOptionList = (field, options) => {
-    if (activePicker !== field) return null
+    if (activePicker !== field) return null;
 
     return (
       <View style={styles.optionList}>
         <ScrollView nestedScrollEnabled style={styles.optionScroll}>
-          {options.map(option => (
+          {options.map((option) => (
             <TouchableOpacity
               key={option}
               style={styles.optionItem}
@@ -109,8 +130,8 @@ export default function PublishScreen() {
           ))}
         </ScrollView>
       </View>
-    )
-  }
+    );
+  };
 
   return (
     <SafeAreaView style={styles.safeArea} edges={['top']}>
@@ -119,23 +140,14 @@ export default function PublishScreen() {
         behavior={Platform.OS === 'ios' ? 'padding' : undefined}
       >
         <ScrollView contentContainerStyle={styles.scrollContent}>
-
           <Text style={styles.title}>SELL A CAR</Text>
 
-          {/* --- FOTO O BOTONES --- */}
           {image ? (
             <View style={styles.imageContainer}>
-              <Image
-                source={{ uri: image }}
-                style={styles.previewImage}
-                resizeMode="cover"
-              />
+              <Image source={{ uri: image }} style={styles.previewImage} resizeMode="cover" />
 
-              <TouchableOpacity
-                style={styles.removeImageButton}
-                onPress={() => setImage(null)}
-              >
-                <Text style={styles.removeImageX}>✕</Text>
+              <TouchableOpacity style={styles.removeImageButton} onPress={() => setImage(null)}>
+                <Text style={styles.removeImageX}>X</Text>
               </TouchableOpacity>
             </View>
           ) : (
@@ -145,7 +157,7 @@ export default function PublishScreen() {
                 activeOpacity={0.7}
                 onPress={takePhoto}
               >
-                <Text style={styles.photoButtonPlus}>＋</Text>
+                <Text style={styles.photoButtonPlus}>+</Text>
                 <Text style={styles.photoButtonText}>Take picture</Text>
               </TouchableOpacity>
 
@@ -154,22 +166,26 @@ export default function PublishScreen() {
                 activeOpacity={0.7}
                 onPress={pickImageFromGallery}
               >
-                <Text style={styles.photoButtonPlus}>＋</Text>
+                <Text style={styles.photoButtonPlus}>+</Text>
                 <Text style={styles.photoButtonText}>Add from gallery</Text>
               </TouchableOpacity>
             </>
           )}
 
-          <Text style={styles.tipText}>
-            Professional and good photos will catch buyer’s attention!
-            Try to take great pictures from all sides.
-          </Text>
+          <ImageAnalysisButton
+            style={{ width: '100%' }}
+            imageUri={image}
+            onAnalysisComplete={handleAnalysisComplete}
+            onDescriptionGenerated={(text) => handleChange('description', text)}
+          />
 
-          {/* ---- FORM ---- */}
+          <Text style={styles.tipText}>
+            Professional and good photos will catch buyer attention! Try to take great pictures from
+            all sides.
+          </Text>
 
           <Text style={styles.sectionTitle}>Car information</Text>
 
-          {/* TITLE */}
           <Text style={styles.label}>Title</Text>
           <TextInput
             style={styles.input}
@@ -179,20 +195,14 @@ export default function PublishScreen() {
             onChangeText={(t) => handleChange('title', t)}
           />
 
-
-          {/* BRAND */}
           <Text style={styles.label}>Brand</Text>
-          <TouchableOpacity
-            style={styles.selector}
-            onPress={() => togglePicker('make')}
-          >
+          <TouchableOpacity style={styles.selector} onPress={() => togglePicker('make')}>
             <Text style={form.make ? styles.selectorValue : styles.selectorPlaceholder}>
               {form.make || 'Select your brand'}
             </Text>
           </TouchableOpacity>
           {renderOptionList('make', MAKE_OPTIONS)}
 
-          {/* MODEL - AHORA VISIBLE JUSTO DEBAJO DE BRAND */}
           <Text style={styles.label}>Model</Text>
           <TextInput
             style={styles.input}
@@ -202,7 +212,6 @@ export default function PublishScreen() {
             onChangeText={(t) => handleChange('model', t)}
           />
 
-          {/* YEAR */}
           <Text style={styles.label}>Year</Text>
           <TextInput
             style={styles.input}
@@ -214,7 +223,6 @@ export default function PublishScreen() {
             onChangeText={(t) => handleChange('year', t.replace(/[^0-9]/g, ''))}
           />
 
-          {/* PRICE */}
           <Text style={styles.label}>Price</Text>
           <TextInput
             style={styles.input}
@@ -225,7 +233,6 @@ export default function PublishScreen() {
             onChangeText={(t) => handleChange('price', t)}
           />
 
-          {/* BODY COLOR */}
           <Text style={styles.label}>Body color</Text>
           <TextInput
             style={styles.input}
@@ -235,7 +242,6 @@ export default function PublishScreen() {
             onChangeText={(t) => handleChange('color', t)}
           />
 
-          {/* MILEAGE */}
           <Text style={styles.label}>Mileage</Text>
           <TextInput
             style={styles.input}
@@ -246,31 +252,22 @@ export default function PublishScreen() {
             onChangeText={(t) => handleChange('mileage', t)}
           />
 
-          {/* FUEL TYPE */}
           <Text style={styles.label}>Fuel type</Text>
-          <TouchableOpacity
-            style={styles.selector}
-            onPress={() => togglePicker('fuel_type')}
-          >
+          <TouchableOpacity style={styles.selector} onPress={() => togglePicker('fuel_type')}>
             <Text style={form.fuel_type ? styles.selectorValue : styles.selectorPlaceholder}>
               {form.fuel_type || 'Select fuel type'}
             </Text>
           </TouchableOpacity>
           {renderOptionList('fuel_type', FUEL_OPTIONS)}
 
-          {/* TRANSMISSION */}
           <Text style={styles.label}>Transmission</Text>
-          <TouchableOpacity
-            style={styles.selector}
-            onPress={() => togglePicker('transmission')}
-          >
+          <TouchableOpacity style={styles.selector} onPress={() => togglePicker('transmission')}>
             <Text style={form.transmission ? styles.selectorValue : styles.selectorPlaceholder}>
               {form.transmission || 'Manual or automatic'}
             </Text>
           </TouchableOpacity>
           {renderOptionList('transmission', TRANSMISSION_OPTIONS)}
 
-          {/* DOORS */}
           <Text style={styles.label}>Doors</Text>
           <TextInput
             style={styles.input}
@@ -281,7 +278,6 @@ export default function PublishScreen() {
             onChangeText={(t) => handleChange('doors', t)}
           />
 
-          {/* LOCATION */}
           <Text style={styles.label}>Location</Text>
           <TextInput
             style={styles.input}
@@ -291,7 +287,6 @@ export default function PublishScreen() {
             onChangeText={(t) => handleChange('location', t)}
           />
 
-          {/* STORY */}
           <Text style={styles.label}>Story</Text>
           <TextInput
             style={[styles.input, styles.multiline]}
@@ -303,14 +298,11 @@ export default function PublishScreen() {
             onChangeText={(t) => handleChange('description', t)}
           />
 
-
-          {/* TAGS */}
           <TouchableOpacity style={styles.tagsButton}>
             <Text style={styles.tagsText}>Add tags</Text>
-            <Text style={styles.chevron}>›</Text>
+            <Text style={styles.chevron}>{'>'}</Text>
           </TouchableOpacity>
 
-          {/* FEEDBACK */}
           {error && (
             <View style={styles.feedbackBoxError}>
               <Text style={styles.feedbackText}>{error}</Text>
@@ -323,7 +315,6 @@ export default function PublishScreen() {
             </View>
           )}
 
-          {/* SUBMIT */}
           <TouchableOpacity
             style={[styles.postButton, submitting && styles.submitDisabled]}
             onPress={handleSubmit}
@@ -340,5 +331,5 @@ export default function PublishScreen() {
         </ScrollView>
       </KeyboardAvoidingView>
     </SafeAreaView>
-  )
+  );
 }
