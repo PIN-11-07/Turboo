@@ -27,6 +27,76 @@ export const homeScreenStyles = StyleSheet.create({
     marginBottom: 12,
     backgroundColor: palette.background,
   },
+  recommendationsSection: {
+    paddingHorizontal: 16,
+    marginBottom: 12,
+  },
+  recommendationCard: {
+    backgroundColor: 'rgba(245, 197, 24, 0.06)',
+    borderRadius: 14,
+    padding: 14,
+    borderWidth: 1,
+    borderColor: 'rgba(245, 197, 24, 0.18)',
+    marginBottom: 12,
+  },
+  recommendationHero: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  recommendationTitle: {
+    fontSize: 16,
+    fontWeight: '700',
+    color: palette.accent,
+  },
+  recommendationSubtitle: {
+    fontSize: 13,
+    color: palette.textSecondary,
+    marginTop: 6,
+  },
+  recommendationList: {
+    paddingVertical: 6,
+  },
+  recommendationItem: {
+    flexBasis: '48%',
+    marginBottom: 12,
+    borderRadius: 12,
+    overflow: 'hidden',
+    backgroundColor: palette.surface,
+    borderWidth: 1,
+    borderColor: palette.border,
+  },
+  recommendationImage: {
+    width: '100%',
+    height: 110,
+  },
+  recommendationItemContent: {
+    padding: 10,
+  },
+  recommendationItemTitle: {
+    fontSize: 14,
+    fontWeight: '700',
+    color: palette.textPrimary,
+  },
+  recommendationItemPrice: {
+    fontSize: 13,
+    color: palette.accent,
+    marginTop: 6,
+    fontWeight: '700',
+  },
+  recommendButton: {
+    alignSelf: 'flex-start',
+    marginTop: 12,
+    backgroundColor: palette.surface,
+    paddingVertical: 8,
+    paddingHorizontal: 12,
+    borderRadius: 20,
+    borderWidth: 1,
+    borderColor: palette.border,
+  },
+  recommendButtonText: {
+    color: palette.accent,
+    fontWeight: '700',
+  },
   hero: {
     paddingHorizontal: 4,
     marginBottom: 12,
