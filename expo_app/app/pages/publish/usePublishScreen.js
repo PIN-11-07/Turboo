@@ -33,13 +33,9 @@ const createInitialForm = () => ({
 })
 
 const sanitizeNumber = (value) => {
-  if (value === null || value === undefined) {
-    return null
-  }
-
+  if (value === null || value === undefined) return null
   const normalized = String(value).replace(',', '.').trim()
   const numericValue = normalized ? Number(normalized) : null
-
   return Number.isFinite(numericValue) ? numericValue : null
 }
 
@@ -50,11 +46,15 @@ const sanitizeInteger = (value) => {
 
 export const usePublishScreen = () => {
   const { user } = useAuth()
+
   const [form, setForm] = useState(createInitialForm)
   const [activePicker, setActivePicker] = useState(null)
   const [submitting, setSubmitting] = useState(false)
   const [error, setError] = useState(null)
   const [successMessage, setSuccessMessage] = useState(null)
+
+  // 👇 FALTABA ESTO
+  const [image, setImage] = useState(null)
 
   const isAuthenticated = Boolean(user?.id)
 
@@ -77,10 +77,7 @@ export const usePublishScreen = () => {
   )
 
   const handleChange = (field, value) => {
-    setForm((prev) => ({
-      ...prev,
-      [field]: value,
-    }))
+    setForm((prev) => ({ ...prev, [field]: value }))
     setError(null)
     setSuccessMessage(null)
   }
@@ -92,21 +89,18 @@ export const usePublishScreen = () => {
   }
 
   const handleOptionSelect = (field, option) => {
-    setForm((prev) => ({
-      ...prev,
-      [field]: option,
-    }))
+    setForm((prev) => ({ ...prev, [field]: option }))
     setActivePicker(null)
   }
 
   const validateForm = () => {
-    const missingFields = REQUIRED_FIELDS.filter((field) => {
-      const value = form[field]
-      return !(typeof value === 'string' ? value.trim() : value)
+    const missingFields = REQUIRED_FIELDS.filter((f) => {
+      const v = form[f]
+      return !(typeof v === 'string' ? v.trim() : v)
     })
 
     if (missingFields.length > 0) {
-      const missingLabels = missingFields.map((field) => requiredLabels[field] || field)
+      const missingLabels = missingFields.map((f) => requiredLabels[f] || f)
       setError(`Completa los campos obligatorios: ${missingLabels.join(', ')}.`)
       return false
     }
@@ -116,25 +110,13 @@ export const usePublishScreen = () => {
     const mileageValue = sanitizeInteger(form.mileage)
     const doorsValue = sanitizeInteger(form.doors)
 
-    if (priceValue === null) {
-      setError('Introduce un precio valido.')
-      return false
-    }
-
-    if (yearValue === null || yearValue < 1900) {
-      setError('Introduce un anio valido.')
-      return false
-    }
-
-    if (mileageValue === null || mileageValue < 0) {
-      setError('Introduce un kilometraje valido.')
-      return false
-    }
-
-    if (doorsValue === null || doorsValue <= 0) {
-      setError('Introduce un numero de puertas valido.')
-      return false
-    }
+    if (priceValue === null) return setError('Introduce un precio valido.')
+    if (yearValue === null || yearValue < 1900)
+      return setError('Introduce un anio valido.')
+    if (mileageValue === null || mileageValue < 0)
+      return setError('Introduce un kilometraje valido.')
+    if (doorsValue === null || doorsValue <= 0)
+      return setError('Introduce un numero de puertas valido.')
 
     return {
       title: form.title.trim(),
@@ -147,8 +129,11 @@ export const usePublishScreen = () => {
       fuel_type: form.fuel_type,
       transmission: form.transmission,
       doors: doorsValue,
-      color: form.color.trim(),
+      color: form.color.trim(),  
       location: form.location.trim(),
+
+      // 👇 SE AGREGA LA IMAGEN AL PAYLOAD
+      images: image ? [image] : [],
     }
   }
 
@@ -159,10 +144,7 @@ export const usePublishScreen = () => {
     }
 
     const payload = validateForm()
-
-    if (!payload) {
-      return
-    }
+    if (!payload) return
 
     setSubmitting(true)
     setError(null)
@@ -175,14 +157,13 @@ export const usePublishScreen = () => {
         is_active: true,
       })
 
-      if (insertError) {
-        throw insertError
-      }
+      if (insertError) throw insertError
 
       setForm(createInitialForm())
+      setImage(null) // limpiar imagen después de publicar
       setSuccessMessage('Anuncio publicado correctamente.')
-    } catch (submitError) {
-      console.error(submitError)
+    } catch (e) {
+      console.error(e)
       setError('No fue posible publicar el anuncio. Intentalo de nuevo.')
     } finally {
       setSubmitting(false)
@@ -200,5 +181,9 @@ export const usePublishScreen = () => {
     togglePicker,
     handleOptionSelect,
     handleSubmit,
+
+    // 👇 Estos faltaban
+    image,
+    setImage,
   }
 }
