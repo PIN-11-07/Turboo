@@ -1,0 +1,230 @@
+import { StyleSheet } from 'react-native'
+import { palette } from '../../theme/palette'
+
+export const purchaseScreenStyles = StyleSheet.create({
+  safeArea: {
+    flex: 1,
+    backgroundColor: palette.background,
+  },
+  scrollContent: {
+    padding: 20,
+    backgroundColor: palette.background,
+    paddingBottom: 40,
+  },
+  title: {
+    fontSize: 24,
+    fontWeight: '700',
+    color: palette.textPrimary,
+  },
+  subtitle: {
+    marginTop: 6,
+    marginBottom: 14,
+    color: palette.textSecondary,
+    fontSize: 14,
+    lineHeight: 20,
+  },
+  card: {
+    backgroundColor: palette.surface,
+    borderRadius: 16,
+    padding: 16,
+    marginBottom: 16,
+    borderWidth: 1,
+    borderColor: palette.border,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 6 },
+    shadowOpacity: 0.35,
+    shadowRadius: 10,
+    elevation: 6,
+  },
+  cardHeader: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    justifyContent: 'space-between',
+  },
+  cardTitle: {
+    flex: 1,
+    fontSize: 18,
+    fontWeight: '700',
+    color: palette.textPrimary,
+    marginRight: 12,
+  },
+  cardPrice: {
+    fontSize: 18,
+    fontWeight: '700',
+    color: palette.accent,
+  },
+  cardSubtitle: {
+    marginTop: 8,
+    color: palette.textMuted,
+    fontSize: 14,
+  },
+  sectionTitle: {
+    fontSize: 16,
+    fontWeight: '700',
+    color: palette.textPrimary,
+    marginBottom: 12,
+  },
+  row: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginTop: 6,
+  },
+  rowSpacing: {
+    marginTop: 12,
+  },
+  rowItem: {
+    flex: 1,
+  },
+  label: {
+    color: palette.textSecondary,
+    fontSize: 14,
+  },
+  value: {
+    color: palette.textPrimary,
+    fontWeight: '600',
+    fontSize: 15,
+  },
+  divider: {
+    height: 1,
+    backgroundColor: palette.border,
+    marginVertical: 10,
+  },
+  formGroup: {
+    marginTop: 10,
+  },
+  inputLabel: {
+    color: palette.textSecondary,
+    fontSize: 13,
+    marginBottom: 6,
+  },
+  input: {
+    backgroundColor: palette.overlay,
+    borderRadius: 10,
+    padding: 12,
+    color: palette.textPrimary,
+    borderWidth: 1,
+    borderColor: palette.border,
+    fontSize: 15,
+  },
+  inputPlaceholder: {
+    color: palette.textMuted,
+  },
+  primaryButton: {
+    backgroundColor: palette.accent,
+    paddingVertical: 14,
+    borderRadius: 12,
+    alignItems: 'center',
+    marginTop: 6,
+  },
+  primaryButtonText: {
+    color: '#1E1E1E',
+    fontSize: 16,
+    fontWeight: '700',
+  },
+  disabledHint: {
+    marginTop: 8,
+    color: palette.textMuted,
+    fontSize: 13,
+    lineHeight: 18,
+  },
+  secondaryButton: {
+    marginTop: 12,
+    paddingVertical: 12,
+    borderRadius: 10,
+    alignItems: 'center',
+    borderWidth: 1,
+    borderColor: palette.border,
+    backgroundColor: palette.surface,
+  },
+  secondaryButtonText: {
+    color: palette.textPrimary,
+    fontSize: 15,
+    fontWeight: '600',
+  },
+  buttonDisabled: {
+    opacity: 0.55,
+  },
+  errorBox: {
+    backgroundColor: 'rgba(255, 107, 107, 0.12)',
+    borderWidth: 1,
+    borderColor: palette.danger,
+    padding: 12,
+    borderRadius: 10,
+    marginBottom: 10,
+  },
+  errorText: {
+    color: palette.danger,
+    fontSize: 14,
+  },
+  infoBox: {
+    marginTop: 8,
+    padding: 12,
+    borderRadius: 10,
+    borderWidth: 1,
+    borderColor: palette.border,
+    backgroundColor: palette.overlay,
+  },
+  infoTitle: {
+    color: palette.textPrimary,
+    fontSize: 15,
+    fontWeight: '700',
+    marginBottom: 6,
+  },
+  infoText: {
+    color: palette.textSecondary,
+    fontSize: 14,
+    lineHeight: 20,
+  },
+  successBox: {
+    backgroundColor: 'rgba(141, 228, 123, 0.12)',
+    borderWidth: 1,
+    borderColor: palette.success,
+    padding: 12,
+    borderRadius: 10,
+    marginBottom: 10,
+  },
+  successText: {
+    color: palette.success,
+    fontSize: 14,
+  },
+  loader: {
+    marginTop: 30,
+    alignItems: 'center',
+  },
+  confirmationHeader: {
+    alignItems: 'center',
+    marginBottom: 16,
+  },
+  confirmationIcon: {
+    fontSize: 48,
+    color: palette.success,
+    marginBottom: 6,
+  },
+  confirmationTitle: {
+    fontSize: 22,
+    fontWeight: '700',
+    color: palette.textPrimary,
+  },
+  confirmationSubtitle: {
+    marginTop: 6,
+    color: palette.textSecondary,
+    fontSize: 14,
+    textAlign: 'center',
+    lineHeight: 20,
+  },
+  emptyBox: {
+    alignItems: 'center',
+    padding: 20,
+    backgroundColor: palette.surface,
+    borderRadius: 14,
+    borderWidth: 1,
+    borderColor: palette.border,
+  },
+  emptyText: {
+    color: palette.textSecondary,
+    fontSize: 15,
+    textAlign: 'center',
+    marginBottom: 12,
+  },
+})

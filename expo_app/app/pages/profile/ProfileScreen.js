@@ -150,6 +150,15 @@ export default function ProfileScreen() {
           <Text style={styles.cardLabel}>Correo electrónico</Text>
           <Text style={styles.cardValue}>{profile?.mail || 'No disponible'}</Text>
 
+          <Text style={styles.cardLabel}>Saldo disponible</Text>
+          <View style={styles.balanceRow}>
+            <Text style={styles.balanceValue}>
+              {formatPrice(profile?.balance ?? 0)}
+            </Text>
+            <Text style={styles.balanceHint}>
+              Usa este saldo para pagar vehículos en Turboo.
+            </Text>
+          </View>
         </View>
 
         <View style={styles.section}>

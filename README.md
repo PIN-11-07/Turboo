@@ -208,6 +208,11 @@ Turboo/
 - **UX details:** buttons show a spinner while the Supabase mutation runs, disable automatically when the session is missing and stay in sync when navigating between tabs.
 - **Data flow:** all screens rely on a shared cache that mirrors `favorites` so toggling one heart immediately updates the other mounted buttons without extra API calls.
 
+### g) Wallet & purchase simulation
+- **Balance:** each profile has a `saldo` field surfaced in the Profile page so users can see their available wallet balance.
+- **Flow:** from the vehicle detail page a “Comprar” CTA opens a dedicated checkout screen where the buyer fills card data, confirms, and the app transfers the amount to the seller’s balance while applying a 5% platform fee.
+- **Guards:** buyers cannot purchase their own listing and the flow checks for sufficient balance before applying the simulated transfer.
+
 ## 6. Components
 ### FavoriteButton (`app/components/FavoriteButton.js`)
 - **Responsibility:** renders the heart icon, loads the initial favorite status, sends Supabase mutations (`insert`/`delete`) and handles optimistic updates while keeping errors isolated per button.
@@ -265,6 +270,7 @@ Row Level Security (RLS) is enabled on every public table described below.
 | `id`                | `uuid`        | PK, FK → `auth.users.id`, `on delete cascade`     | Mirrors the auth user ID.                      |
 | `full_name`         | `text`        |                                                   | Synced from Supabase Auth metadata.            |
 | `profile_image_url` | `text`        |                                                   | Avatar URL from metadata.                      |
+| `saldo`             | `numeric`     | `default 0`                                       | Wallet balance used for simulated payments.    |
 | `created_at`        | `timestamptz` | `default timezone('utc', now())`                  | Automatic creation timestamp.                  |
 | `updated_at`        | `timestamptz` | `default timezone('utc', now())`                  | Updated by trigger on every profile change.    |
 
@@ -273,6 +279,7 @@ Row Level Security (RLS) is enabled on every public table described below.
 * `handle_profile_timestamp` + trigger `on_profile_updated` → refreshes `updated_at` before each update.
 * `handle_new_user` + trigger `on_auth_user_created` → auto-inserts a profile when a new auth user is created.
 * `sync_user_name` + trigger `on_auth_user_updated` → keeps `full_name` and `profile_image_url` in sync with metadata.
+* `process_vehicle_purchase(buyer_id, seller_id, price, fee_percent, listing_id)` (security definer) → transfers saldo from buyer to seller applying the platform fee y marca el anuncio como inactivo; callable via Supabase RPC.
 
 **RLS policies:**
 
@@ -309,6 +316,91 @@ Additional constraints: `unique (user_id, listing_id)` enforces one favorite per
 * `public.profiles.id` → `public.favorites.user_id` (1:N)
 * `public.listings.id` → `public.favorites.listing_id` (N:1)
 
+### Supabase SQL (wallet transfer)
+Add this function so the app can mover saldo entre usuarios respetando RLS y marcar el anuncio como vendido (`is_active = false`):
+
+```sql
+drop function if exists public.process_vehicle_purchase(uuid, uuid, numeric, numeric);
+
+create or replace function public.process_vehicle_purchase(
+  buyer_id uuid,
+  seller_id uuid,
+  price numeric,
+  fee_percent numeric default 5,
+  listing_id uuid default null
+) returns table (buyer_balance numeric, seller_balance numeric, listing_inactive boolean)
+language plpgsql
+security definer
+set search_path = public
+as $$
+declare
+  v_price numeric := coalesce(price, 0);
+  v_fee numeric := greatest(coalesce(fee_percent, 0), 0);
+  v_payout numeric;
+  v_buyer_balance numeric;
+  v_seller_balance numeric;
+  v_listing_deactivated boolean := false;
+begin
+  if auth.uid() is null then
+    raise exception 'Not authenticated';
+  end if;
+
+  if auth.uid() <> buyer_id then
+    raise exception 'Caller must match buyer_id';
+  end if;
+
+  if buyer_id = seller_id then
+    raise exception 'Buyer and seller cannot match';
+  end if;
+
+  if v_price <= 0 then
+    raise exception 'Invalid price';
+  end if;
+
+  v_payout := v_price - (v_price * v_fee / 100);
+  if v_payout < 0 then
+    v_payout := 0;
+  end if;
+
+  update public.profiles
+  set saldo = saldo - v_price
+  where id = buyer_id
+  returning saldo into v_buyer_balance;
+
+  if not found then
+    raise exception 'Buyer not found';
+  end if;
+
+  if v_buyer_balance < 0 then
+    update public.profiles set saldo = saldo + v_price where id = buyer_id;
+    raise exception 'Insufficient balance';
+  end if;
+
+  update public.profiles
+  set saldo = saldo + v_payout
+  where id = seller_id
+  returning saldo into v_seller_balance;
+
+  if not found then
+    update public.profiles set saldo = saldo + v_price where id = buyer_id;
+    raise exception 'Seller not found';
+  end if;
+
+  if listing_id is not null then
+    update public.listings
+    set is_active = false
+    where id = listing_id
+      and user_id = seller_id
+    returning true into v_listing_deactivated;
+  end if;
+
+  return query select v_buyer_balance, v_seller_balance, v_listing_deactivated;
+end;
+$$;
+
+grant execute on function public.process_vehicle_purchase(uuid, uuid, numeric, numeric, uuid) to authenticated;
+```
+
 ## 8. Useful Commands
 **Docker commands:**
 - `docker compose build expo` – builds the Expo image based on Node 20.
@@ -333,7 +425,7 @@ Additional constraints: `unique (user_id, listing_id)` enforces one favorite per
 
 ### Sprint 2
 - [ ] Database design, implementation and seeding increment  
-- [ ] Buy vehicle flow  
+- [x] Buy vehicle flow  
 - [x] Text search  
 - [ ] Search filters  
 - [ ] AI auto-fill  

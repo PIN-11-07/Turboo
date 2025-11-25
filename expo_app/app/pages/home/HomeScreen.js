@@ -10,7 +10,7 @@ import {
   View,
 } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
-import { useNavigation } from '@react-navigation/native'
+import { useFocusEffect, useNavigation, useRoute } from '@react-navigation/native'
 import { homeScreenStyles } from './HomeStyles'
 import { palette } from '../../theme/palette'
 import FavoriteButton from '../../components/FavoriteButton'
@@ -31,6 +31,7 @@ const getMainImage = (images) =>
 
 export default function HomeScreen() {
   const navigation = useNavigation()
+  const route = useRoute()
   const {
     filteredListings,
     initialLoading,
@@ -41,6 +42,7 @@ export default function HomeScreen() {
     setSearchQuery,
     handleRefresh,
     handleLoadMore,
+    removeListingById,
   } = useHomeScreen()
 
   const renderListing = useCallback(
@@ -110,6 +112,27 @@ export default function HomeScreen() {
       </View>
     )
   }, [loadingMore])
+
+  useFocusEffect(
+    useCallback(() => {
+      const purchasedId = route.params?.purchasedListingId
+      const shouldRefresh = route.params?.refreshAfterPurchase
+
+      if (purchasedId) {
+        removeListingById(purchasedId)
+      }
+      if (shouldRefresh) {
+        handleRefresh()
+      }
+
+      if (purchasedId || shouldRefresh) {
+        navigation.setParams({
+          purchasedListingId: undefined,
+          refreshAfterPurchase: undefined,
+        })
+      }
+    }, [handleRefresh, navigation, removeListingById, route.params])
+  )
 
   return (
     <SafeAreaView style={styles.safeArea} edges={['top']}>

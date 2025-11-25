@@ -2,6 +2,8 @@ import React from 'react'
 import { createNativeStackNavigator } from '@react-navigation/native-stack'
 import ProfileScreen from './ProfileScreen'
 import ListingDetailScreen from '../listingDetails/ListingDetailScreen'
+import PurchaseScreen from '../purchase/PurchaseScreen'
+import PurchaseConfirmationScreen from '../purchase/PurchaseConfirmationScreen'
 import { palette } from '../../theme/palette'
 
 const Stack = createNativeStackNavigator()
@@ -36,6 +38,16 @@ export default function ProfileNavigator() {
         name="ListingDetail"
         component={ListingDetailScreen}
         options={{ title: 'Detalles del vehículo' }}
+      />
+      <Stack.Screen
+        name="Purchase"
+        component={PurchaseScreen}
+        options={{ title: 'Confirmar compra' }}
+      />
+      <Stack.Screen
+        name="PurchaseConfirmation"
+        component={PurchaseConfirmationScreen}
+        options={{ title: 'Compra completada', headerBackVisible: false }}
       />
     </Stack.Navigator>
   )

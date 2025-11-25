@@ -5,12 +5,15 @@ import {
   Image,
   ScrollView,
   Text,
+  TouchableOpacity,
   View,
 } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
+import { useNavigation } from '@react-navigation/native'
 import { listingDetailScreenStyles } from './ListingDetailStyles'
 import { palette } from '../../theme/palette'
 import FavoriteButton from '../../components/FavoriteButton'
+import { useAuth } from '../../context/AuthContext'
 import { useListingDetailScreen } from './useListingDetailScreen'
 
 const formatPrice = (value) => {
@@ -39,6 +42,17 @@ const ATTRIBUTE_LABELS = [
 export default function ListingDetailScreen() {
   const { listing, listingId, loading, error, images, caption, sellerName } =
     useListingDetailScreen()
+  const navigation = useNavigation()
+  const { user } = useAuth()
+
+  const isOwner = listing?.user_id && user?.id === listing.user_id
+
+  const handleBuyPress = () => {
+    if (!listingId || !listing || isOwner) {
+      return
+    }
+    navigation.navigate('Purchase', { listingId, listing })
+  }
 
   return (
     <SafeAreaView style={styles.safeArea} edges={['left', 'right', 'bottom']}>
@@ -119,6 +133,23 @@ export default function ListingDetailScreen() {
                 {sellerName ?? 'Información no disponible'}
               </Text>
             </View>
+
+            {!isOwner && listing ? (
+              <View style={styles.section}>
+                <Text style={styles.sectionTitle}>Compra con saldo</Text>
+                <Text style={styles.purchaseText}>
+                  Usa tu saldo para finalizar la compra. Transferiremos el importe al vendedor
+                  descontando la comisión de la plataforma.
+                </Text>
+                <TouchableOpacity
+                  style={styles.buyButton}
+                  onPress={handleBuyPress}
+                  activeOpacity={0.85}
+                >
+                  <Text style={styles.buyButtonText}>Comprar este vehículo</Text>
+                </TouchableOpacity>
+              </View>
+            ) : null}
 
             <View style={styles.section}>
               <Text style={styles.sectionTitle}>Especificaciones técnicas</Text>
