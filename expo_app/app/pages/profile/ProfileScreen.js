@@ -1,6 +1,7 @@
 import React, { useCallback } from 'react'
 import {
   ActivityIndicator,
+  Alert,
   Image,
   ScrollView,
   Text,
@@ -33,12 +34,25 @@ export default function ProfileScreen() {
     loading,
     error,
     profile,
-    listings,
+    activeListings,
+    inactiveListings,
     favoriteListings,
     avatarInitial,
     handleListingPress,
     handleFavoriteRemoval,
+    reactivateListing,
+    reactivatingId,
   } = useProfileScreen()
+
+  const handleReactivate = useCallback(
+    async (listingId) => {
+      const success = await reactivateListing(listingId)
+      if (!success) {
+        Alert.alert('No se pudo activar', 'Inténtalo de nuevo más tarde.')
+      }
+    },
+    [reactivateListing]
+  )
 
   const renderListingCard = useCallback(
     (listing, keyPrefix = 'listing', allowFavoriteToggle = false) => {
@@ -51,6 +65,11 @@ export default function ProfileScreen() {
       const publishDate = listing.created_at
         ? new Date(listing.created_at).toLocaleDateString('es-ES')
         : 'fecha s/d'
+      const isInactive = listing.is_active === false
+      const isReactivating = reactivatingId === listing.id
+      const dateLabel = isInactive
+        ? `Guardado el ${publishDate}`
+        : `Publicado el ${publishDate}`
 
       const handleFavoriteChange = (nextValue) => {
         if (!nextValue) {
@@ -58,10 +77,14 @@ export default function ProfileScreen() {
         }
       }
 
+      const handleReactivatePress = async () => {
+        await handleReactivate(listing.id)
+      }
+
       return (
         <TouchableOpacity
           key={`${keyPrefix}-${listing.id}`}
-          style={styles.listingCard}
+          style={[styles.listingCard, isInactive && styles.listingCardInactive]}
           onPress={() => handleListingPress(listing)}
           activeOpacity={0.8}
         >
@@ -80,7 +103,13 @@ export default function ProfileScreen() {
           </View>
           <View style={styles.listingInfo}>
             <View style={styles.listingInfoHeader}>
-              <Text style={styles.listingTitle} numberOfLines={2}>
+              <Text
+                style={[
+                  styles.listingTitle,
+                  isInactive && styles.listingTitleInactive,
+                ]}
+                numberOfLines={2}
+              >
                 {listing.title}
               </Text>
               {allowFavoriteToggle ? (
@@ -93,13 +122,45 @@ export default function ProfileScreen() {
                 />
               ) : null}
             </View>
-            <Text style={styles.listingPrice}>{formatPrice(listing.price)}</Text>
-            <Text style={styles.listingDate}>Publicado el {publishDate}</Text>
+            <Text
+              style={[
+                styles.listingPrice,
+                isInactive && styles.listingPriceInactive,
+              ]}
+            >
+              {formatPrice(listing.price)}
+            </Text>
+            <Text
+              style={[styles.listingDate, isInactive && styles.listingDateInactive]}
+            >
+              {dateLabel}
+            </Text>
+            {isInactive ? (
+              <View style={styles.inactiveRow}>
+                <View style={styles.inactiveBadge}>
+                  <Text style={styles.inactiveBadgeText}>Inactivo</Text>
+                </View>
+                <TouchableOpacity
+                  style={[
+                    styles.activateButton,
+                    isReactivating && styles.activateButtonDisabled,
+                  ]}
+                  onPress={handleReactivatePress}
+                  disabled={isReactivating}
+                >
+                  {isReactivating ? (
+                    <ActivityIndicator color="#000" />
+                  ) : (
+                    <Text style={styles.activateButtonText}>Activar</Text>
+                  )}
+                </TouchableOpacity>
+              </View>
+            ) : null}
           </View>
         </TouchableOpacity>
       )
     },
-    [handleFavoriteRemoval, handleListingPress]
+    [handleFavoriteRemoval, handleListingPress, handleReactivate, reactivatingId]
   )
 
   const renderContent = () => {
@@ -162,11 +223,20 @@ export default function ProfileScreen() {
         </View>
 
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Tus anuncios</Text>
-          {listings.length === 0 ? (
-            <Text style={styles.emptyState}>Todavía no has publicado anuncios.</Text>
+          <Text style={styles.sectionTitle}>Tus anuncios activos</Text>
+          {activeListings.length === 0 ? (
+            <Text style={styles.emptyState}>No tienes anuncios activos.</Text>
           ) : (
-            listings.map((listing) => renderListingCard(listing, 'own'))
+            activeListings.map((listing) => renderListingCard(listing, 'own-active'))
+          )}
+        </View>
+
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>Tus anuncios inactivos</Text>
+          {inactiveListings.length === 0 ? (
+            <Text style={styles.emptyState}>No tienes anuncios inactivos.</Text>
+          ) : (
+            inactiveListings.map((listing) => renderListingCard(listing, 'own-inactive'))
           )}
         </View>
 
