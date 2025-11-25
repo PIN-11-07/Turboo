@@ -78,7 +78,7 @@ export const useProfileScreen = () => {
           supabase.auth.getUser(),
           supabase
             .from('profiles')
-            .select('profile_image_url, saldo')
+            .select('profile_image_url, saldo, full_name')
             .eq('id', user.id)
             .maybeSingle(),
           supabase
@@ -114,7 +114,12 @@ export const useProfileScreen = () => {
 
         const authUser = authData?.user ?? null
 
-        const name = extractName(authUser) || extractName(user) || null
+        const profileName =
+          (typeof profileData?.full_name === 'string' &&
+            profileData.full_name.trim()) ||
+          extractName(authUser) ||
+          extractName(user) ||
+          null
 
         const mail =
           (typeof authUser?.email === 'string' && authUser.email.trim()) ||
@@ -122,7 +127,7 @@ export const useProfileScreen = () => {
           null
 
         setProfile({
-          name,
+          name: profileName,
           mail,
           profileImageUrl: profileData?.profile_image_url || null,
           balance:
