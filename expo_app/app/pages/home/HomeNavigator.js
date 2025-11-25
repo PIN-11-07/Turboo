@@ -2,6 +2,8 @@ import React from 'react'
 import { createNativeStackNavigator } from '@react-navigation/native-stack'
 import HomeScreen from './HomeScreen'
 import ListingDetailScreen from '../listingDetails/ListingDetailScreen'
+import PurchaseScreen from '../purchase/PurchaseScreen'
+import PurchaseConfirmationScreen from '../purchase/PurchaseConfirmationScreen'
 import RecommendationsScreen from './RecommendationsScreen'
 import { palette } from '../../theme/palette'
 
@@ -37,6 +39,16 @@ export default function HomeNavigator() {
         name="ListingDetail"
         component={ListingDetailScreen}
         options={{ title: 'Detalles del vehículo' }}
+      />
+      <Stack.Screen
+        name="Purchase"
+        component={PurchaseScreen}
+        options={{ title: 'Confirmar compra' }}
+      />
+      <Stack.Screen
+        name="PurchaseConfirmation"
+        component={PurchaseConfirmationScreen}
+        options={{ title: 'Compra completada', headerBackVisible: false }}
       />
       <Stack.Screen
         name="Recommendations"

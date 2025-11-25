@@ -108,6 +108,13 @@ export const useHomeScreen = () => {
     search.showFilters,
   ])
 
+  const removeListingById = useCallback((listingId) => {
+    if (!listingId) {
+      return
+    }
+    setListings((prev) => prev.filter((listing) => listing.id !== listingId))
+  }, [])
+
   return {
     listings,
     filteredListings,
@@ -118,6 +125,7 @@ export const useHomeScreen = () => {
     error,
     handleRefresh,
     handleLoadMore,
+    removeListingById,
     search,
   }
 }

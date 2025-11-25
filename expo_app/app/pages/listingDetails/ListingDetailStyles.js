@@ -149,4 +149,22 @@ export const listingDetailScreenStyles = StyleSheet.create({
   favoriteIconActive: {
     color: palette.danger,
   },
+  purchaseText: {
+    color: palette.textSecondary,
+    fontSize: 15,
+    lineHeight: 22,
+    marginBottom: 14,
+  },
+  buyButton: {
+    marginTop: 4,
+    backgroundColor: palette.accent,
+    paddingVertical: 14,
+    borderRadius: 12,
+    alignItems: 'center',
+  },
+  buyButtonText: {
+    color: '#1E1E1E',
+    fontSize: 16,
+    fontWeight: '700',
+  },
 })

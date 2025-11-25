@@ -12,7 +12,7 @@ import {
   View,
 } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
- 
+import { useFocusEffect, useNavigation, useRoute } from '@react-navigation/native'
 import { Ionicons } from '@expo/vector-icons'
 import { homeScreenStyles } from './HomeStyles'
 import { palette } from '../../theme/palette'
@@ -20,8 +20,8 @@ import FavoriteButton from '../../components/FavoriteButton'
 import SearchSuggestions from '../../components/SearchSuggestions'
 import SearchFilters from '../../components/SearchFilters'
 import { useHomeScreen } from './useHomeScreen'
-import { useNavigation } from '@react-navigation/native'
 import { formatPrice } from '../../utils/format'
+
 
 // formatPrice is now imported from utils
 
@@ -29,6 +29,8 @@ const getMainImage = (images) => (Array.isArray(images) && images.length > 0 ? i
 
 export default function HomeScreen() {
   const navigation = useNavigation()
+  const route = useRoute()
+
   const {
     filteredListings,
     initialLoading,
@@ -37,8 +39,10 @@ export default function HomeScreen() {
     error,
     handleRefresh,
     handleLoadMore,
+    removeListingById,
     search,
   } = useHomeScreen()
+}
 
   // Compact link to Recommendations screen (keeps home compact)
 
@@ -138,6 +142,27 @@ export default function HomeScreen() {
       </View>
     )
   }, [loadingMore])
+
+  useFocusEffect(
+    useCallback(() => {
+      const purchasedId = route.params?.purchasedListingId
+      const shouldRefresh = route.params?.refreshAfterPurchase
+
+      if (purchasedId) {
+        removeListingById(purchasedId)
+      }
+      if (shouldRefresh) {
+        handleRefresh()
+      }
+
+      if (purchasedId || shouldRefresh) {
+        navigation.setParams({
+          purchasedListingId: undefined,
+          refreshAfterPurchase: undefined,
+        })
+      }
+    }, [handleRefresh, navigation, removeListingById, route.params])
+  )
 
   return (
     <SafeAreaView style={styles.safeArea} edges={['top']}>

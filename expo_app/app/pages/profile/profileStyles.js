@@ -82,6 +82,25 @@ export const profileScreenStyles = StyleSheet.create({
     fontWeight: '500',
     marginTop: 4,
   },
+  balanceRow: {
+    marginTop: 8,
+    paddingVertical: 10,
+    paddingHorizontal: 12,
+    borderRadius: 12,
+    backgroundColor: palette.overlay,
+    borderWidth: 1,
+    borderColor: palette.border,
+  },
+  balanceValue: {
+    fontSize: 20,
+    color: palette.accent,
+    fontWeight: '700',
+  },
+  balanceHint: {
+    marginTop: 4,
+    color: palette.textSecondary,
+    fontSize: 13,
+  },
   section: {
     width: '100%',
     marginTop: 32,

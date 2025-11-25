@@ -40,29 +40,7 @@ export const useProfileScreen = () => {
   const [profile, setProfile] = useState(null)
   const [listings, setListings] = useState([])
   const [favoriteListings, setFavoriteListings] = useState([])
-
-  const refreshFavoriteListings = useCallback(async () => {
-    if (!user) {
-      setFavoriteListings([])
-      return
-    }
-
-    try {
-      const { data, error } = await supabase
-        .from('favorites')
-        .select(`listing:listing_id (${LISTING_FIELDS})`)
-        .eq('user_id', user.id)
-        .order('created_at', { ascending: false })
-
-      if (error) {
-        throw error
-      }
-
-      setFavoriteListings(mapFavoritesToListings(data))
-    } catch (refreshError) {
-      console.error('Error refreshing favorite listings', refreshError)
-    }
-  }, [user])
+  const [refreshTick, setRefreshTick] = useState(0)
 
   useEffect(() => {
     let isMounted = true
@@ -91,7 +69,7 @@ export const useProfileScreen = () => {
           supabase.auth.getUser(),
           supabase
             .from('profiles')
-            .select('profile_image_url')
+            .select('profile_image_url, saldo')
             .eq('id', user.id)
             .maybeSingle(),
           supabase
@@ -138,6 +116,10 @@ export const useProfileScreen = () => {
           name,
           mail,
           profileImageUrl: profileData?.profile_image_url || null,
+          balance:
+            profileData && profileData.saldo != null
+              ? Number(profileData.saldo)
+              : 0,
         })
         setListings(Array.isArray(listingsData) ? listingsData : [])
         setFavoriteListings(mapFavoritesToListings(favoritesData))
@@ -158,12 +140,12 @@ export const useProfileScreen = () => {
     return () => {
       isMounted = false
     }
-  }, [user])
+  }, [refreshTick, user])
 
   useFocusEffect(
     useCallback(() => {
-      refreshFavoriteListings()
-    }, [refreshFavoriteListings])
+      setRefreshTick((prev) => prev + 1)
+    }, [])
   )
 
   const avatarInitial = useMemo(() => {
