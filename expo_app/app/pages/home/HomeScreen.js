@@ -42,8 +42,6 @@ export default function HomeScreen() {
     removeListingById,
     search,
   } = useHomeScreen()
-}
-
   // Compact link to Recommendations screen (keeps home compact)
 
   const renderListing = useCallback(
