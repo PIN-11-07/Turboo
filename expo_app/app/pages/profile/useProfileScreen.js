@@ -6,7 +6,7 @@ import { supabase } from '../../util/supabase'
 const notFoundErrorCodes = new Set(['PGRST116', 'PGRST114'])
 
 const LISTING_FIELDS =
-  'id, user_id, title, description, price, make, model, year, mileage, fuel_type, transmission, doors, color, images, created_at'
+  'id, user_id, title, description, price, make, model, year, mileage, fuel_type, transmission, doors, color, images, is_active, created_at'
 
 const extractName = (supabaseUser) => {
   if (!supabaseUser) {
@@ -32,6 +32,14 @@ const mapFavoritesToListings = (favoritesData) =>
     .map((favorite) => favorite?.listing)
     .filter((listing) => listing && listing.id)
 
+const listingIsActive = (listing) => {
+  const value = listing?.is_active
+  if (value === false) return false
+  if (typeof value === 'string') return value.toLowerCase() !== 'false'
+  if (typeof value === 'number') return value !== 0
+  return true
+}
+
 export const useProfileScreen = () => {
   const { user, signOut } = useAuth()
   const navigation = useNavigation()
@@ -41,6 +49,7 @@ export const useProfileScreen = () => {
   const [listings, setListings] = useState([])
   const [favoriteListings, setFavoriteListings] = useState([])
   const [refreshTick, setRefreshTick] = useState(0)
+  const [reactivatingId, setReactivatingId] = useState(null)
 
   useEffect(() => {
     let isMounted = true
@@ -172,6 +181,52 @@ export const useProfileScreen = () => {
     )
   }, [])
 
+  const activeListings = useMemo(
+    () => listings.filter((listing) => listingIsActive(listing)),
+    [listings]
+  )
+
+  const inactiveListings = useMemo(
+    () => listings.filter((listing) => !listingIsActive(listing)),
+    [listings]
+  )
+
+  const reactivateListing = useCallback(
+    async (listingId) => {
+      if (!listingId || !user?.id) {
+        return false
+      }
+
+      setReactivatingId(listingId)
+
+      try {
+        const { error: updateError } = await supabase
+          .from('listings')
+          .update({ is_active: true })
+          .eq('id', listingId)
+          .eq('user_id', user.id)
+
+        if (updateError) {
+          throw updateError
+        }
+
+        setListings((prev) =>
+          prev.map((listing) =>
+            listing.id === listingId ? { ...listing, is_active: true } : listing
+          )
+        )
+
+        return true
+      } catch (updateError) {
+        console.error(updateError)
+        return false
+      } finally {
+        setReactivatingId(null)
+      }
+    },
+    [user?.id]
+  )
+
   return {
     user,
     signOut,
@@ -179,9 +234,13 @@ export const useProfileScreen = () => {
     error,
     profile,
     listings,
+    activeListings,
+    inactiveListings,
     favoriteListings,
     avatarInitial,
     handleListingPress,
     handleFavoriteRemoval,
+    reactivateListing,
+    reactivatingId,
   }
 }

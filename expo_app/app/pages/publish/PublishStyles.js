@@ -143,6 +143,22 @@ export const publishScreenStyles = StyleSheet.create({
     fontWeight: '600',
   },
 
+  draftButton: {
+    marginTop: 20,
+    backgroundColor: 'transparent',
+    borderWidth: 1,
+    borderColor: palette.gold,
+    paddingVertical: 14,
+    borderRadius: 8,
+    alignItems: 'center',
+  },
+
+  draftButtonText: {
+    color: palette.gold,
+    fontSize: 16,
+    fontWeight: '600',
+  },
+
   submitDisabled: {
     opacity: 0.5,
   },

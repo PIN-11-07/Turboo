@@ -179,6 +179,55 @@ export const profileScreenStyles = StyleSheet.create({
     color: palette.textMuted,
     marginTop: 4,
   },
+  listingCardInactive: {
+    borderColor: palette.danger,
+    backgroundColor: palette.elevated,
+  },
+  listingTitleInactive: {
+    color: palette.textSecondary,
+  },
+  listingPriceInactive: {
+    color: palette.textSecondary,
+  },
+  listingDateInactive: {
+    color: palette.textMuted,
+  },
+  inactiveRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginTop: 12,
+  },
+  inactiveBadge: {
+    paddingHorizontal: 10,
+    paddingVertical: 6,
+    borderRadius: 8,
+    backgroundColor: 'rgba(255, 107, 107, 0.12)',
+    borderWidth: 1,
+    borderColor: palette.danger,
+  },
+  inactiveBadgeText: {
+    color: palette.danger,
+    fontSize: 12,
+    fontWeight: '700',
+    letterSpacing: 0.4,
+  },
+  activateButton: {
+    paddingHorizontal: 14,
+    paddingVertical: 10,
+    borderRadius: 10,
+    backgroundColor: palette.accent,
+    minWidth: 110,
+    alignItems: 'center',
+  },
+  activateButtonText: {
+    color: '#000',
+    fontSize: 14,
+    fontWeight: '700',
+  },
+  activateButtonDisabled: {
+    opacity: 0.6,
+  },
   favoriteButton: {
     width: 36,
     height: 36,

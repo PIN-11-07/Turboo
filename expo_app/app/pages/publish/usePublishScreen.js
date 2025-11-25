@@ -50,6 +50,7 @@ export const usePublishScreen = () => {
   const [form, setForm] = useState(createInitialForm)
   const [activePicker, setActivePicker] = useState(null)
   const [submitting, setSubmitting] = useState(false)
+  const [submittingAction, setSubmittingAction] = useState(null)
   const [error, setError] = useState(null)
   const [successMessage, setSuccessMessage] = useState(null)
 
@@ -129,7 +130,7 @@ export const usePublishScreen = () => {
       fuel_type: form.fuel_type,
       transmission: form.transmission,
       doors: doorsValue,
-      color: form.color.trim(),  
+      color: form.color.trim(),
       location: form.location.trim(),
 
       // 👇 SE AGREGA LA IMAGEN AL PAYLOAD
@@ -147,6 +148,7 @@ export const usePublishScreen = () => {
     if (!payload) return
 
     setSubmitting(true)
+    setSubmittingAction('publish')
     setError(null)
     setSuccessMessage(null)
 
@@ -167,6 +169,40 @@ export const usePublishScreen = () => {
       setError('No fue posible publicar el anuncio. Intentalo de nuevo.')
     } finally {
       setSubmitting(false)
+      setSubmittingAction(null)
+    }
+  }
+
+  const handleSaveDraft = async () => {
+    if (!isAuthenticated) {
+      setError('Debes iniciar sesion para guardar el borrador.')
+      return
+    }
+
+    const payload = validateForm()
+    if (!payload) return
+
+    setSubmitting(true)
+    setSubmittingAction('draft')
+    setError(null)
+    setSuccessMessage(null)
+
+    try {
+      const { error: insertError } = await supabase.from('listings').insert({
+        ...payload,
+        user_id: user.id,
+        is_active: false,
+      })
+
+      if (insertError) throw insertError
+
+      setSuccessMessage('Anuncio guardado como borrador.')
+    } catch (e) {
+      console.error(e)
+      setError('No fue posible guardar el borrador. Intentalo de nuevo.')
+    } finally {
+      setSubmitting(false)
+      setSubmittingAction(null)
     }
   }
 
@@ -174,6 +210,7 @@ export const usePublishScreen = () => {
     form,
     activePicker,
     submitting,
+    submittingAction,
     error,
     successMessage,
     isAuthenticated,
@@ -181,6 +218,7 @@ export const usePublishScreen = () => {
     togglePicker,
     handleOptionSelect,
     handleSubmit,
+    handleSaveDraft,
 
     // 👇 Estos faltaban
     image,

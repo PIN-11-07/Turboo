@@ -60,6 +60,8 @@ export default function PublishScreen() {
     togglePicker,
     handleOptionSelect,
     handleSubmit,
+    handleSaveDraft,
+    submittingAction,
     image,
     setImage,
   } = usePublishScreen();
@@ -314,6 +316,18 @@ export default function PublishScreen() {
               <Text style={styles.feedbackText}>{successMessage}</Text>
             </View>
           )}
+
+          <TouchableOpacity
+            style={[styles.draftButton, submitting && styles.submitDisabled]}
+            onPress={handleSaveDraft}
+            disabled={submitting}
+          >
+            {submitting && submittingAction === 'draft' ? (
+              <ActivityIndicator color="#C58A1A" />
+            ) : (
+              <Text style={styles.draftButtonText}>Guardar borrador</Text>
+            )}
+          </TouchableOpacity>
 
           <TouchableOpacity
             style={[styles.postButton, submitting && styles.submitDisabled]}
