@@ -63,6 +63,7 @@ export default function ProfileScreen() {
     handleFavoriteRemoval,
     reactivateListing,
     reactivatingId,
+    refreshProfile,
   } = useProfileScreen()
 
   const [profile, setProfile] = useState(fetchedProfile)
@@ -207,6 +208,7 @@ export default function ProfileScreen() {
       setProfile(nextProfile)
       setNewAvatarUri(nextProfile.profileImageUrl ?? null)
       setEditing(false)
+      refreshProfile()
       Alert.alert('Éxito', 'Perfil actualizado con éxito')
     } catch (updateError) {
       console.error('Error al actualizar perfil/subir imagen:', updateError)
@@ -214,7 +216,15 @@ export default function ProfileScreen() {
     } finally {
       setSaving(false)
     }
-  }, [user?.id, newAvatarUri, name, email, profile, fetchedProfile])
+  }, [
+    user?.id,
+    newAvatarUri,
+    name,
+    email,
+    profile,
+    fetchedProfile,
+    refreshProfile,
+  ])
 
   const handleCancelEdit = useCallback(() => {
     setEditing(false)

@@ -51,6 +51,10 @@ export const useProfileScreen = () => {
   const [refreshTick, setRefreshTick] = useState(0)
   const [reactivatingId, setReactivatingId] = useState(null)
 
+  const refreshProfile = useCallback(() => {
+    setRefreshTick((prev) => prev + 1)
+  }, [])
+
   useEffect(() => {
     let isMounted = true
 
@@ -158,8 +162,8 @@ export const useProfileScreen = () => {
 
   useFocusEffect(
     useCallback(() => {
-      setRefreshTick((prev) => prev + 1)
-    }, [])
+      refreshProfile()
+    }, [refreshProfile])
   )
 
   const avatarInitial = useMemo(() => {
@@ -247,5 +251,6 @@ export const useProfileScreen = () => {
     handleFavoriteRemoval,
     reactivateListing,
     reactivatingId,
+    refreshProfile,
   }
 }
