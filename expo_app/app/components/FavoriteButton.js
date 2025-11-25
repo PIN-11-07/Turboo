@@ -344,4 +344,5 @@ export function FavoriteButton({
   )
 }
 
+export { subscribeToFavoriteStatus, setFavoriteStatus }
 export default FavoriteButton

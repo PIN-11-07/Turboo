@@ -16,6 +16,7 @@ mobile marketplace used to publish and browse car listings. Users can authentica
 - Docker and Docker Compose installed 
 - Supabase account with an existing project (URL + anon key) 
 - Expo Go app on a physical device if you want to test through the QR code
+- Google AI Studio API key if you want AI auto-fill (`EXPO_PUBLIC_GEMINI_API_KEY`)
 ## 2. Run the Project Locally with Docker
 
 > [!NOTE]
@@ -194,9 +195,9 @@ Turboo/
 - **Limitations/notes:** the feed shows only the first available image; if the images array is stringified it gets normalized in the detail screen.
 
 ### d) Listing publication
-- **Description:** `PublishScreen` offers a validated form for creating listings (required fields, numeric sanitization, brand/fuel/transmission pickers) and writes them to Supabase.
-- **APIs used:** `supabase.from('listings').insert`, custom validation helpers and in-memory selectors.
-- **Limitations/notes:** there is no media upload; the `images` field must be maintained manually (there is no UI to upload pictures).
+- **Description:** `PublishScreen` offers a validated form for creating listings (required fields, numeric sanitization, brand/fuel/transmission pickers) and writes them to Supabase. An “Remplir avec l'IA” button analyses the selected car photo with Gemini and auto-remplishes make/model/year/color/description when the image is already chosen.
+- **APIs used:** `supabase.from('listings').insert`, custom validation helpers and in-memory selectors, Gemini image+text generation (requires `EXPO_PUBLIC_GEMINI_API_KEY` from Google AI Studio).
+- **Limitations/notes:** no media upload to Supabase (images stay local in the form); AI analysis needs a valid Gemini key (billing activated but free quota available).
 
 ### e) Profile and listing management
 - **Description:** `ProfileScreen` fetches user data (`auth.getUser`, `profiles` table for avatars) and lists published listings, allowing navigation to the shared detail screen. La scheda `ListingDetail` mostra anche nome e immagine del venditore pescandoli dalla tabella `profiles`, ora leggibile da tutti per poter esporre questi metadati.
@@ -213,11 +214,21 @@ Turboo/
 - **Flow:** from the vehicle detail page a “Comprar” CTA opens a dedicated checkout screen where the buyer fills card data, confirms, and the app transfers the amount to the seller’s balance while applying a 5% platform fee.
 - **Guards:** buyers cannot purchase their own listing and the flow checks for sufficient balance before applying the simulated transfer.
 
+### h) AI auto-fill (publish)
+- **Description:** `ImageAnalisisButton` reads the already-selected car photo, sends it to Gemini, and fills publish fields plus generates a sales description.
+- **Config:** set `EXPO_PUBLIC_GEMINI_API_KEY` in `.env` (Google AI Studio key; billing enabled but free tier covers tests).
+- **UX:** shows loading state; if no image is selected, prompts the user to add one first.
+
 ## 6. Components
 ### FavoriteButton (`app/components/FavoriteButton.js`)
 - **Responsibility:** renders the heart icon, loads the initial favorite status, sends Supabase mutations (`insert`/`delete`) and handles optimistic updates while keeping errors isolated per button.
 - **Shared cache:** keeps a `Map` keyed by listing + user; listeners subscribe/unsubscribe so every mounted button reacts instantly to status changes.
 - **Variants & props:** `variant="detail\" | "overlay\" | "list\"` tweaks layout to match each screen; `initialIsFavorite`, `fetchOnMount`, `onStatusChange`, `hitSlop` and style overrides cover more advanced cases (e.g., removing an item from *Tus favoritos* when it gets unhearted).
+
+### ImageAnalisisButton (`app/components/ImageAnalisisButton.js`)
+- **Responsibility:** converts the picked image to base64, calls Gemini to extract car fields, and triggers description generation callbacks.
+- **Props:** `imageUri`, `onAnalysisComplete`, `onDescriptionGenerated`, `style`.
+- **Notes:** requires `EXPO_PUBLIC_GEMINI_API_KEY`; only works once an image has been chosen in the publish flow.
 
 ## 7. Database Structure
 
@@ -428,7 +439,7 @@ grant execute on function public.process_vehicle_purchase(uuid, uuid, numeric, n
 - [x] Buy vehicle flow  
 - [x] Text search  
 - [ ] Search filters  
-- [ ] AI auto-fill  
+- [x] AI auto-fill  
 - [ ] Save draft  
 - [ ] Vehicle matchmaking  
 - [ ] Ratings  
