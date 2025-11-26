@@ -2,6 +2,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useFocusEffect, useNavigation } from '@react-navigation/native'
 import { useAuth } from '../../context/AuthContext'
 import { supabase } from '../../util/supabase'
+import { getUserTransactionHistory } from '../../services/transactions'
 
 const notFoundErrorCodes = new Set(['PGRST116', 'PGRST114'])
 
@@ -48,6 +49,7 @@ export const useProfileScreen = () => {
   const [profile, setProfile] = useState(null)
   const [listings, setListings] = useState([])
   const [favoriteListings, setFavoriteListings] = useState([])
+  const [transactionHistory, setTransactionHistory] = useState([])
   const [refreshTick, setRefreshTick] = useState(0)
   const [reactivatingId, setReactivatingId] = useState(null)
 
@@ -64,6 +66,7 @@ export const useProfileScreen = () => {
           setProfile(null)
           setListings([])
           setFavoriteListings([])
+          setTransactionHistory([])
           setLoading(false)
         }
         return
@@ -78,6 +81,7 @@ export const useProfileScreen = () => {
           { data: profileData, error: profileError },
           { data: listingsData, error: listingsError },
           { data: favoritesData, error: favoritesError },
+          transactionHistoryData,
         ] = await Promise.all([
           supabase.auth.getUser(),
           supabase
@@ -95,6 +99,10 @@ export const useProfileScreen = () => {
             .select(`listing:listing_id (${LISTING_FIELDS})`)
             .eq('user_id', user.id)
             .order('created_at', { ascending: false }),
+          getUserTransactionHistory(user.id).catch(error => {
+            console.warn('Failed to fetch transaction history:', error)
+            return []
+          }),
         ])
 
         if (authError) {
@@ -141,6 +149,7 @@ export const useProfileScreen = () => {
         })
         setListings(Array.isArray(listingsData) ? listingsData : [])
         setFavoriteListings(mapFavoritesToListings(favoritesData))
+        setTransactionHistory(transactionHistoryData || [])
       } catch (fetchError) {
         console.error(fetchError)
         if (isMounted) {
@@ -246,6 +255,7 @@ export const useProfileScreen = () => {
     activeListings,
     inactiveListings,
     favoriteListings,
+    transactionHistory,
     avatarInitial,
     handleListingPress,
     handleFavoriteRemoval,
