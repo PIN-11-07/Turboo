@@ -21,6 +21,8 @@ import SearchSuggestions from '../../components/SearchSuggestions'
 import SearchFilters from '../../components/SearchFilters'
 import { useHomeScreen } from './useHomeScreen'
 import { formatPrice } from '../../utils/format'
+import * as ImagePicker from 'expo-image-picker'
+import ImageAnalysisButton from '../../components/ImageAnalisisButton'
 
 
 // formatPrice is now imported from utils
@@ -70,7 +72,7 @@ export default function HomeScreen() {
           </View>
           <View style={styles.cardContent}>
             <View style={styles.cardHeader}>
-              <Text style={styles.cardTitle}>{item.title}</Text>
+              <Text style={styles.cardTitle}>{item.make}</Text>
               <Text style={styles.cardPrice}>{formatPrice(item.price)}</Text>
             </View>
             <Text style={styles.cardSubtitle}>
@@ -91,6 +93,100 @@ export default function HomeScreen() {
     },
     [navigation]
   )
+
+  const [image, setImage] = useState(null)
+  const [aiMessageVisible, setAiMessageVisible] = useState(false)
+  const [aiMessage, setAiMessage] = useState('')
+
+  const pickImageFromGallery = async () => {
+    const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync()
+
+    if (status !== 'granted') {
+      // Minimal feedback; avoid blocking UX
+      return
+    }
+
+    const result = await ImagePicker.launchImageLibraryAsync({
+      allowsEditing: true,
+      aspect: [4, 3],
+      quality: 1,
+    })
+
+    if (!result.canceled) {
+      const uri = result.assets ? result.assets[0].uri : result.uri
+      setImage(uri)
+    }
+  }
+
+  const takePhoto = async () => {
+    const { status } = await ImagePicker.requestCameraPermissionsAsync()
+
+    if (status !== 'granted') {
+      return
+    }
+
+    const result = await ImagePicker.launchCameraAsync({
+      allowsEditing: true,
+      aspect: [4, 3],
+      quality: 1,
+    })
+
+    if (!result.canceled) {
+      const uri = result.assets ? result.assets[0].uri : result.uri
+      setImage(uri)
+    }
+  }
+
+  const handleAnalysisCompleteForSearch = (data) => {
+    if (!data) return
+
+    // Only apply a small set of simple filters: make, color and price
+    const newFilters = { ...search.filters }
+
+    // Apply brand and color if detected
+    if (data.make) {
+      newFilters.make = [data.make]
+      // Use make as search text to help narrow results
+      search.setSearchText(`${data.make}`)
+      search.setShowSuggestions(false)
+    }
+
+    if (data.color) {
+      newFilters.color = [data.color]
+    }
+
+    // If AI provides a price estimate, set a +-20% range around it
+    if (data.price) {
+      const parsedPrice = Number(String(data.price).replace(/[^0-9.]/g, ''))
+      if (!isNaN(parsedPrice) && parsedPrice > 0) {
+        const min = Math.max(search.priceRange.min, Math.round(parsedPrice * 0.8))
+        const max = Math.min(search.priceRange.max, Math.round(parsedPrice * 1.2))
+        newFilters.priceMin = min
+        newFilters.priceMax = max
+      }
+    }
+
+    // Apply filters silently (do not open the filters panel)
+    search.setFilters(newFilters)
+    search.setShowFilters(false)
+
+    // Simple banner summarizing applied filters
+    const parts = []
+    if (newFilters.make && newFilters.make.length) parts.push(`Brand: ${newFilters.make.join(', ')}`)
+    if (newFilters.color && newFilters.color.length) parts.push(`Color: ${newFilters.color.join(', ')}`)
+    if (newFilters.priceMin !== undefined && newFilters.priceMax !== undefined) parts.push(`Price: ${formatPrice(newFilters.priceMin)} - ${formatPrice(newFilters.priceMax)}`)
+
+    const banner = parts.length > 0
+      ? `AI-proposed filters applied:\n${parts.join('\n')}`
+      : 'AI analyzed the image but did not find confident filter suggestions.'
+
+    setAiMessage(banner)
+    setAiMessageVisible(true)
+    setTimeout(() => setAiMessageVisible(false), 6000)
+
+    // Clear picked image after applying
+    setTimeout(() => setImage(null), 500)
+  }
 
   const renderGridItem = useCallback(
     ({ item }) => {
@@ -293,6 +389,54 @@ export default function HomeScreen() {
             <Text style={styles.recommendButtonText}>Para ti</Text>
           </TouchableOpacity>
           {error && <Text style={styles.errorText}>{error}</Text>}
+
+          {/* AI Search: pick/take image and analyze to generate filters */}
+          <View style={styles.aiSearchContainer}>
+            {image ? (
+              <View style={styles.aiPreviewRow}>
+                <Image source={{ uri: image }} style={styles.aiPreviewImage} />
+                <TouchableOpacity style={styles.removeImageButtonSmall} onPress={() => setImage(null)}>
+                  <Text style={styles.removeImageX}>X</Text>
+                </TouchableOpacity>
+              </View>
+            ) : (
+              <View style={styles.aiButtonsRow}>
+                <TouchableOpacity style={styles.aiSmallButton} onPress={takePhoto}>
+                  <Ionicons name="camera" size={16} color={palette.background} />
+                  <Text style={styles.aiSmallButtonText}>Foto</Text>
+                </TouchableOpacity>
+
+                <TouchableOpacity style={styles.aiSmallButton} onPress={pickImageFromGallery}>
+                  <Ionicons name="images" size={16} color={palette.background} />
+                  <Text style={styles.aiSmallButtonText}>Galería</Text>
+                </TouchableOpacity>
+              </View>
+            )}
+
+            {/* Show analyze button when an image is selected */}
+            {image && (
+              <ImageAnalysisButton
+                imageUri={image}
+                onAnalysisComplete={handleAnalysisCompleteForSearch}
+                style={{ width: '100%' }}
+              />
+            )}
+          </View>
+
+          {/* AI Banner: professional English message shown after analysis */}
+          {aiMessageVisible && (
+            <View style={{ backgroundColor: '#FFFFFF', padding: 12, borderRadius: 10, marginHorizontal: 20, marginTop: 12 }}>
+              <View style={{ flexDirection: 'row', alignItems: 'flex-start' }}>
+                <View style={{ flex: 1 }}>
+                  <Text style={{ color: '#111', fontWeight: '700', marginBottom: 6 }}>AI-driven Recommendations</Text>
+                  <Text style={{ color: '#222', lineHeight: 20 }}>{aiMessage}</Text>
+                </View>
+                <TouchableOpacity onPress={() => setAiMessageVisible(false)} style={{ marginLeft: 12 }}>
+                  <Text style={{ color: '#666', fontWeight: '600' }}>Dismiss</Text>
+                </TouchableOpacity>
+              </View>
+            </View>
+          )}
         </View>
 
         {/* Search Filters */}
@@ -306,6 +450,9 @@ export default function HomeScreen() {
           colorOptions={search.colorOptions}
           fuelTypeOptions={search.fuelTypeOptions}
           transmissionOptions={search.transmissionOptions}
+          bodyTypeOptions={search.bodyTypeOptions}
+          conditionOptions={search.conditionOptions}
+          doorsOptions={search.doorsOptions}
           onApply={() => {
             search.setShowFilters(false)
             Keyboard.dismiss()

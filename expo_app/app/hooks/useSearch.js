@@ -53,6 +53,9 @@ export const useSearch = (listings = []) => {
     fuelType: [], // Array for multi-select with OR condition
     transmission: [], // Array for multi-select with OR condition
     mileageMax: '',
+    bodyType: [],
+    condition: [],
+    doors: [],
   })
 
   // Update filters when ranges change
@@ -80,12 +83,22 @@ export const useSearch = (listings = []) => {
   ]
 
   const fuelTypeOptions = [
-    'Gasolina', 'Diésel', 'Eléctrico', 'Híbrido', 'Gas'
+    'Gasolina', 'Diésel', 'Eléctrico', 'Híbrido', 'GLP', 'GNC', 'Gas'
   ]
 
   const transmissionOptions = [
-    'Manual', 'Automática'
+    'Manual', 'Automática', 'Semiautomática'
   ]
+
+  const bodyTypeOptions = [
+    'SUV', 'Sedan', 'Hatchback', 'Coupe', 'Convertible', 'Wagon', 'Van', 'Pickup', 'Minivan', 'Crossover'
+  ]
+
+  const conditionOptions = [
+    'Excellent', 'Good', 'Average', 'Needs restoration'
+  ]
+
+  const doorsOptions = ['2', '3', '4', '5+']
 
   // Generate search suggestions
   const suggestions = useMemo(() => {
@@ -207,6 +220,31 @@ export const useSearch = (listings = []) => {
       const selectedTransmissions = filters.transmission.map(t => normalizeForSearch(t))
       if (!selectedTransmissions.includes(listingTransmission)) return false
     }
+
+    // Condition filter (multi-select OR condition)
+    if (Array.isArray(filters.condition) && filters.condition.length > 0) {
+      const listingCondition = normalizeForSearch(listing.condition)
+      const selectedConditions = filters.condition.map(c => normalizeForSearch(c))
+      if (!selectedConditions.includes(listingCondition)) return false
+    }
+
+    // Body type filter (multi-select OR condition)
+    if (Array.isArray(filters.bodyType) && filters.bodyType.length > 0) {
+      const listingBody = normalizeForSearch(listing.body_type)
+      const selectedBodies = filters.bodyType.map(b => normalizeForSearch(b))
+      if (!selectedBodies.includes(listingBody)) return false
+    }
+
+    // Doors filter (multi-select OR). Accepts numeric or string values in listings
+    if (Array.isArray(filters.doors) && filters.doors.length > 0) {
+      const listingDoors = String(listing.doors ?? '')
+      const normalizedListingDoors = listingDoors === '5' ? '5+' : listingDoors
+      const matchesDoor = filters.doors.some(d => {
+        if (d === '5+' && (Number(listing.doors) >= 5)) return true
+        return d === normalizedListingDoors
+      })
+      if (!matchesDoor) return false
+    }
     
     // Mileage filter
     if (filters.mileageMax) {
@@ -270,6 +308,9 @@ export const useSearch = (listings = []) => {
       fuelType: [],
       transmission: [],
       mileageMax: '',
+      bodyType: [],
+      condition: [],
+      doors: [],
     })
     setShowFilters(false)
   }, [priceRange, yearRange])
@@ -315,6 +356,9 @@ export const useSearch = (listings = []) => {
     colorOptions,
     fuelTypeOptions,
     transmissionOptions,
+    bodyTypeOptions,
+    conditionOptions,
+    doorsOptions,
     priceRange,
     yearRange,
 

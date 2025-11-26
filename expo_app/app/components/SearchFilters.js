@@ -30,7 +30,7 @@ const { width } = Dimensions.get('window')
  * @param {Function} props.onApply - Callback when applying filters
  * @param {Function} props.onClear - Callback when clearing filters
  */
-const SearchFilters = ({
+  const SearchFilters = ({
   visible,
   filters,
   setFilters,
@@ -40,6 +40,9 @@ const SearchFilters = ({
   colorOptions,
   fuelTypeOptions,
   transmissionOptions,
+  bodyTypeOptions,
+  conditionOptions,
+  doorsOptions,
   onApply,
   onClear,
 }) => {
@@ -225,6 +228,69 @@ const SearchFilters = ({
                 >
                   <Text style={[styles.chipText, isSelected && styles.chipTextSelected]}>
                     {transmission}
+                  </Text>
+                </TouchableOpacity>
+              )
+            })}
+          </View>
+        </View>
+
+        {/* Body Type */}
+        <View style={styles.section}>
+          <Text style={styles.sectionLabel}>Body Type (multi-select)</Text>
+          <View style={styles.chipContainer}>
+            {bodyTypeOptions.map(bt => {
+              const isSelected = Array.isArray(filters.bodyType) && filters.bodyType.includes(bt)
+              return (
+                <TouchableOpacity
+                  key={bt}
+                  onPress={() => handleMultiSelect('bodyType', bt)}
+                  style={[styles.chip, isSelected && styles.chipSelected]}
+                >
+                  <Text style={[styles.chipText, isSelected && styles.chipTextSelected]}>
+                    {bt}
+                  </Text>
+                </TouchableOpacity>
+              )
+            })}
+          </View>
+        </View>
+
+        {/* Condition */}
+        <View style={styles.section}>
+          <Text style={styles.sectionLabel}>Condition (multi-select)</Text>
+          <View style={styles.chipContainer}>
+            {conditionOptions.map(cond => {
+              const isSelected = Array.isArray(filters.condition) && filters.condition.includes(cond)
+              return (
+                <TouchableOpacity
+                  key={cond}
+                  onPress={() => handleMultiSelect('condition', cond)}
+                  style={[styles.chip, isSelected && styles.chipSelected]}
+                >
+                  <Text style={[styles.chipText, isSelected && styles.chipTextSelected]}>
+                    {cond}
+                  </Text>
+                </TouchableOpacity>
+              )
+            })}
+          </View>
+        </View>
+
+        {/* Doors */}
+        <View style={styles.section}>
+          <Text style={styles.sectionLabel}>Doors</Text>
+          <View style={styles.chipContainer}>
+            {doorsOptions.map(d => {
+              const isSelected = Array.isArray(filters.doors) && filters.doors.includes(d)
+              return (
+                <TouchableOpacity
+                  key={d}
+                  onPress={() => handleMultiSelect('doors', d)}
+                  style={[styles.chip, isSelected && styles.chipSelected]}
+                >
+                  <Text style={[styles.chipText, isSelected && styles.chipTextSelected]}>
+                    {d}
                   </Text>
                 </TouchableOpacity>
               )

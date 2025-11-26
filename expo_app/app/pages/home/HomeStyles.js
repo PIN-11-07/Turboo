@@ -384,4 +384,45 @@ export const homeScreenStyles = StyleSheet.create({
     color: palette.textMuted,
     fontSize: 12,
   },
+  aiSearchContainer: {
+    marginTop: 12,
+  },
+  aiButtonsRow: {
+    flexDirection: 'row',
+    gap: 8,
+  },
+  aiSmallButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: palette.accent,
+    paddingVertical: 8,
+    paddingHorizontal: 12,
+    borderRadius: 10,
+    marginRight: 8,
+  },
+  aiSmallButtonText: {
+    color: palette.background,
+    fontWeight: '700',
+    marginLeft: 8,
+  },
+  aiPreviewRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  aiPreviewImage: {
+    width: 96,
+    height: 72,
+    borderRadius: 8,
+    marginRight: 8,
+    backgroundColor: palette.overlay,
+  },
+  removeImageButtonSmall: {
+    backgroundColor: palette.surface,
+    padding: 8,
+    borderRadius: 8,
+  },
+  removeImageX: {
+    color: palette.danger,
+    fontWeight: '700',
+  },
 })
