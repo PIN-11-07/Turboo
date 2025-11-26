@@ -219,6 +219,50 @@ Turboo/
 - **Config:** set `EXPO_PUBLIC_GEMINI_API_KEY` in `.env` (Google AI Studio key; billing enabled but free tier covers tests).
 - **UX:** shows loading state; if no image is selected, prompts the user to add one first.
 
+### i) AI image search (Home)
+- **Description:** Users can pick or take a photo directly from the `Home` screen. The selected image is analyzed using the same Gemini-based pipeline (`CarAnalysisService` + `ImageAnalisisButton`) used for publish autofill.
+- **What the AI applies:** to keep search recall high the AI applies a minimal set of filters only: **brand (make)**, **color**, and a **price range (±20%)** when a price estimate is available. The detected brand is also used as the search text to improve matching.
+- **Behavior & UX:** filters are applied silently (the filters panel does not open), a professional banner summarizing the applied filters is shown, and the picked image is cleared after the search is applied.
+- **Rationale:** limiting the AI-applied filters reduces over-constraining and finds visually similar listings more reliably.
+- **Config:** requires `EXPO_PUBLIC_GEMINI_API_KEY` in `.env` and the `ImageAnalisisButton` component to be available in the publish flow.
+
+### j) Data generator script
+- **Location:** `scripts/generate_luxury_listings.py`
+- **Purpose:** generate fake luxury car listings for development/testing. Outputs SQL INSERT, JSONL (one object per line), or optionally inserts directly into Supabase via the REST API.
+- **Key features:**
+  - Proper SQL escaping for text fields.
+  - Ensures output directories exist before writing files.
+  - CLI flags: `-n/--num`, `--sql-out`, `--jsonl-out`, `--api`, `--supabase-url`, `--supabase-key`, `--prefer-return`.
+  - Helpful errors when Python dependencies are missing.
+- **Dependencies:** Python 3 and the `faker` and `requests` packages. Install with:
+
+```powershell
+python -m pip install faker requests
+```
+
+- **Usage examples:**
+
+Write SQL file (safe to inspect before running against DB):
+```powershell
+python scripts/generate_luxury_listings.py -n 40 --sql-out tmp/luxury_insert.sql
+```
+
+Write JSONL (one JSON object per line):
+```powershell
+python scripts/generate_luxury_listings.py -n 40 --jsonl-out tmp/luxury.jsonl
+```
+
+Insert directly into Supabase via REST (requires a service role key):
+```powershell
+python scripts/generate_luxury_listings.py -n 40 --api --supabase-url "https://your-project.supabase.co" --supabase-key "SERVICE_ROLE_KEY" --prefer-return
+```
+
+- **Important:** for direct API insertion you must use a Supabase `service_role` key (or an account with write permissions). The public/anon key is likely blocked by Row Level Security for inserts. Always verify `--jsonl-out` or `--sql-out` before using `--api` in production-like environments.
+
+### Search & filters enhancements
+- The search/filter system (`useSearch` + `SearchFilters`) was extended to support additional options: **body type**, **condition**, **doors**, **fuel type** and **transmission**. These options are exposed in the `SearchFilters` component as selectable chips and sliders.
+
+
 ## 6. Components
 ### FavoriteButton (`app/components/FavoriteButton.js`)
 - **Responsibility:** renders the heart icon, loads the initial favorite status, sends Supabase mutations (`insert`/`delete`) and handles optimistic updates while keeping errors isolated per button.
