@@ -45,7 +45,7 @@ const ImageAnalysisButton = ({
       const model = analysisResult?.model;
       const message = make || model ? `${make || ''} ${model || ''}`.trim() : 'Car not identified';
       
-      Alert.alert('Analysis complete', message);
+      //Alert.alert('Analysis complete', message);
       
     } catch (error) {
       console.error('Error in button component:', error);
