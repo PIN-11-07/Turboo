@@ -2,6 +2,9 @@ import { useMemo, useState } from 'react'
 import { useAuth } from '../../context/AuthContext'
 import { supabase } from '../../util/supabase'
 
+const CLOUD_NAME = "di7ioytqx"
+const UPLOAD_PRESET = "vehiculos_upload"
+
 const REQUIRED_FIELDS = [
   'title',
   'description',
@@ -131,59 +134,67 @@ export const usePublishScreen = () => {
       doors: doorsValue,
       color: form.color.trim(),  
       location: form.location.trim(),
+    }
+  }
 
-      // 👇 SE AGREGA LA IMAGEN AL PAYLOAD
-      images: image ? [image] : [],
+  const uploadToCloudinary = async (uri) => {
+    try {
+      const data = new FormData()
+      data.append("file", { uri, type:"image/jpeg", name:`vehiculo_${Date.now()}.jpg` })
+      data.append("upload_preset", UPLOAD_PRESET)
+
+      const res = await fetch(`https://api.cloudinary.com/v1_1/${CLOUD_NAME}/image/upload`, {
+        method:"POST",
+        body:data
+      })
+
+      const json = await res.json()
+      return json.secure_url ?? null
+
+    } catch {
+      return null
     }
   }
 
   const handleSubmit = async () => {
-    if (!isAuthenticated) {
-      setError('Debes iniciar sesion para publicar un anuncio.')
-      return
-    }
-
+    if (!isAuthenticated) return setError("Debes iniciar sesión")
+    
     const payload = validateForm()
     if (!payload) return
 
-    setSubmitting(true)
-    setError(null)
-    setSuccessMessage(null)
+    setSubmitting(true); setError(null); setSuccessMessage(null)
 
     try {
-      const { error: insertError } = await supabase.from('listings').insert({
+      let imageUrl = null
+
+      if (image) {
+        imageUrl = await uploadToCloudinary(image)
+        if (!imageUrl) throw new Error("Error subiendo imagen")
+      }
+
+      const { error: insertError } = await supabase.from("listings").insert({
         ...payload,
-        user_id: user.id,
-        is_active: true,
+        user_id:user.id,
+        images: imageUrl ? [imageUrl] : [],
+        is_active:true,
       })
 
       if (insertError) throw insertError
 
       setForm(createInitialForm())
-      setImage(null) // limpiar imagen después de publicar
-      setSuccessMessage('Anuncio publicado correctamente.')
+      setImage(null)
+      setSuccessMessage("Publicado correctamente.")
+
     } catch (e) {
-      console.error(e)
-      setError('No fue posible publicar el anuncio. Intentalo de nuevo.')
+      setError("Error al publicar. Inténtalo más tarde.")
     } finally {
       setSubmitting(false)
     }
   }
 
   return {
-    form,
-    activePicker,
-    submitting,
-    error,
-    successMessage,
-    isAuthenticated,
-    handleChange,
-    togglePicker,
-    handleOptionSelect,
-    handleSubmit,
-
-    // 👇 Estos faltaban
-    image,
-    setImage,
+    form, image, setImage, submitting, error,
+    successMessage, activePicker, isAuthenticated,
+    handleChange, togglePicker, handleOptionSelect, handleSubmit,
   }
 }

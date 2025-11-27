@@ -21,6 +21,8 @@ import SearchSuggestions from '../../components/SearchSuggestions'
 import SearchFilters from '../../components/SearchFilters'
 import { useHomeScreen } from './useHomeScreen'
 import { formatPrice } from '../../utils/format'
+import { useFocusEffect } from '@react-navigation/native'
+
 
 // formatPrice is now imported from utils
 
@@ -39,6 +41,12 @@ export default function HomeScreen() {
     handleLoadMore,
     search,
   } = useHomeScreen()
+
+    useFocusEffect(
+    useCallback(() => {
+      handleRefresh()   // <- el feed se actualiza automático al volver
+    }, [])
+  )
 
   const renderListing = useCallback(
     ({ item }) => {
@@ -148,7 +156,7 @@ export default function HomeScreen() {
       <View style={styles.container}>
         <View style={styles.topSection}>
           <View style={styles.hero}>
-            <Text style={styles.heroTitle}>TURBOO</Text>
+            <Text style={styles.heroTitle}>REVVOL</Text>
           </View>
 
           {/* Enhanced Search Interface */}
