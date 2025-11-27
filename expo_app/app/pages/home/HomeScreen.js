@@ -46,6 +46,12 @@ export default function HomeScreen() {
   } = useHomeScreen()
   // Compact link to Recommendations screen (keeps home compact)
 
+  useFocusEffect(
+    useCallback(() => {
+      handleRefresh()
+    }, [])
+  )
+
   const renderListing = useCallback(
     ({ item }) => {
       const mainImage = getMainImage(item.images)
