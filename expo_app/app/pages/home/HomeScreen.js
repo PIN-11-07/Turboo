@@ -295,7 +295,7 @@ export default function HomeScreen() {
             colors={['#bf8a2e', '#000000ff']}
             start={{ x: 0, y: 0 }}
             end={{ x: 0, y: 1 }}
-            style={styles.heroContainer} // Ya no necesitas height ni otros hacks
+            style={styles.heroContainer}
           />
 
           {/* Enhanced FSearch Interface */}

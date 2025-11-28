@@ -6,11 +6,11 @@ const { width } = Dimensions.get('window')
 export const homeScreenStyles = StyleSheet.create({
   safeArea: {
     flex: 1,
-    backgroundColor: palette.background,
+    backgroundColor: "transparent",
   },
   container: {
     flex: 1,
-    backgroundColor: palette.background, // color base oscuro
+    backgroundColor: "transparent", // color base oscuro
   },
 
   listContent: {
