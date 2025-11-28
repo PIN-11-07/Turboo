@@ -180,6 +180,15 @@ export const useProfileScreen = () => {
     return fallbackName.trim().charAt(0).toUpperCase() || '?'
   }, [profile?.name, user?.email])
 
+  const filteredFavoriteListings = useMemo(
+    () =>
+      favoriteListings.filter((listing) => {
+        // Ne montrer que les annonces actives OU les annonces de l'utilisateur lui-même
+        return listingIsActive(listing) || listing.user_id === user?.id
+      }),
+    [favoriteListings, user?.id]
+  )
+
   const handleListingPress = useCallback(
     (listing) => {
       if (!listing?.id) {
@@ -254,7 +263,7 @@ export const useProfileScreen = () => {
     listings,
     activeListings,
     inactiveListings,
-    favoriteListings,
+    favoriteListings: filteredFavoriteListings,
     transactionHistory,
     avatarInitial,
     handleListingPress,

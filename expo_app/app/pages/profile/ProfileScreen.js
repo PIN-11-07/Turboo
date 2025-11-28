@@ -268,6 +268,7 @@ export default function ProfileScreen() {
         : 'fecha s/d'
       const isInactive = listing.is_active === false
       const isReactivating = reactivatingId === listing.id
+      const isOwnListing = listing.user_id === user?.id
       const dateLabel = isInactive
         ? `Guardado el ${publishDate}`
         : `Publicado el ${publishDate}`
@@ -336,7 +337,7 @@ export default function ProfileScreen() {
             >
               {dateLabel}
             </Text>
-            {isInactive ? (
+            {isInactive && isOwnListing ? (
               <View style={styles.inactiveRow}>
                 <View style={styles.inactiveBadge}>
                   <Text style={styles.inactiveBadgeText}>Inactivo</Text>
@@ -356,12 +357,16 @@ export default function ProfileScreen() {
                   )}
                 </TouchableOpacity>
               </View>
+            ) : isInactive && !isOwnListing ? (
+              <View style={styles.inactiveBadge}>
+                <Text style={styles.inactiveBadgeText}>No disponible</Text>
+              </View>
             ) : null}
           </View>
         </TouchableOpacity>
       )
     },
-    [handleFavoriteRemoval, handleListingPress, handleReactivate, reactivatingId]
+    [handleFavoriteRemoval, handleListingPress, handleReactivate, reactivatingId, user?.id]
   )
 
   if (loading) {
