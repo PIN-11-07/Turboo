@@ -4,28 +4,30 @@ import { palette } from '../../theme/palette'
 export const homeScreenStyles = StyleSheet.create({
   safeArea: {
     flex: 1,
-    backgroundColor: palette.background,
+    backgroundColor: "transparent",
   },
+
   container: {
     flex: 1,
-    backgroundColor: palette.background,
+    backgroundColor: 'transparent', // color base oscuro
   },
+
   listContent: {
     paddingHorizontal: 16,
     paddingBottom: 16,
-    backgroundColor: palette.background,
+    backgroundColor: "transparent",
   },
   emptyList: {
     paddingHorizontal: 16,
     paddingBottom: 16,
     flexGrow: 1,
-    backgroundColor: palette.background,
+    backgroundColor: "transparent",
   },
   topSection: {
     paddingTop: 16,
     paddingHorizontal: 16,
     marginBottom: 12,
-    backgroundColor: palette.background,
+    backgroundColor: "transparent",
   },
   recommendationsSection: {
     paddingHorizontal: 16,
@@ -267,7 +269,7 @@ export const homeScreenStyles = StyleSheet.create({
     alignItems: 'center',
     backgroundColor: 'rgba(4, 4, 4, 0.85)',
   },
-  
+
   // Enhanced Search Styles
   searchBarContainer: {
     flexDirection: 'row',
@@ -342,7 +344,7 @@ export const homeScreenStyles = StyleSheet.create({
     fontSize: 16,
     fontWeight: '500',
   },
-  
+
   // Grid View Styles  
   gridContainer: {
     paddingHorizontal: 10,
@@ -357,7 +359,7 @@ export const homeScreenStyles = StyleSheet.create({
     borderColor: palette.border,
   },
   gridImageContainer: {
-    aspectRatio: 4/3,
+    aspectRatio: 4 / 3,
     width: '100%',
   },
   gridImage: {
@@ -425,4 +427,31 @@ export const homeScreenStyles = StyleSheet.create({
     color: palette.danger,
     fontWeight: '700',
   },
+
+  heroContainer: {
+    position: 'absolute',
+    top: 0, 
+    top: 120,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    zIndex: -1,
+  },
+
+
+  heroTitleMain: {
+    color: "#fff",
+    fontSize: 40,
+    fontWeight: "700",
+  },
+
+
+  heroTitleSub: {
+    fontSize: 32,
+    fontStyle: "italic",
+    color: "#D6B170",
+    marginTop: -6,
+  },
+
+
 })
