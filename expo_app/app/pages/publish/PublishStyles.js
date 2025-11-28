@@ -57,10 +57,10 @@ export const publishScreenStyles = StyleSheet.create({
   },
 
   tipText: {
-    color: palette.textMuted,
-    fontSize: 12,
-    marginBottom: 20,
-    marginTop: 4,
+    color: '#ddddddff',
+    fontSize: 14,
+    marginBottom: 30,
+    marginTop: 10,
     lineHeight: 16,
   },
 
@@ -73,6 +73,7 @@ export const publishScreenStyles = StyleSheet.create({
 
   label: {
     color: palette.textPrimary,
+    fontFamily: 'System',
     fontSize: 13,
     marginBottom: 6,
     marginTop: 12,
@@ -104,7 +105,7 @@ export const publishScreenStyles = StyleSheet.create({
     padding: 14,
     borderRadius: 8,
     fontSize: 16,
-    color: palette.textPrimary,
+    color: palette.gold,
   },
 
   multiline: {
@@ -130,7 +131,7 @@ export const publishScreenStyles = StyleSheet.create({
   },
 
   postButton: {
-    marginTop: 28,
+    marginTop: 54,
     backgroundColor: palette.gold,
     paddingVertical: 16,
     borderRadius: 8,
@@ -245,5 +246,17 @@ removeImageX: {
   fontSize: 18,
   fontWeight: 'bold',
 },
-
+placeholder: {
+  color: palette.gold, 
+  opacity: 0.65, 
+  fontSize: 16,
+},
+sellCarTitle: {
+  fontFamily: 'serif',
+  fontSize: 16,
+  color: '#fff',
+  textAlign: 'center',
+  marginVertical: 20,
+  letterSpacing: 1,
+},
 })

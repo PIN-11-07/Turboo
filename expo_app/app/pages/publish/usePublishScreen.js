@@ -56,25 +56,25 @@ export const usePublishScreen = () => {
   const [error, setError] = useState(null)
   const [successMessage, setSuccessMessage] = useState(null)
 
-  // 👇 FALTABA ESTO
+  
   const [image, setImage] = useState(null)
 
   const isAuthenticated = Boolean(user?.id)
 
   const requiredLabels = useMemo(
     () => ({
-      title: 'Titulo',
-      description: 'Descripcion',
-      price: 'Precio',
-      make: 'Marca',
-      model: 'Modelo',
-      year: 'Anio',
-      mileage: 'Kilometraje',
+      title: 'Title',
+      description: 'Description',
+      price: 'Price',
+      make: 'Brand',
+      model: 'Model',
+      year: 'Year',
+      mileage: 'Mileage',
       fuel_type: 'Combustible',
       transmission: 'Transmision',
-      doors: 'Puertas',
+      doors: 'Doors',
       color: 'Color',
-      location: 'Ubicacion',
+      location: 'Location',
     }),
     []
   )
@@ -104,7 +104,7 @@ export const usePublishScreen = () => {
 
     if (missingFields.length > 0) {
       const missingLabels = missingFields.map((f) => requiredLabels[f] || f)
-      setError(`Completa los campos obligatorios: ${missingLabels.join(', ')}.`)
+      setError(`Complete the required fields: ${missingLabels.join(', ')}.`)
       return false
     }
 
