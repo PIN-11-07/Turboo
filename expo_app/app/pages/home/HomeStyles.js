@@ -1,15 +1,16 @@
-import { StyleSheet } from 'react-native'
+import { StyleSheet, Dimensions, Platform } from 'react-native'
 import { palette } from '../../theme/palette'
+
+const { width } = Dimensions.get('window')
 
 export const homeScreenStyles = StyleSheet.create({
   safeArea: {
     flex: 1,
-    backgroundColor: "transparent",
+    backgroundColor: palette.background,
   },
-
   container: {
     flex: 1,
-    backgroundColor: 'transparent', // color base oscuro
+    backgroundColor: palette.background, // color base oscuro
   },
 
   listContent: {
@@ -430,7 +431,7 @@ export const homeScreenStyles = StyleSheet.create({
 
   heroContainer: {
     position: 'absolute',
-    top: 0, 
+    top: 0,
     top: 120,
     left: 0,
     right: 0,
@@ -453,5 +454,63 @@ export const homeScreenStyles = StyleSheet.create({
     marginTop: -6,
   },
 
-
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0, 0, 0, 0.7)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 20,
+  },
+  modalContent: {
+    backgroundColor: palette.surface,
+    borderRadius: 16,
+    padding: 24,
+    width: '100%',
+    maxWidth: 340,
+    alignItems: 'center',
+    borderWidth: 1,
+    borderColor: palette.border,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+    elevation: 10,
+  },
+  modalTitle: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    color: palette.textPrimary,
+    marginBottom: 12,
+    fontFamily: Platform.OS === 'ios' ? 'Georgia' : 'serif',
+  },
+  modalText: {
+    fontSize: 14,
+    color: palette.textSecondary,
+    textAlign: 'center',
+    marginBottom: 24,
+    lineHeight: 20,
+  },
+  modalButtonPrimary: {
+    backgroundColor: palette.accent,
+    paddingVertical: 12,
+    paddingHorizontal: 24,
+    borderRadius: 8,
+    width: '100%',
+    alignItems: 'center',
+    marginBottom: 12,
+  },
+  modalButtonText: {
+    color: '#000',
+    fontWeight: '600',
+    fontSize: 16,
+  },
+  modalButtonSecondary: {
+    paddingVertical: 12,
+    width: '100%',
+    alignItems: 'center',
+  },
+  modalButtonTextSecondary: {
+    color: palette.textMuted,
+    fontSize: 14,
+  },
 })

@@ -38,7 +38,7 @@ export default function HomeNavigator() {
       <Stack.Screen
         name="ListingDetail"
         component={ListingDetailScreen}
-        options={{ title: 'Detalles del vehículo' }}
+        options={{ headerShown: false }}
       />
       <Stack.Screen
         name="Purchase"

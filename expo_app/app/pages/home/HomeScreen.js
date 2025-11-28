@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from 'react'
+import React, { useCallback, useState, useEffect } from 'react'
 import {
   ActivityIndicator,
   FlatList,
@@ -10,9 +10,11 @@ import {
   TextInput,
   TouchableOpacity,
   View,
+  Modal,
 } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { useFocusEffect, useNavigation, useRoute } from '@react-navigation/native'
+import { useAuth } from '../../context/AuthContext'
 import { Ionicons } from '@expo/vector-icons'
 import { homeScreenStyles } from './HomeStyles'
 import { palette } from '../../theme/palette'
@@ -23,6 +25,7 @@ import { useHomeScreen } from './useHomeScreen'
 import { formatPrice } from '../../utils/format'
 import * as ImagePicker from 'expo-image-picker'
 import ImageAnalysisButton from '../../components/ImageAnalisisButton'
+import AnimatedAISearchButton from '../../components/AnimatedAISearchButton'
 import { LinearGradient } from 'expo-linear-gradient'
 
 
@@ -33,6 +36,18 @@ const getMainImage = (images) => (Array.isArray(images) && images.length > 0 ? i
 export default function HomeScreen() {
   const navigation = useNavigation()
   const route = useRoute()
+  const { user } = useAuth()
+  const [authModalVisible, setAuthModalVisible] = useState(false)
+
+  useEffect(() => {
+    let timer
+    if (!user) {
+      timer = setTimeout(() => {
+        setAuthModalVisible(true)
+      }, 5000)
+    }
+    return () => clearTimeout(timer)
+  }, [user])
 
   const {
     filteredListings,
@@ -275,7 +290,7 @@ export default function HomeScreen() {
 
           <Text style={styles.heroTitleMain}>Discover</Text>
           <Text style={styles.heroTitleSub}>all cars</Text>
-          <View style={{ height: 30 }} /> 
+          <View style={{ height: 30 }} />
           <LinearGradient
             colors={['#bf8a2e', '#000000ff']}
             start={{ x: 0, y: 0 }}
@@ -419,15 +434,16 @@ export default function HomeScreen() {
               </View>
             ) : (
               <View style={styles.aiButtonsRow}>
-                <TouchableOpacity style={styles.aiSmallButton} onPress={takePhoto}>
-                  <Ionicons name="camera" size={16} color={palette.background} />
-                  <Text style={styles.aiSmallButtonText}>Foto</Text>
-                </TouchableOpacity>
-
-                <TouchableOpacity style={styles.aiSmallButton} onPress={pickImageFromGallery}>
-                  <Ionicons name="images" size={16} color={palette.background} />
-                  <Text style={styles.aiSmallButtonText}>Galería</Text>
-                </TouchableOpacity>
+                <AnimatedAISearchButton
+                  onPress={takePhoto}
+                  icon="camera-outline"
+                  label="Scan Car"
+                />
+                <AnimatedAISearchButton
+                  onPress={pickImageFromGallery}
+                  icon="images-outline"
+                  label="Upload"
+                />
               </View>
             )}
 
@@ -522,7 +538,38 @@ export default function HomeScreen() {
           </View>
         )}
       </View>
-    </SafeAreaView>
+
+      <Modal
+        animationType="fade"
+        transparent={true}
+        visible={authModalVisible}
+        onRequestClose={() => setAuthModalVisible(false)}
+      >
+        <View style={styles.modalOverlay}>
+          <View style={styles.modalContent}>
+            <Text style={styles.modalTitle}>Join the Community</Text>
+            <Text style={styles.modalText}>
+              You are not connected. Please log in or create an account to unlock exclusive deals and features.
+            </Text>
+            <TouchableOpacity
+              style={styles.modalButtonPrimary}
+              onPress={() => {
+                setAuthModalVisible(false)
+                navigation.navigate('Auth')
+              }}
+            >
+              <Text style={styles.modalButtonText}>Log In / Sign Up</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={styles.modalButtonSecondary}
+              onPress={() => setAuthModalVisible(false)}
+            >
+              <Text style={styles.modalButtonTextSecondary}>Continue as Guest</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
+    </SafeAreaView >
 
   )
 }
