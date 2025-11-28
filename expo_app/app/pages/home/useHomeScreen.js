@@ -2,7 +2,8 @@ import { useCallback, useEffect, useMemo, useState } from 'react'
 import { supabase } from '../../util/supabase'
 import { useSearch } from '../../hooks/useSearch'
 
-const PAGE_SIZE = 10
+// Number of listings to fetch per page. Increased to show more results per request.
+const PAGE_SIZE = 50
 
 export const useHomeScreen = () => {
   const [listings, setListings] = useState([])
