@@ -259,6 +259,14 @@ python scripts/generate_luxury_listings.py -n 40 --api --supabase-url "https://y
 
 - **Important:** for direct API insertion you must use a Supabase `service_role` key (or an account with write permissions). The public/anon key is likely blocked by Row Level Security for inserts. Always verify `--jsonl-out` or `--sql-out` before using `--api` in production-like environments.
 
+### k) UI & Design System (REVVOL)
+- **Theme:** The app now follows the premium **REVVOL** design language, featuring a deep black background (`#090809`) with **Mustard** (`#887E1D`) and **Dark Mustard** (`#85570F`) accents.
+- **Typography:** Elegant Serif fonts (50px titles) paired with clean Sans-serif body text.
+- **Components:** Custom headers, capsule buttons, and gradient cards.
+- **Redesigned Screens:**
+  - **Listing Detail:** Complete overhaul with hero image, specs grid, and seller info card.
+  - **Welcome Screen:** New background and "Slide to Explore" interaction.
+
 ### Search & filters enhancements
 - The search/filter system (`useSearch` + `SearchFilters`) was extended to support additional options: **body type**, **condition**, **doors**, **fuel type** and **transmission**. These options are exposed in the `SearchFilters` component as selectable chips and sliders.
 

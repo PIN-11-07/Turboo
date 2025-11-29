@@ -12,4 +12,11 @@ export const palette = {
   success: '#8DE47B',
   danger: '#FF6B6B',
   disabled: '#2D2D2D',
+  // New Design Colors
+  darkGrey: '#1A1A1A',
+  darkMustard: '#85570F',
+  mustard: '#BB7E1D',
+  champagne: '#E1CFAA',
+  lightGrey: '#D9D9D9',
+  white: '#FFFFFF',
 }

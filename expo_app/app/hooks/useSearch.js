@@ -11,7 +11,7 @@ export const useSearch = (listings = []) => {
   const [showSuggestions, setShowSuggestions] = useState(false)
   const [sortBy, setSortBy] = useState('date') // 'date' or 'price'
   const [sortDir, setSortDir] = useState('desc') // 'asc' or 'desc'
-  const [viewMode, setViewMode] = useState('list') // 'list' or 'grid'
+  const [viewMode, setViewMode] = useState('grid') // 'list' or 'grid'
   const [showFilters, setShowFilters] = useState(false)
   
   // Calculate price and year ranges from listings data

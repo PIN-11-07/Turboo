@@ -142,7 +142,9 @@ export default function PublishScreen() {
         behavior={Platform.OS === 'ios' ? 'padding' : undefined}
       >
         <ScrollView contentContainerStyle={styles.scrollContent}>
-          <Text style={styles.title}>SELL A CAR</Text>
+         <Text style={styles.sellCarTitle}>
+  SELL A CAR
+</Text>
 
           {image ? (
             <View style={styles.imageContainer}>
@@ -182,24 +184,28 @@ export default function PublishScreen() {
           />
 
           <Text style={styles.tipText}>
-            Professional and good photos will catch buyer attention! Try to take great pictures from
+            Professional and good photos will catch buyer's attention! Try to take great pictures from
             all sides.
           </Text>
 
-          <Text style={styles.sectionTitle}>Car information</Text>
+         <Text style={{ fontFamily: 'serif', fontSize: 24, color: '#fff' }}>
+            Car information
+          </Text>
+
+
 
           <Text style={styles.label}>Title</Text>
           <TextInput
             style={styles.input}
-            placeholder="Great condition, low mileage..."
-            placeholderTextColor="#888"
+            placeholder="Select your title"
+            placeholderTextColor={styles.placeholder.color}
             value={form.title}
             onChangeText={(t) => handleChange('title', t)}
           />
 
           <Text style={styles.label}>Brand</Text>
           <TouchableOpacity style={styles.selector} onPress={() => togglePicker('make')}>
-            <Text style={form.make ? styles.selectorValue : styles.selectorPlaceholder}>
+            <Text style={styles.selectorValue}>
               {form.make || 'Select your brand'}
             </Text>
           </TouchableOpacity>
@@ -208,8 +214,8 @@ export default function PublishScreen() {
           <Text style={styles.label}>Model</Text>
           <TextInput
             style={styles.input}
-            placeholder="Golf, A3, Fiesta..."
-            placeholderTextColor="#888"
+            placeholder="Select your model"
+            placeholderTextColor={styles.placeholder.color}
             value={form.model}
             onChangeText={(t) => handleChange('model', t)}
           />
@@ -217,8 +223,8 @@ export default function PublishScreen() {
           <Text style={styles.label}>Year</Text>
           <TextInput
             style={styles.input}
-            placeholder="2018"
-            placeholderTextColor="#888"
+            placeholder="Select year of production"
+            placeholderTextColor={styles.placeholder.color}
             value={form.year}
             keyboardType="numeric"
             maxLength={4}
@@ -229,7 +235,7 @@ export default function PublishScreen() {
           <TextInput
             style={styles.input}
             placeholder="Price in EUR"
-            placeholderTextColor="#888"
+            placeholderTextColor={styles.placeholder.color}
             value={form.price}
             keyboardType="numeric"
             onChangeText={(t) => handleChange('price', t)}
@@ -238,8 +244,8 @@ export default function PublishScreen() {
           <Text style={styles.label}>Body color</Text>
           <TextInput
             style={styles.input}
-            placeholder="Black, silver, blue..."
-            placeholderTextColor="#888"
+            placeholder="Select your color"
+            placeholderTextColor={styles.placeholder.color}
             value={form.color}
             onChangeText={(t) => handleChange('color', t)}
           />
@@ -248,7 +254,7 @@ export default function PublishScreen() {
           <TextInput
             style={styles.input}
             placeholder="Mileage in KM"
-            placeholderTextColor="#888"
+            placeholderTextColor={styles.placeholder.color}
             keyboardType="numeric"
             value={form.mileage}
             onChangeText={(t) => handleChange('mileage', t)}
@@ -256,7 +262,7 @@ export default function PublishScreen() {
 
           <Text style={styles.label}>Fuel type</Text>
           <TouchableOpacity style={styles.selector} onPress={() => togglePicker('fuel_type')}>
-            <Text style={form.fuel_type ? styles.selectorValue : styles.selectorPlaceholder}>
+            <Text style={styles.selectorValue}>
               {form.fuel_type || 'Select fuel type'}
             </Text>
           </TouchableOpacity>
@@ -264,8 +270,8 @@ export default function PublishScreen() {
 
           <Text style={styles.label}>Transmission</Text>
           <TouchableOpacity style={styles.selector} onPress={() => togglePicker('transmission')}>
-            <Text style={form.transmission ? styles.selectorValue : styles.selectorPlaceholder}>
-              {form.transmission || 'Manual or automatic'}
+            <Text style={styles.selectorValue}>
+              {form.transmission || 'Select transmission type'}
             </Text>
           </TouchableOpacity>
           {renderOptionList('transmission', TRANSMISSION_OPTIONS)}
@@ -273,8 +279,8 @@ export default function PublishScreen() {
           <Text style={styles.label}>Doors</Text>
           <TextInput
             style={styles.input}
-            placeholder="3 / 5"
-            placeholderTextColor="#888"
+            placeholder="Number of doors"
+            placeholderTextColor={styles.placeholder.color}
             keyboardType="numeric"
             value={form.doors}
             onChangeText={(t) => handleChange('doors', t)}
@@ -283,8 +289,8 @@ export default function PublishScreen() {
           <Text style={styles.label}>Location</Text>
           <TextInput
             style={styles.input}
-            placeholder="City or province"
-            placeholderTextColor="#888"
+            placeholder="Where is your car located?"
+            placeholderTextColor={styles.placeholder.color}
             value={form.location}
             onChangeText={(t) => handleChange('location', t)}
           />
@@ -293,17 +299,12 @@ export default function PublishScreen() {
           <TextInput
             style={[styles.input, styles.multiline]}
             placeholder="Tell us about your car"
-            placeholderTextColor="#888"
+            placeholderTextColor={styles.placeholder.color}
             multiline
             numberOfLines={5}
             value={form.description}
             onChangeText={(t) => handleChange('description', t)}
           />
-
-          <TouchableOpacity style={styles.tagsButton}>
-            <Text style={styles.tagsText}>Add tags</Text>
-            <Text style={styles.chevron}>{'>'}</Text>
-          </TouchableOpacity>
 
           {error && (
             <View style={styles.feedbackBoxError}>
@@ -317,17 +318,7 @@ export default function PublishScreen() {
             </View>
           )}
 
-          <TouchableOpacity
-            style={[styles.draftButton, submitting && styles.submitDisabled]}
-            onPress={handleSaveDraft}
-            disabled={submitting}
-          >
-            {submitting && submittingAction === 'draft' ? (
-              <ActivityIndicator color="#C58A1A" />
-            ) : (
-              <Text style={styles.draftButtonText}>Guardar borrador</Text>
-            )}
-          </TouchableOpacity>
+          
 
           <TouchableOpacity
             style={[styles.postButton, submitting && styles.submitDisabled]}
@@ -338,6 +329,18 @@ export default function PublishScreen() {
               <ActivityIndicator color="#000" />
             ) : (
               <Text style={styles.postButtonText}>Post your vehicle</Text>
+            )}
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            style={[styles.draftButton, submitting && styles.submitDisabled]}
+            onPress={handleSaveDraft}
+            disabled={submitting}
+          >
+            {submitting && submittingAction === 'draft' ? (
+              <ActivityIndicator color="#C58A1A" />
+            ) : (
+              <Text style={styles.draftButtonText}>Save draft</Text>
             )}
           </TouchableOpacity>
 
