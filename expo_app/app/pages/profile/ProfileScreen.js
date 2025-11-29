@@ -13,6 +13,7 @@ import { SafeAreaView } from 'react-native-safe-area-context'
 import * as ImagePicker from 'expo-image-picker'
 import { Feather, Ionicons } from '@expo/vector-icons'
 import FavoriteButton from '../../components/FavoriteButton'
+import TransactionItem from '../../components/TransactionItem'
 import { profileScreenStyles } from './profileStyles'
 import { palette } from '../../theme/palette'
 import { useProfileScreen } from './useProfileScreen'
@@ -58,6 +59,7 @@ export default function ProfileScreen() {
     activeListings,
     inactiveListings,
     favoriteListings,
+    transactionHistory,
     avatarInitial,
     handleListingPress,
     handleFavoriteRemoval,
@@ -109,6 +111,13 @@ export default function ProfileScreen() {
     () => activeListings.length + inactiveListings.length,
     [activeListings.length, inactiveListings.length]
   )
+
+  const handleTransactionPress = useCallback((transaction) => {
+    // Naviguer vers le détail du listing si disponible
+    if (transaction.listing_id) {
+      handleListingPress(transaction.listing_id)
+    }
+  }, [handleListingPress])
 
   const hasAvatar = Boolean(newAvatarUri || profile?.profileImageUrl)
   const displayAvatarUri =
@@ -259,6 +268,7 @@ export default function ProfileScreen() {
         : 'fecha s/d'
       const isInactive = listing.is_active === false
       const isReactivating = reactivatingId === listing.id
+      const isOwnListing = listing.user_id === user?.id
       const dateLabel = isInactive
         ? `Guardado el ${publishDate}`
         : `Publicado el ${publishDate}`
@@ -327,7 +337,7 @@ export default function ProfileScreen() {
             >
               {dateLabel}
             </Text>
-            {isInactive ? (
+            {isInactive && isOwnListing ? (
               <View style={styles.inactiveRow}>
                 <View style={styles.inactiveBadge}>
                   <Text style={styles.inactiveBadgeText}>Inactivo</Text>
@@ -347,12 +357,16 @@ export default function ProfileScreen() {
                   )}
                 </TouchableOpacity>
               </View>
+            ) : isInactive && !isOwnListing ? (
+              <View style={styles.inactiveBadge}>
+                <Text style={styles.inactiveBadgeText}>No disponible</Text>
+              </View>
             ) : null}
           </View>
         </TouchableOpacity>
       )
     },
-    [handleFavoriteRemoval, handleListingPress, handleReactivate, reactivatingId]
+    [handleFavoriteRemoval, handleListingPress, handleReactivate, reactivatingId, user?.id]
   )
 
   if (loading) {
@@ -421,6 +435,31 @@ export default function ProfileScreen() {
         favoriteListings.map((listing) =>
           renderListingCard(listing, 'favorite', true)
         )
+      )}
+    </View>
+  )
+
+  const renderTransactionHistorySection = () => (
+    <View style={styles.section}>
+      <Text style={styles.sectionTitle}>Historial de transacciones</Text>
+      {transactionHistory.length === 0 ? (
+        <View style={styles.emptyStateContainer}>
+          <Feather name="clock" size={48} color={palette.textMuted} />
+          <Text style={styles.emptyStateText}>
+            No tienes transacciones aún.{'\n'}
+            Cuando compres o vendas un vehículo aparecerá aquí.
+          </Text>
+        </View>
+      ) : (
+        <View style={styles.listContainer}>
+          {transactionHistory.map((transaction) => (
+            <TransactionItem
+              key={transaction.id}
+              transaction={transaction}
+              onPress={handleTransactionPress}
+            />
+          ))}
+        </View>
       )}
     </View>
   )
@@ -597,7 +636,7 @@ export default function ProfileScreen() {
           <View style={styles.activitySection}>
             <Text style={styles.activityTitle}>Mi Actividad</Text>
             <Text style={styles.activitySubtitle}>
-              Revisa tus publicaciones y coches favoritos
+              Revisa tus publicaciones, favoritos e historial de transacciones
             </Text>
           </View>
 
@@ -663,12 +702,43 @@ export default function ProfileScreen() {
                 </Text>
               </View>
             </TouchableOpacity>
+
+            <TouchableOpacity
+              onPress={() => setActiveTab('history')}
+              style={[styles.tab, activeTab === 'history' && styles.activeTab]}
+            >
+              <View style={styles.tabContent}>
+                <Feather
+                  name="clock"
+                  size={18}
+                  color={activeTab === 'history' ? 'black' : palette.accent}
+                />
+                <Text
+                  style={[
+                    styles.tabText,
+                    activeTab === 'history' && styles.tabTabTextActive,
+                  ]}
+                >
+                  {' '}
+                  Historial
+                </Text>
+                <Text
+                  style={[
+                    styles.tabNumber,
+                    activeTab === 'history' && styles.tabNumberActive,
+                  ]}
+                >
+                  {' '}
+                  {transactionHistory.length}{' '}
+                </Text>
+              </View>
+            </TouchableOpacity>
           </View>
 
           <View style={styles.listWrapper}>
-            {activeTab === 'published'
-              ? renderPublishedSections()
-              : renderFavoritesSection()}
+            {activeTab === 'published' && renderPublishedSections()}
+            {activeTab === 'favorites' && renderFavoritesSection()}
+            {activeTab === 'history' && renderTransactionHistorySection()}
 
             <TouchableOpacity style={styles.signOutButton} onPress={signOut}>
               <Text style={styles.signOutButtonText}>Cerrar sesión</Text>

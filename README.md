@@ -270,6 +270,13 @@ python scripts/generate_luxury_listings.py -n 40 --api --supabase-url "https://y
 ### Search & filters enhancements
 - The search/filter system (`useSearch` + `SearchFilters`) was extended to support additional options: **body type**, **condition**, **doors**, **fuel type** and **transmission**. These options are exposed in the `SearchFilters` component as selectable chips and sliders.
 
+### k) Transaction history
+- **Description:** Users can view their complete purchase and sales history through a dedicated "Historial" tab in the profile screen, showing chronological transactions with clear "Comprado"/"Vendido" labels.
+- **Data persistence:** All transactions are automatically recorded in the `public.transactions` table when purchases are completed via the enhanced `process_vehicle_purchase` function.
+- **UX details:** Each transaction shows vehicle details, counterpart information, transaction type badge (purchase/sale), price, and date, all styled according to the Revvol design system (dark background, gold accents).
+- **Navigation:** Transactions can be tapped to navigate to the original listing detail if it still exists.
+
+
 
 ## 6. Components
 ### FavoriteButton (`app/components/FavoriteButton.js`)
@@ -282,6 +289,11 @@ python scripts/generate_luxury_listings.py -n 40 --api --supabase-url "https://y
 - **Props:** `imageUri`, `onAnalysisComplete`, `onDescriptionGenerated`, `style`.
 - **Notes:** requires `EXPO_PUBLIC_GEMINI_API_KEY`; only works once an image has been chosen in the publish flow.
 
+### TransactionItem (`app/components/TransactionItem.js`)
+- **Responsibility:** renders individual transaction cards in the history tab showing purchase/sale details with elegant Revvol styling.
+- **Props:** `transaction` (formatted transaction object), `onPress` (callback for navigation), `style` (custom styling).
+- **Design details:** displays vehicle image, title, counterpart info, transaction type badge ("Comprado"/"Vendido"), price, and date; badges use gold accent for purchases and green for sales with subtle transparency effects.
+
 ## 7. Database Structure
 
 **Tables in Supabase:**
@@ -290,6 +302,7 @@ python scripts/generate_luxury_listings.py -n 40 --api --supabase-url "https://y
 * `public.listings`
 * `public.profiles`
 * `public.favorites`
+* `public.transactions`
 
 Row Level Security (RLS) is enabled on every public table described below.
 
@@ -372,12 +385,44 @@ Additional constraints: `unique (user_id, listing_id)` enforces one favorite per
 
 ---
 
+### **Table `public.transactions`**
+
+| Field               | Type          | Constraints / Default                             | Description                                              |
+| ------------------- | ------------- | ------------------------------------------------- | -------------------------------------------------------- |
+| `id`                | `uuid`        | PK, `default gen_random_uuid()`                   | Transaction identifier.                                  |
+| `buyer_id`          | `uuid`        | FK → `public.profiles.id`, `not null`, cascade    | User who purchased the vehicle.                          |
+| `seller_id`         | `uuid`        | FK → `public.profiles.id`, `not null`, cascade    | User who sold the vehicle.                               |
+| `listing_id`        | `uuid`        | FK → `public.listings.id`, `not null`, cascade    | Vehicle listing that was transacted.                     |
+| `price`             | `numeric(12,2)` | `not null`, `check price >= 0`                  | Full transaction price paid by buyer.                    |
+| `platform_fee`      | `numeric(12,2)` | `not null`, `check platform_fee >= 0`           | Fee retained by the platform.                            |
+| `seller_payout`     | `numeric(12,2)` | `not null`, `check seller_payout >= 0`          | Amount received by seller after fee deduction.          |
+| `transaction_type`  | `text`        | `not null`, check in (`purchase`, `sale`)        | Type from user perspective (purchase/sale).             |
+| `user_id`           | `uuid`        | FK → `public.profiles.id`, `not null`, cascade   | User ID for simplified queries (buyer or seller).       |
+| `created_at`        | `timestamptz` | `not null default now()`                         | Transaction timestamp.                                   |
+
+**Functions & triggers:**
+
+* `create_transaction_records(buyer_id, seller_id, listing_id, price, platform_fee, seller_payout)` (security definer) → creates dual transaction records (one for buyer as 'purchase', one for seller as 'sale') automatically called by the purchase flow.
+
+**RLS policies:**
+
+1. `Users can view their own transactions` → `SELECT` only when `auth.uid() = user_id`.
+2. `System can insert transactions` → manual `INSERT` blocked, only via functions.
+3. `No manual updates` → `UPDATE` explicitly disabled.
+4. `No manual deletes` → `DELETE` explicitly disabled.
+
+---
+
 ### Relationships
 
 * `auth.users.id` → `public.profiles.id` (1:1, synchronized via triggers)
 * `auth.users.id` → `public.listings.user_id` (1:N, cascades on delete)
 * `public.profiles.id` → `public.favorites.user_id` (1:N)
 * `public.listings.id` → `public.favorites.listing_id` (N:1)
+* `public.profiles.id` → `public.transactions.buyer_id` (1:N)
+* `public.profiles.id` → `public.transactions.seller_id` (1:N)
+* `public.profiles.id` → `public.transactions.user_id` (1:N)
+* `public.listings.id` → `public.transactions.listing_id` (1:N)
 
 ### Supabase SQL (wallet transfer)
 Add this function so the app can mover saldo entre usuarios respetando RLS y marcar el anuncio como vendido (`is_active = false`):
@@ -490,8 +535,11 @@ grant execute on function public.process_vehicle_purchase(uuid, uuid, numeric, n
 - [ ] Database design, implementation and seeding increment  
 - [x] Buy vehicle flow  
 - [x] Text search  
-- [ ] Search filters  
+- [x] Search filters  
 - [x] AI auto-fill  
 - [ ] Save draft  
 - [ ] Vehicle matchmaking  
-- [ ] Ratings  
+- [ ] Ratings
+
+### Sprint 3
+- [x] Transaction history  
