@@ -14,6 +14,7 @@ import { useNavigation } from '@react-navigation/native'
 import { LinearGradient } from 'expo-linear-gradient'
 import { Ionicons } from '@expo/vector-icons'
 import { palette } from '../../theme/palette'
+import { Video } from 'expo-av'
 
 const { height } = Dimensions.get('window')
 
@@ -58,48 +59,55 @@ export default function WelcomeScreen() {
         <Animated.View
             style={[
                 styles.container,
-                {
-                    transform: [{ translateY: slideAnim }],
-                },
+                { transform: [{ translateY: slideAnim }] },
             ]}
             {...panResponder.panHandlers}
         >
-            <ImageBackground
-                source={require('../../../assets/welcome_hero.jpg')}
-                style={styles.background}
-                resizeMode="cover"
-            >
-                <LinearGradient
-                    colors={['rgba(0,0,0,0.3)', 'rgba(0,0,0,0.8)']}
-                    style={styles.gradient}
-                >
-                    <View style={styles.content}>
-                        <Text style={styles.brand}>REVVOL</Text>
+            <View style={styles.videoContainer}>
+                <Video
+                    source={require('../../../assets/VideoInicio.mp4')}  // o URL
+                    style={StyleSheet.absoluteFill}
+                    resizeMode="cover"
+                    shouldPlay          // 🔥 inicia automáticamente
+                    isLooping           // 🔁 se repite
+                    isMuted             // 🔇 opcional
+                />
+            </View>
 
-                        <View style={styles.titleContainer}>
-                            <Text style={styles.titleItalic}>Exclusive</Text>
-                            <Text style={styles.titleRegular}> deals for</Text>
-                        </View>
-                        <View style={styles.titleContainer}>
-                            <Text style={styles.titleItalic}>classic</Text>
-                            <Text style={styles.titleRegular}> drivers</Text>
-                        </View>
+            {/* 🔥 capa oscura para que se vea el texto */}
+            <LinearGradient
+                colors={['rgba(0,0,0,0.3)', 'rgba(0,0,0,0.8)']}
+                style={StyleSheet.absoluteFill}
+            />
 
-                        <View style={styles.spacer} />
+            {/* 🔥 todo tu contenido vuelve a aparecer arriba del video */}
+            <View style={styles.content}>
+                <Text style={styles.brand}>REVVOL</Text>
 
-                        <View style={styles.buttonContainer}>
-                            <TouchableOpacity
-                                style={styles.secondaryButton}
-                                onPress={navigateToApp}
-                            >
-                                <Text style={styles.secondaryButtonText}>Slide to Explore</Text>
-                                <Ionicons name="chevron-up" size={20} color="#FFF" style={{ marginLeft: 8 }} />
-                            </TouchableOpacity>
-                        </View>
-                    </View>
-                </LinearGradient>
-            </ImageBackground>
+                <View style={styles.titleContainer}>
+                    <Text style={styles.titleItalic}>Exclusive</Text>
+                    <Text style={styles.titleRegular}> deals for</Text>
+                </View>
+
+                <View style={styles.titleContainer}>
+                    <Text style={styles.titleItalic}>classic</Text>
+                    <Text style={styles.titleRegular}> drivers</Text>
+                </View>
+
+                <View style={styles.spacer} />
+
+                <View style={styles.buttonContainer}>
+                    <TouchableOpacity
+                        style={styles.secondaryButton}
+                        onPress={navigateToApp}
+                    >
+                        <Text style={styles.secondaryButtonText}>Slide to Explore</Text>
+                        <Ionicons name="chevron-up" size={20} color="#FFF" style={{ marginLeft: 8 }} />
+                    </TouchableOpacity>
+                </View>
+            </View>
         </Animated.View>
+
     )
 }
 
@@ -184,5 +192,10 @@ const styles = StyleSheet.create({
         fontSize: 12,
         marginTop: 8,
     },
+    videoContainer: {
+        ...StyleSheet.absoluteFillObject,
+        zIndex: -1,
+    }
+
 })
 
