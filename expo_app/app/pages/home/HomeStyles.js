@@ -10,7 +10,7 @@ export const homeScreenStyles = StyleSheet.create({
   },
   container: {
     flex: 1,
-    backgroundColor: "transparent", // color base oscuro
+    backgroundColor: "transparent",
   },
 
   listContent: {
@@ -87,19 +87,25 @@ export const homeScreenStyles = StyleSheet.create({
     fontWeight: '700',
   },
   recommendButton: {
-    alignSelf: 'flex-start',
-    marginTop: 12,
     backgroundColor: palette.surface,
-    paddingVertical: 8,
-    paddingHorizontal: 12,
-    borderRadius: 20,
+    paddingHorizontal: 10,
+    borderRadius: 8,
     borderWidth: 1,
     borderColor: palette.border,
+    height: 40,
+    justifyContent: 'center',
+    alignItems: 'center',
+
+    width: 90,
+    flexDirection: 'row',
   },
   recommendButtonText: {
     color: palette.accent,
     fontWeight: '700',
+    marginLeft: 6,
   },
+
+
   hero: {
     paddingHorizontal: 4,
     marginBottom: 12,
@@ -271,14 +277,13 @@ export const homeScreenStyles = StyleSheet.create({
     backgroundColor: 'rgba(4, 4, 4, 0.85)',
   },
 
-  // Enhanced Search Styles
   searchBarContainer: {
     flexDirection: 'row',
     alignItems: 'center',
     marginBottom: 12,
   },
   searchInputWrapper: {
-    flex: 1,
+    flex: 1.4,
     position: 'relative',
   },
   enhancedSearchInput: {
@@ -287,10 +292,13 @@ export const homeScreenStyles = StyleSheet.create({
     borderWidth: 1,
     borderColor: palette.border,
     paddingHorizontal: 44,
-    paddingVertical: 12,
     fontSize: 16,
     color: palette.textPrimary,
+    height: 40,
+    paddingVertical: 0,
+    borderRadius: 8
   },
+
   searchInputFocused: {
     borderColor: palette.accent,
   },
@@ -314,14 +322,19 @@ export const homeScreenStyles = StyleSheet.create({
   controlButton: {
     marginLeft: 8,
     paddingVertical: 8,
-    paddingHorizontal: 12,
+    paddingHorizontal: 6,
     backgroundColor: palette.surface,
     borderRadius: 8,
     borderWidth: 1,
     borderColor: palette.border,
     alignItems: 'center',
-    minWidth: 64,
+    minWidth: 54,
+    height: 40,
+    justifyContent: 'center'
   },
+
+
+
   controlButtonActive: {
     backgroundColor: palette.accent,
     borderColor: palette.accent,
@@ -407,6 +420,7 @@ export const homeScreenStyles = StyleSheet.create({
     color: palette.background,
     fontWeight: '700',
     marginLeft: 8,
+    height: 6,
   },
   aiPreviewRow: {
     flexDirection: 'row',
