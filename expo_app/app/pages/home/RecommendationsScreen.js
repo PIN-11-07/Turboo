@@ -94,13 +94,13 @@ export default function RecommendationsScreen() {
       </View>
 
       <LinearGradient
-        colors={['#bf8a2e', '#000']}
+        colors={['#c68515ff', '#000']}
         style={styles.gradientBackground}
       />
 
       {recommendations.length === 0 ? (
         <View style={{ padding: 24 }}>
-            <Text style={homeScreenStyles.emptyText}>No hay recomendaciones por el momento.</Text>
+            <Text style={homeScreenStyles.emptyText}>There are no recommendations at the moment.</Text>
         </View>
       ) : (
         <FlatList

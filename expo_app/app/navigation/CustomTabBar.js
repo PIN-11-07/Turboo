@@ -76,7 +76,7 @@ export default function CustomTabBar({ state, descriptors, navigation }) {
 const styles = StyleSheet.create({
     container: {
         position: 'absolute',
-        bottom: 20,
+        bottom: 24,
         left: 0,
         right: 0,
         alignItems: 'center',
@@ -86,7 +86,7 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         backgroundColor: palette.darkGrey, // #1A1A1A
         borderRadius: 30,
-        paddingVertical: 10,
+        paddingVertical: 0,
         paddingHorizontal: 10,
         width: '90%',
         justifyContent: 'space-around',

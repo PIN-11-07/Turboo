@@ -237,7 +237,6 @@ export default function HomeScreen() {
           <View style={styles.gridContent}>
             <Text style={styles.gridTitle}>{item.make} {item.model}</Text>
             <Text style={styles.gridPrice}>{formatPrice(item.price)}</Text>
-            <Text style={styles.gridYear}>{item.year || 'Año s/d'}</Text>
           </View>
         </TouchableOpacity>
       )
@@ -292,7 +291,7 @@ export default function HomeScreen() {
           <Text style={styles.heroTitleSub}>all cars</Text>
           <View style={{ height: 30 }} />
           <LinearGradient
-            colors={['#bf8a2e', '#000000ff']}
+            colors={['#c68515ff', '#000000ff']}
             start={{ x: 0, y: 0 }}
             end={{ x: 0, y: 1 }}
             style={styles.heroContainer}
