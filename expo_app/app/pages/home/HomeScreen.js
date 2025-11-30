@@ -325,7 +325,7 @@ export default function HomeScreen() {
                     search.setIsFocused(false)
                   }, 200)
                 }}
-                placeholder="Busca marca, modelo o ciudad"
+                placeholder="Search"
                 placeholderTextColor={palette.textMuted}
                 style={[
                   styles.enhancedSearchInput,
@@ -359,7 +359,7 @@ export default function HomeScreen() {
                 >
                   <Ionicons name="swap-vertical" size={16} color={palette.accent} />
                   <Text style={styles.controlButtonText}>
-                    {search.sortBy === 'date' ? 'Fecha' : 'Precio'} {search.sortDir === 'desc' ? '↓' : '↑'}
+                    {search.sortBy === 'date' ? 'Date' : 'Price'} {search.sortDir === 'desc' ? '↓' : '↑'}
                   </Text>
                 </TouchableOpacity>
 
@@ -374,7 +374,7 @@ export default function HomeScreen() {
                     color={search.showFilters ? palette.background : palette.accent}
                   />
                   <Text style={[styles.controlButtonText, search.showFilters && styles.controlButtonTextActive]}>
-                    Filtros
+                    Filters
                   </Text>
                 </TouchableOpacity>
 
@@ -419,8 +419,10 @@ export default function HomeScreen() {
             activeOpacity={0.85}
             onPress={() => navigation.navigate('Recommendations')}
           >
-            <Text style={styles.recommendButtonText}>Para ti</Text>
+            <Ionicons name="sparkles-outline" size={16} color={palette.accent} />
+            <Text style={styles.recommendButtonText}>For you</Text>
           </TouchableOpacity>
+
           {error && <Text style={styles.errorText}>{error}</Text>}
 
           {/* AI Search: pick/take image and analyze to generate filters */}
@@ -438,11 +440,13 @@ export default function HomeScreen() {
                   onPress={takePhoto}
                   icon="camera-outline"
                   label="Scan Car"
+                  style={{ borderRadius: 8 }}
                 />
                 <AnimatedAISearchButton
                   onPress={pickImageFromGallery}
                   icon="images-outline"
                   label="Upload"
+                   style={{ borderRadius: 8 }}
                 />
               </View>
             )}
