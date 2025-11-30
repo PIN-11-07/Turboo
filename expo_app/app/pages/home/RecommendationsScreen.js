@@ -7,6 +7,8 @@ import { palette } from '../../theme/palette'
 import FavoriteButton from '../../components/FavoriteButton'
 import { useAuth } from '../../context/AuthContext'
 import recommender from '../../util/recommender'
+import { styles } from "./RecommendationsStyles"
+import { LinearGradient } from 'expo-linear-gradient'
 
 const getMainImage = (images) => (Array.isArray(images) && images.length > 0 ? images[0] : null)
 
@@ -84,22 +86,27 @@ export default function RecommendationsScreen() {
   }
 
   return (
-    <SafeAreaView style={homeScreenStyles.safeArea} edges={['top']}>
-      <View style={homeScreenStyles.container}>
-        <View style={{ paddingHorizontal: 16, paddingTop: 12 }}>
-          <Text style={{ fontSize: 20, fontWeight: '700', color: palette.textPrimary }}>Recomendaciones para ti</Text>
-          <Text style={{ marginTop: 6, color: palette.textSecondary }}>Basado en tu actividad y preferencias</Text>
-        </View>
+    <SafeAreaView style={styles.safeArea}>
+      <View style={styles.headerContainer}>
+        <Text style={styles.heroTitleMain}>Selected</Text>
+        <Text style={styles.heroTitleSub}>for you</Text>
+        <Text style={styles.headerText}>Curated classics inspired by your recent interests.</Text>
+      </View>
 
-        {recommendations.length === 0 ? (
-          <View style={{ padding: 24 }}>
+      <LinearGradient
+        colors={['#bf8a2e', '#000']}
+        style={styles.gradientBackground}
+      />
+
+      {recommendations.length === 0 ? (
+        <View style={{ padding: 24 }}>
             <Text style={homeScreenStyles.emptyText}>No hay recomendaciones por el momento.</Text>
-          </View>
-        ) : (
-          <FlatList
-            data={dataToShow}
-            keyExtractor={(item) => String(item.id)}
-            renderItem={renderItem}
+        </View>
+      ) : (
+        <FlatList
+          data={dataToShow} 
+          keyExtractor={(item) => String(item.id)}
+          renderItem={renderItem}
             contentContainerStyle={{ paddingHorizontal: 16, paddingTop: 12, paddingBottom: 24 }}
             ListHeaderComponent={
               featured ? (
@@ -133,9 +140,9 @@ export default function RecommendationsScreen() {
             onEndReached={onEndReached}
             onEndReachedThreshold={0.6}
             ListFooterComponent={<View style={{ height: 64 }} />}
-          />
-        )}
-      </View>
+        />
+      )}
+
     </SafeAreaView>
   )
 }
