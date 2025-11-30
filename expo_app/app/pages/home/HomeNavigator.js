@@ -53,7 +53,7 @@ export default function HomeNavigator() {
       <Stack.Screen
         name="Recommendations"
         component={RecommendationsScreen}
-        options={{ title: 'Recomendaciones para ti' }}
+        options={{ title: '' }}
       />
     </Stack.Navigator>
   )

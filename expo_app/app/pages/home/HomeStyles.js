@@ -443,15 +443,14 @@ export const homeScreenStyles = StyleSheet.create({
     fontWeight: '700',
   },
 
-  heroContainer: {
-    position: 'absolute',
-    top: 0,
-    top: 120,
-    left: 0,
-    right: 0,
-    bottom: 0,
-    zIndex: -1,
-  },
+heroContainer: {
+  position: 'absolute',
+  top: 120,
+  left: 0,
+  right: 0,
+  height: 300,
+  zIndex: -1,
+},
 
 
   heroTitleMain: {
