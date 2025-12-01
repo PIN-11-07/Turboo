@@ -301,6 +301,27 @@ export const profileScreenStyles = StyleSheet.create({
     marginBottom: 8,
     textAlign: 'center',
   },
+  ratingRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 8,
+  },
+  ratingStar: {
+    marginRight: 2,
+    position: 'relative',
+  },
+  ratingStarFill: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    overflow: 'hidden',
+  },
+  ratingValue: {
+    marginLeft: 6,
+    fontSize: 25,
+    fontWeight: 'bold',
+    color: palette.accent,
+  },
   email: {
     fontSize: 16,
     color: palette.textSecondary,

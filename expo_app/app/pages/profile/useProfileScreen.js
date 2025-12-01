@@ -86,7 +86,7 @@ export const useProfileScreen = () => {
           supabase.auth.getUser(),
           supabase
             .from('profiles')
-            .select('profile_image_url, saldo, full_name')
+            .select('profile_image_url, saldo, full_name, rating_avg')
             .eq('id', user.id)
             .maybeSingle(),
           supabase
@@ -138,6 +138,10 @@ export const useProfileScreen = () => {
           (typeof user?.email === 'string' && user.email.trim()) ||
           null
 
+        const ratingAvg = Number.isFinite(Number(profileData?.rating_avg))
+          ? Number(profileData.rating_avg)
+          : 0
+
         setProfile({
           name: profileName,
           mail,
@@ -146,6 +150,7 @@ export const useProfileScreen = () => {
             profileData && profileData.saldo != null
               ? Number(profileData.saldo)
               : 0,
+          rating: ratingAvg,
         })
         setListings(Array.isArray(listingsData) ? listingsData : [])
         setFavoriteListings(mapFavoritesToListings(favoritesData))

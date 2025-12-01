@@ -37,6 +37,10 @@ const ATTRIBUTE_LABELS = [
   { key: 'color', label: 'Color' },
 ]
 
+const ACCENT_COLOR = '#C58A1A'
+const ACCENT_COLOR_DARK = '#8A5C0D'
+const STAR_COLOR = ACCENT_COLOR
+
 export default function ListingDetailScreen() {
   const { listing, listingId, loading, error, images, sellerName, sellerRating, sellerProfileImageUrl } =
     useListingDetailScreen()
@@ -60,7 +64,7 @@ export default function ListingDetailScreen() {
   if (loading) {
     return (
       <View style={styles.centerContainer}>
-        <ActivityIndicator size="large" color="#887E1D" />
+        <ActivityIndicator size="large" color={ACCENT_COLOR} />
       </View>
     )
   }
@@ -72,11 +76,15 @@ export default function ListingDetailScreen() {
           {error || 'El vehículo no está disponible.'}
         </Text>
         <TouchableOpacity onPress={() => navigation.goBack()} style={{ marginTop: 20 }}>
-          <Text style={{ color: '#887E1D' }}>Volver</Text>
+          <Text style={{ color: ACCENT_COLOR }}>Volver</Text>
         </TouchableOpacity>
       </View>
     )
   }
+
+  const normalizedSellerRating = Number.isFinite(Number(sellerRating))
+    ? Number(sellerRating)
+    : null
 
   return (
     <SafeAreaView style={styles.safeArea} edges={['top', 'left', 'right']}>
@@ -111,16 +119,6 @@ export default function ListingDetailScreen() {
           <Text style={styles.carTitle}>{listing.title}</Text>
           <View style={styles.priceRow}>
             <Text style={styles.price}>{formatPrice(listing.price)}</Text>
-            <View style={styles.interactionRow}>
-              <View style={styles.interactionItem}>
-                <Ionicons name="eye-outline" size={16} color="#887E1D" />
-                <Text style={styles.interactionText}>1.2k</Text>
-              </View>
-              <View style={styles.interactionItem}>
-                <Ionicons name="heart-outline" size={16} color="#887E1D" />
-                <Text style={styles.interactionText}>24</Text>
-              </View>
-            </View>
           </View>
         </View>
         {/* Hero Image */}
@@ -154,7 +152,7 @@ export default function ListingDetailScreen() {
         {/* About Section */}
         <View style={styles.aboutSection}>
           <LinearGradient
-            colors={['#85570F', '#090809']}
+            colors={[ACCENT_COLOR_DARK, '#090809']}
             start={{ x: 0, y: 0 }}
             end={{ x: 0, y: 1 }}
             style={styles.aboutGradient}
@@ -194,17 +192,30 @@ export default function ListingDetailScreen() {
               )}
             </View>
             <View style={styles.sellerInfo}>
-              <Text style={styles.sellerName}>
-                {sellerName || 'Vendedor'}
-              </Text>
-              <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                <Ionicons name="star" size={14} color="#887E1D" />
-                <Text style={styles.sellerRating}>
-                  {Number.isFinite(Number(sellerRating))
-                    ? ` ${Number(sellerRating).toFixed(1)} (Verified)`
-                    : ' Sin valoraciones'}
-                </Text>
-              </View>
+              <Text style={styles.sellerName}>{sellerName || 'Vendedor'}</Text>
+              {normalizedSellerRating !== null ? (
+                <View style={styles.sellerRatingRow}>
+                  {[1, 2, 3, 4, 5].map((star) => {
+                    const fill = Math.min(
+                      Math.max(normalizedSellerRating - (star - 1), 0),
+                      1
+                    )
+                    return (
+                      <View key={star} style={styles.sellerStar}>
+                        <Ionicons name="star-outline" size={18} color="#4F4F4F" />
+                        <View style={[styles.sellerStarFill, { width: 18 * fill }]}>
+                          <Ionicons name="star" size={18} color={STAR_COLOR} />
+                        </View>
+                      </View>
+                    )
+                  })}
+                  <Text style={styles.sellerRatingValue}>
+                    {normalizedSellerRating.toFixed(1)}
+                  </Text>
+                </View>
+              ) : (
+                <Text style={styles.sellerRatingFallback}>Sin valoraciones</Text>
+              )}
             </View>
           </View>
         </View>
@@ -218,7 +229,7 @@ export default function ListingDetailScreen() {
               activeOpacity={0.9}
             >
               <LinearGradient
-                colors={['#887E1D', '#85570F']}
+                colors={[ACCENT_COLOR, ACCENT_COLOR_DARK]}
                 start={{ x: 0, y: 0 }}
                 end={{ x: 1, y: 0 }}
                 style={styles.primaryGradient}
@@ -240,7 +251,7 @@ export default function ListingDetailScreen() {
         <View style={styles.footer}>
           <View style={styles.footerCta}>
             <LinearGradient
-              colors={['#887E1D', '#85570F']}
+              colors={[ACCENT_COLOR, ACCENT_COLOR_DARK]}
               style={styles.footerGradient}
             >
               <Text style={styles.footerText}>¿Interesado?</Text>

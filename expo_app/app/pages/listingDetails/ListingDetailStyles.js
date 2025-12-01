@@ -2,14 +2,16 @@ import { StyleSheet, Platform, Dimensions } from 'react-native'
 
 const { width } = Dimensions.get('window')
 
-// REVVOL Palette
 const COLORS = {
-  background: '#090809', // "Light Grey" in prompt, but hex is dark
+  background: '#090809',
   white: '#FFFFFF',
-  mustard: '#887E1D',
-  darkMustard: '#85570F',
-  darkGrey: '#1A1A1A', // Approximated for "Gris oscuro"
-  champagne: '#F7E7CE', // Approximated
+  mustard: '#C58A1A',
+  mustardDark: '#8A5C0D',
+  mustardSoft: '#E3B45A',
+  charcoal: '#1C1C1C',
+  champagne: '#F4E3C3',
+  border: 'rgba(197, 138, 26, 0.35)',
+  overlay: 'rgba(197, 138, 26, 0.12)',
 }
 
 export const listingDetailScreenStyles = StyleSheet.create({
@@ -113,12 +115,12 @@ export const listingDetailScreenStyles = StyleSheet.create({
     borderRadius: 20,
     marginRight: 10,
     borderWidth: 1,
-    borderColor: 'rgba(136, 126, 29, 0.3)',
+    borderColor: COLORS.border,
   },
   // About Section
   aboutSection: {
-    marginHorizontal: 0, // Full width or adjusted
-    marginTop: -50, // Pull up under the image
+    marginHorizontal: 0,
+    marginTop: -50,
     marginBottom: 20,
     borderTopLeftRadius: 40,
     borderTopRightRadius: 40,
@@ -164,14 +166,14 @@ export const listingDetailScreenStyles = StyleSheet.create({
   specItem: {
     width: '48%',
     marginBottom: 10,
-    backgroundColor: 'rgba(136, 126, 29, 0.1)', // Mustard tint
+    backgroundColor: COLORS.overlay,
     padding: 16,
     borderRadius: 20,
     borderWidth: 1,
-    borderColor: 'rgba(136, 126, 29, 0.3)', // Mustard border
+    borderColor: COLORS.border,
   },
   specLabel: {
-    color: '#D6B170', // Light mustard/gold for label
+    color: COLORS.mustardSoft,
     fontSize: 12,
     fontStyle: 'italic',
     marginBottom: 4,
@@ -186,11 +188,11 @@ export const listingDetailScreenStyles = StyleSheet.create({
   sellerSection: {
     marginHorizontal: 30,
     marginBottom: 30,
-    backgroundColor: 'rgba(136, 126, 29, 0.1)',
+    backgroundColor: COLORS.overlay,
     borderRadius: 30,
     padding: 20,
     borderWidth: 1,
-    borderColor: 'rgba(136, 126, 29, 0.2)',
+    borderColor: COLORS.border,
   },
   sellerHeader: {
     flexDirection: 'row',
@@ -201,7 +203,7 @@ export const listingDetailScreenStyles = StyleSheet.create({
     width: 60,
     height: 60,
     borderRadius: 30,
-    backgroundColor: '#333',
+    backgroundColor: COLORS.charcoal,
     marginRight: 16,
     justifyContent: 'center',
     alignItems: 'center',
@@ -231,6 +233,31 @@ export const listingDetailScreenStyles = StyleSheet.create({
     color: COLORS.mustard,
     fontSize: 14,
     marginTop: 4,
+  },
+  sellerRatingRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginTop: 6,
+    gap: 6,
+  },
+  sellerStar: {
+    position: 'relative',
+  },
+  sellerStarFill: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    overflow: 'hidden',
+  },
+  sellerRatingValue: {
+    color: COLORS.mustard,
+    fontSize: 16,
+    fontWeight: '600',
+  },
+  sellerRatingFallback: {
+    color: COLORS.champagne,
+    fontSize: 14,
+    marginTop: 6,
   },
   // Action Buttons
   actionsSection: {

@@ -35,6 +35,9 @@ const editableAvatarStyle = {
   alignItems: 'center',
 }
 
+const STAR_COLOR = '#C58A1A'
+const STAR_SIZE = 25
+
 const formatPrice = (value) => {
   const numericValue = Number(value)
 
@@ -535,41 +538,30 @@ export default function ProfileScreen() {
               <>
                 <Text style={styles.name}>{profile?.name || 'Usuario'}</Text>
 
-                <View
-                  style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 8 }}
-                >
+                <View style={styles.ratingRow}>
                   {[1, 2, 3, 4, 5].map((star) => {
-                    const rating = Number(profile?.rating ?? 0)
-                    const fill = Math.min(Math.max(rating - (star - 1), 0), 1)
+                    const ratingValue = Number(profile?.rating ?? 0)
+                    const fill = Math.min(Math.max(ratingValue - (star - 1), 0), 1)
 
                     return (
-                      <View key={star} style={{ marginRight: 2 }}>
-                        <Ionicons name="star-outline" size={25} color="#ccc" />
+                      <View key={star} style={styles.ratingStar}>
+                        <Ionicons name="star-outline" size={STAR_SIZE} color="#ccc" />
                         <View
-                          style={{
-                            position: 'absolute',
-                            width: 30 * fill,
-                            overflow: 'hidden',
-                          }}
+                          style={[styles.ratingStarFill, { width: STAR_SIZE * fill }]}
                         >
-                          <Ionicons name="star" size={25} color={palette.accent} />
+                          <Ionicons name="star" size={STAR_SIZE} color={STAR_COLOR} />
                         </View>
                       </View>
                     )
                   })}
-                  <Text
-                    style={{
-                      marginLeft: 6,
-                      fontSize: 25,
-                      fontWeight: 'bold',
-                      color: palette.accent,
-                    }}
-                  >
+                  <Text style={styles.ratingValue}>
                     {Number(profile?.rating ?? 0).toFixed(1)}
                   </Text>
                 </View>
 
-                <View style={styles.row}>
+                <View
+                  style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 8 }}
+                >
                   <Feather name="mail" size={15} color={palette.accent} />
                   <Text style={styles.email}>{email || 'No disponible'}</Text>
                 </View>
