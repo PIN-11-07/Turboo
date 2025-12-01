@@ -1,5 +1,6 @@
 import React, { useCallback } from 'react'
-import { Alert, SafeAreaView, Text, TouchableOpacity, View } from 'react-native'
+import { Alert, Text, TouchableOpacity, View } from 'react-native'
+import { SafeAreaView } from 'react-native-safe-area-context'
 import { Ionicons } from '@expo/vector-icons'
 import { ratingStyles as styles } from './ratingStyles'
 import { useRatingScreen } from './useRatingScreen'
