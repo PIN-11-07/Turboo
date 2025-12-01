@@ -38,7 +38,7 @@ const ATTRIBUTE_LABELS = [
 ]
 
 export default function ListingDetailScreen() {
-  const { listing, listingId, loading, error, images, sellerName } =
+  const { listing, listingId, loading, error, images, sellerName, sellerRating, sellerProfileImageUrl } =
     useListingDetailScreen()
   const navigation = useNavigation()
   const { user } = useAuth()
@@ -185,9 +185,13 @@ export default function ListingDetailScreen() {
         <View style={styles.sellerSection}>
           <View style={styles.sellerHeader}>
             <View style={styles.sellerAvatar}>
-              <Text style={styles.sellerAvatarText}>
-                {sellerName ? sellerName.charAt(0).toUpperCase() : 'V'}
-              </Text>
+              {sellerProfileImageUrl ? (
+                <Image source={{ uri: sellerProfileImageUrl }} style={styles.sellerAvatarImage} />
+              ) : (
+                <Text style={styles.sellerAvatarText}>
+                  {sellerName ? sellerName.charAt(0).toUpperCase() : 'V'}
+                </Text>
+              )}
             </View>
             <View style={styles.sellerInfo}>
               <Text style={styles.sellerName}>
@@ -195,7 +199,11 @@ export default function ListingDetailScreen() {
               </Text>
               <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                 <Ionicons name="star" size={14} color="#887E1D" />
-                <Text style={styles.sellerRating}> 4.9 (Verified)</Text>
+                <Text style={styles.sellerRating}>
+                  {Number.isFinite(Number(sellerRating))
+                    ? ` ${Number(sellerRating).toFixed(1)} (Verified)`
+                    : ' Sin valoraciones'}
+                </Text>
               </View>
             </View>
           </View>

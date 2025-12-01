@@ -61,6 +61,8 @@ export const useListingDetailScreen = () => {
   const [loading, setLoading] = useState(!hasRequiredFields(initialListing))
   const [error, setError] = useState(null)
   const [sellerName, setSellerName] = useState(null)
+  const [sellerRating, setSellerRating] = useState(null)
+  const [sellerProfileImageUrl, setSellerProfileImageUrl] = useState(null)
 
   useEffect(() => {
     const shouldFetch = !hasRequiredFields(initialListing) && listingId
@@ -116,16 +118,20 @@ export const useListingDetailScreen = () => {
   useEffect(() => {
     if (!listing?.user_id) {
       setSellerName(null)
+      setSellerRating(null)
+      setSellerProfileImageUrl(null)
       return
     }
 
     let isMounted = true
     setSellerName(null)
+    setSellerRating(null)
+    setSellerProfileImageUrl(null)
 
-    const fetchSellerName = async () => {
+    const fetchSellerProfile = async () => {
       const { data, error: sellerError } = await supabase
         .from('profiles')
-        .select('full_name')
+        .select('full_name, rating_avg, profile_image_url')
         .eq('id', listing.user_id)
         .maybeSingle()
 
@@ -136,15 +142,25 @@ export const useListingDetailScreen = () => {
       if (sellerError) {
         console.error(sellerError)
         setSellerName(null)
+        setSellerRating(null)
+        setSellerProfileImageUrl(null)
         return
       }
 
       const normalizedName =
         typeof data?.full_name === 'string' ? data.full_name.trim() : ''
       setSellerName(normalizedName || null)
+      setSellerRating(
+        Number.isFinite(Number(data?.rating_avg)) ? Number(data.rating_avg) : null
+      )
+      setSellerProfileImageUrl(
+        typeof data?.profile_image_url === 'string' && data.profile_image_url.trim()
+          ? data.profile_image_url.trim()
+          : null
+      )
     }
 
-    fetchSellerName()
+    fetchSellerProfile()
 
     return () => {
       isMounted = false
@@ -159,5 +175,7 @@ export const useListingDetailScreen = () => {
     images,
     caption,
     sellerName,
+    sellerRating,
+    sellerProfileImageUrl,
   }
 }

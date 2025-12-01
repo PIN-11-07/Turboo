@@ -208,6 +208,11 @@ export const listingDetailScreenStyles = StyleSheet.create({
     borderWidth: 1,
     borderColor: COLORS.mustard,
   },
+  sellerAvatarImage: {
+    width: '100%',
+    height: '100%',
+    borderRadius: 30,
+  },
   sellerAvatarText: {
     color: COLORS.mustard,
     fontSize: 24,
