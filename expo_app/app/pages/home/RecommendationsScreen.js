@@ -2,7 +2,6 @@ import React, { useEffect, useState, useCallback, useMemo } from 'react'
 import { View, Text, FlatList, TouchableOpacity, Image, TouchableWithoutFeedback } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { useNavigation } from '@react-navigation/native'
-import { homeScreenStyles } from './HomeStyles'
 import { palette } from '../../theme/palette'
 import FavoriteButton from '../../components/FavoriteButton'
 import { useAuth } from '../../context/AuthContext'
@@ -38,35 +37,39 @@ export default function RecommendationsScreen() {
     }
   }, [user?.id])
 
-  const renderItem = useCallback(
-    ({ item }) => {
+   const renderItem = useCallback(
+   ({ item, index }) => {  
       const mainImage = getMainImage(item.images)
       return (
         <TouchableOpacity
-          style={[homeScreenStyles.card, { marginBottom: 12 }]}
+          style={[
+            styles.cardCarouselItem,
+            index === 0 && styles.firstCard,   // 👈 primera card con estilo único
+            { marginBottom: 12 }
+          ]}
           activeOpacity={0.9}
           onPress={() => navigation.navigate('ListingDetail', { listingId: item.id, listing: item })}
         >
           {mainImage ? (
-            <View style={homeScreenStyles.cardImageWrapper}>
-              <Image source={{ uri: mainImage }} style={[homeScreenStyles.cardImage, { height: 220 }]} />
-              <View style={homeScreenStyles.favoriteButton}>
+            <View style={styles.cardImageWrapper}>
+              <Image source={{ uri: mainImage }} style={[styles.cardImage, { height: 220 }]} />
+              <View style={styles.favoriteButton}>
                 <FavoriteButton listingId={item.id} variant="icon" />
               </View>
             </View>
           ) : (
-            <View style={[homeScreenStyles.cardImage, homeScreenStyles.cardImagePlaceholder]}>
-              <Text style={homeScreenStyles.cardImagePlaceholderText}>Sin foto</Text>
+            <View style={[styles.cardImage, styles.cardImagePlaceholder]}>
+              <Text style={styles.cardImagePlaceholderText}>Sin foto</Text>
             </View>
           )}
-          <View style={homeScreenStyles.cardContent}>
-            <View style={homeScreenStyles.cardHeader}>
-              <Text style={homeScreenStyles.cardTitle} numberOfLines={1} ellipsizeMode="tail">
+          <View style={styles.cardContent}>
+            <View style={styles.cardHeader}>
+              <Text style={styles.cardTitle} numberOfLines={1} ellipsizeMode="tail">
                 {item.title || `${item.make || ''} ${item.model || ''}`}
               </Text>
-              <Text style={homeScreenStyles.cardPrice}>{item.price ? `€ ${Number(item.price).toLocaleString('es-ES')}` : '-'}</Text>
+              <Text style={styles.cardPrice}>{item.price ? `€ ${Number(item.price).toLocaleString('es-ES')}` : '-'}</Text>
             </View>
-            <Text style={homeScreenStyles.cardSubtitle}>{item.year || ''} • {item.mileage ? `${item.mileage} km` : '-'} • {item.fuel_type || '-'}</Text>
+            <Text style={styles.cardSubtitle}>{item.year || ''} • {item.mileage ? `${item.mileage} km` : '-'} • {item.fuel_type || '-'}</Text>
           </View>
         </TouchableOpacity>
       )
@@ -100,46 +103,47 @@ export default function RecommendationsScreen() {
 
       {recommendations.length === 0 ? (
         <View style={{ padding: 24 }}>
-            <Text style={homeScreenStyles.emptyText}>There are no recommendations at the moment.</Text>
+          <Text style={styles.emptyText}>There are no recommendations at the moment.</Text>
         </View>
       ) : (
         <FlatList
-          data={dataToShow} 
+          data={dataToShow}
           keyExtractor={(item) => String(item.id)}
           renderItem={renderItem}
-            contentContainerStyle={{ paddingHorizontal: 16, paddingTop: 12, paddingBottom: 24 }}
-            ListHeaderComponent={
-              featured ? (
-                <TouchableWithoutFeedback onPress={() => navigation.navigate('ListingDetail', { listingId: featured.id, listing: featured })}>
-                  <View style={[homeScreenStyles.card, { marginHorizontal: 16, marginBottom: 12 }]}> 
-                    {getMainImage(featured.images) ? (
-                      <View style={homeScreenStyles.cardImageWrapper}>
-                        <Image source={{ uri: getMainImage(featured.images) }} style={homeScreenStyles.cardImage} />
-                        <View style={homeScreenStyles.favoriteButton}>
-                          <FavoriteButton listingId={featured.id} variant="icon" />
-                        </View>
+          horizontal
+          contentContainerStyle={{ paddingHorizontal: 16, paddingTop: 12, paddingBottom: 24 }}
+          ListHeaderComponent={
+            featured ? (
+              <TouchableWithoutFeedback onPress={() => navigation.navigate('ListingDetail', { listingId: featured.id, listing: featured })}>
+                <View style={[styles.cardCarouselItem, { marginHorizontal: 16, marginBottom: 12 }]}>
+                  {getMainImage(featured.images) ? (
+                    <View style={styles.cardImageWrapper}>
+                      <Image source={{ uri: getMainImage(featured.images) }} style={styles.cardImage} />
+                      <View style={styles.favoriteButton}>
+                        <FavoriteButton listingId={featured.id} variant="icon" />
                       </View>
-                    ) : (
-                      <View style={[homeScreenStyles.cardImage, homeScreenStyles.cardImagePlaceholder]}>
-                        <Text style={homeScreenStyles.cardImagePlaceholderText}>Sin foto</Text>
-                      </View>
-                    )}
-                    <View style={homeScreenStyles.cardContent}>
-                      <View style={homeScreenStyles.cardHeader}>
-                        <Text style={homeScreenStyles.cardTitle} numberOfLines={1} ellipsizeMode="tail">
-                          {featured.title || `${featured.make || ''} ${featured.model || ''}`}
-                        </Text>
-                        <Text style={homeScreenStyles.cardPrice}>{featured.price ? `€ ${Number(featured.price).toLocaleString('es-ES')}` : '-'}</Text>
-                      </View>
-                      <Text style={homeScreenStyles.cardSubtitle}>{featured.year || ''} • {featured.mileage ? `${featured.mileage} km` : '-'} • {featured.fuel_type || '-'}</Text>
                     </View>
+                  ) : (
+                    <View style={[styles.cardImage, styles.cardImagePlaceholder]}>
+                      <Text style={styles.cardImagePlaceholderText}>Sin foto</Text>
+                    </View>
+                  )}
+                  <View style={styles.cardContent}>
+                    <View style={styles.cardHeader}>
+                      <Text style={styles.cardTitle} numberOfLines={1} ellipsizeMode="tail">
+                        {featured.title || `${featured.make || ''} ${featured.model || ''}`}
+                      </Text>
+                      <Text style={styles.cardPrice}>{featured.price ? `€ ${Number(featured.price).toLocaleString('es-ES')}` : '-'}</Text>
+                    </View>
+                    <Text style={styles.cardSubtitle}>{featured.year || ''} • {featured.mileage ? `${featured.mileage} km` : '-'} • {featured.fuel_type || '-'}</Text>
                   </View>
-                </TouchableWithoutFeedback>
-              ) : null
-            }
-            onEndReached={onEndReached}
-            onEndReachedThreshold={0.6}
-            ListFooterComponent={<View style={{ height: 64 }} />}
+                </View>
+              </TouchableWithoutFeedback>
+            ) : null
+          }
+          onEndReached={onEndReached}
+          onEndReachedThreshold={0.6}
+          ListFooterComponent={<View style={{ height: 64 }} />}
         />
       )}
 
