@@ -44,6 +44,19 @@ export default function PurchaseConfirmationScreen() {
     })
   }
 
+  const handleRateSeller = () => {
+    if (!listing?.user_id) {
+      Alert.alert('Sin vendedor', 'No pudimos encontrar al vendedor.')
+      return
+    }
+
+    navigation.navigate('RatingScreen', {
+      sellerId: listing.user_id,
+      sellerName,
+      listingTitle: title,
+    })
+  }
+
   if (!listing || !totals) {
     return (
       <SafeAreaView style={styles.safeArea} edges={['left', 'right', 'bottom']}>
@@ -115,8 +128,12 @@ export default function PurchaseConfirmationScreen() {
           )}
         </View>
 
-        <TouchableOpacity style={styles.primaryButton} onPress={handleChatPress} activeOpacity={0.8}>
-          <Text style={styles.primaryButtonText}>Abrir chat con el vendedor</Text>
+        <TouchableOpacity
+          style={styles.primaryButton}
+          onPress={handleRateSeller}
+          activeOpacity={0.8}
+        >
+          <Text style={styles.primaryButtonText}>Valorar al vendedor</Text>
         </TouchableOpacity>
         <TouchableOpacity
           style={styles.secondaryButton}

@@ -6,6 +6,7 @@ import PurchaseScreen from '../purchase/PurchaseScreen'
 import PurchaseConfirmationScreen from '../purchase/PurchaseConfirmationScreen'
 import RecommendationsScreen from './RecommendationsScreen'
 import { palette } from '../../theme/palette'
+import RatingScreen from '../rating/ratingScreen'
 
 const Stack = createNativeStackNavigator()
 
@@ -54,6 +55,11 @@ export default function HomeNavigator() {
         name="Recommendations"
         component={RecommendationsScreen}
         options={{ title: '' }}
+      />
+      <Stack.Screen
+        name="RatingScreen"
+        component={RatingScreen}
+        options={{ headerShown: false }}
       />
     </Stack.Navigator>
   )
