@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from 'react'
-import { supabase } from '../../util/supabase'
+import { supabase } from '../../utils/supabase'
 import { useSearch } from '../../hooks/useSearch'
 
 const PAGE_SIZE = 50

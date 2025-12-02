@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from 'react'
-import { supabase } from '../../util/supabase'
+import { supabase } from '../../utils/supabase'
 
 // Number of listings to fetch per page.
 const PAGE_SIZE = 50
