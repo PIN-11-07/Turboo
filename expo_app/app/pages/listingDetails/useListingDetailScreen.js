@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
 import { useRoute } from '@react-navigation/native'
-import { supabase } from '../../util/supabase'
+import { supabase } from '../../utils/supabase'
 
 const REQUIRED_FIELDS = [
   'description',

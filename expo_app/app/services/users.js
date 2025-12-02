@@ -1,4 +1,4 @@
-import { supabase } from '../util/supabase';
+import { supabase } from '../utils/supabase';
 
 // Get user profile by ID
 export const getProfileById = async (userId) => {

@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { ActivityIndicator, StyleSheet, Text, TouchableOpacity } from 'react-native'
-import { supabase } from '../util/supabase'
+import { supabase } from '../utils/supabase'
 import { useAuth } from '../context/AuthContext'
 import { palette } from '../theme/palette'
 
