@@ -57,8 +57,11 @@ export default function ListingDetailScreen() {
   }
 
   const handleContactPress = () => {
-    // Placeholder for contact action
-    console.log('Contact seller')
+    navigation.navigate('Chat', {
+      listing,
+      sellerName,
+      sellerRating,
+    })
   }
 
   if (loading) {

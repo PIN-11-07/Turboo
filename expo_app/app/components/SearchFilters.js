@@ -29,8 +29,9 @@ const { width } = Dimensions.get('window')
  * @param {Array} props.transmissionOptions - Available transmission options
  * @param {Function} props.onApply - Callback when applying filters
  * @param {Function} props.onClear - Callback when clearing filters
+ * @param {Function} props.onClose - Callback when closing filters without applying
  */
-  const SearchFilters = ({
+const SearchFilters = ({
   visible,
   filters,
   setFilters,
@@ -45,6 +46,7 @@ const { width } = Dimensions.get('window')
   doorsOptions,
   onApply,
   onClear,
+  onClose,
 }) => {
   const insets = useSafeAreaInsets()
 
@@ -72,13 +74,13 @@ const { width } = Dimensions.get('window')
     setFilters(f => {
       const currentMakes = Array.isArray(f.make) ? [...f.make] : []
       const index = currentMakes.indexOf(make)
-      
+
       if (index >= 0) {
         currentMakes.splice(index, 1)
       } else {
         currentMakes.push(make)
       }
-      
+
       return { ...f, make: currentMakes }
     })
   }
@@ -87,23 +89,28 @@ const { width } = Dimensions.get('window')
     setFilters(f => {
       const currentArray = Array.isArray(f[key]) ? [...f[key]] : []
       const index = currentArray.indexOf(value)
-      
+
       if (index >= 0) {
         currentArray.splice(index, 1)
       } else {
         currentArray.push(value)
       }
-      
+
       return { ...f, [key]: currentArray }
     })
   }
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Filtros</Text>
-      
-      <ScrollView 
-        style={styles.scrollView} 
+      <View style={styles.headerRow}>
+        <Text style={styles.title}>Filtros</Text>
+        <TouchableOpacity onPress={onClose} style={styles.closeButton}>
+          <Text style={styles.closeButtonText}>✕</Text>
+        </TouchableOpacity>
+      </View>
+
+      <ScrollView
+        style={styles.scrollView}
         contentContainerStyle={[styles.scrollContent, { paddingBottom: insets.bottom + 20 }]}
         showsVerticalScrollIndicator={false}
       >
@@ -311,7 +318,7 @@ const { width } = Dimensions.get('window')
           />
         </View>
       </ScrollView>
-      
+
       {/* Action Buttons */}
       <View style={styles.actionContainer}>
         <TouchableOpacity
@@ -332,6 +339,20 @@ const { width } = Dimensions.get('window')
 }
 
 const styles = {
+  headerRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 16,
+  },
+  closeButton: {
+    padding: 4,
+  },
+  closeButtonText: {
+    fontSize: 20,
+    color: palette.textPrimary,
+    fontWeight: 'bold',
+  },
   container: {
     backgroundColor: palette.surface,
     marginHorizontal: 20,
@@ -341,9 +362,8 @@ const styles = {
     flex: 1,
   },
   title: {
-    color: palette.text,
+    color: palette.textPrimary,
     fontWeight: '600',
-    marginBottom: 16,
     fontSize: 16,
   },
   scrollView: {
@@ -408,7 +428,7 @@ const styles = {
   },
   textInput: {
     backgroundColor: palette.background,
-    color: palette.text,
+    color: palette.textPrimary,
     paddingHorizontal: 12,
     paddingVertical: 10,
     borderRadius: 8,
@@ -438,7 +458,7 @@ const styles = {
     fontWeight: '600',
   },
   clearButtonText: {
-    color: palette.text,
+    color: palette.textPrimary,
     fontWeight: '600',
   },
 }

@@ -1,16 +1,19 @@
 import { useCallback, useEffect, useState } from 'react'
 import { supabase } from '../../util/supabase'
+import { useSearch } from '../../hooks/useSearch'
 
-// Number of listings to fetch per page.
 const PAGE_SIZE = 50
 
-export const useHomeScreen = () => {
+export const useSearchScreen = () => {
   const [listings, setListings] = useState([])
   const [initialLoading, setInitialLoading] = useState(true)
   const [refreshing, setRefreshing] = useState(false)
   const [loadingMore, setLoadingMore] = useState(false)
   const [hasMore, setHasMore] = useState(true)
   const [error, setError] = useState(null)
+
+  // Initialize advanced search functionality
+  const search = useSearch(listings)
 
   const fetchListings = useCallback(
     async ({ cursor, refresh } = {}) => {
@@ -58,7 +61,7 @@ export const useHomeScreen = () => {
         }
       } catch (fetchError) {
         console.error(fetchError)
-        setError('Unable to load listings. Please try again later.')
+        setError('No es posible cargar los anuncios. Inténtalo de nuevo más tarde.')
       } finally {
         if (refresh) {
           setRefreshing(false)
@@ -76,6 +79,9 @@ export const useHomeScreen = () => {
     fetchListings()
   }, [fetchListings])
 
+  // Use advanced search exclusively
+  const filteredListings = search.filteredListings
+
   const handleRefresh = useCallback(() => {
     if (!refreshing) {
       fetchListings({ refresh: true })
@@ -83,6 +89,11 @@ export const useHomeScreen = () => {
   }, [fetchListings, refreshing])
 
   const handleLoadMore = useCallback(() => {
+    // Disable load more when using search or filters
+    if (search.searchText.trim() || search.showFilters) {
+      return
+    }
+
     if (!loadingMore && hasMore && listings.length > 0 && !initialLoading) {
       const cursor = listings[listings.length - 1]
       fetchListings({ cursor })
@@ -93,17 +104,13 @@ export const useHomeScreen = () => {
     initialLoading,
     listings,
     loadingMore,
+    search.searchText,
+    search.showFilters,
   ])
-
-  const removeListingById = useCallback((listingId) => {
-    if (!listingId) {
-      return
-    }
-    setListings((prev) => prev.filter((listing) => listing.id !== listingId))
-  }, [])
 
   return {
     listings,
+    filteredListings,
     initialLoading,
     refreshing,
     loadingMore,
@@ -111,6 +118,6 @@ export const useHomeScreen = () => {
     error,
     handleRefresh,
     handleLoadMore,
-    removeListingById,
+    search,
   }
 }

@@ -5,7 +5,9 @@ import { useAuth } from '../context/AuthContext'
 import AuthNavigator from './AuthNavigator'
 import AppNavigator from './AppNavigator'
 import WelcomeScreen from '../pages/welcome/WelcomeScreen'
+import ChatScreen from '../pages/messages/ChatScreen'
 import { palette } from '../theme/palette'
+import * as SplashScreen from 'expo-splash-screen'
 
 const Stack = createNativeStackNavigator()
 
@@ -23,7 +25,17 @@ const navigationTheme = {
 }
 
 export default function RootNavigator() {
-  const { user } = useAuth()
+  const { user, loading } = useAuth()
+
+  React.useEffect(() => {
+    if (!loading) {
+      SplashScreen.hideAsync()
+    }
+  }, [loading])
+
+  if (loading) {
+    return null
+  }
 
   if (!user) {
     return (
@@ -38,6 +50,7 @@ export default function RootNavigator() {
       <Stack.Navigator screenOptions={{ headerShown: false }} initialRouteName="Welcome">
         <Stack.Screen name="Welcome" component={WelcomeScreen} />
         <Stack.Screen name="MainApp" component={AppNavigator} />
+        <Stack.Screen name="Chat" component={ChatScreen} />
       </Stack.Navigator>
     </NavigationContainer>
   )

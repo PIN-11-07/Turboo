@@ -1,7 +1,10 @@
 import React, { useState } from 'react';
-import { TouchableOpacity, Text, ActivityIndicator, Alert, View } from 'react-native';
+import { TouchableOpacity, Text, ActivityIndicator, Alert, View, StyleSheet } from 'react-native';
 import * as FileSystem from 'expo-file-system/legacy';
+import { LinearGradient } from 'expo-linear-gradient';
+import { Ionicons } from '@expo/vector-icons';
 import { CarAnalysisService } from '../services/CarAnalysisService';
+import { palette } from '../theme/palette';
 
 const ImageAnalysisButton = ({
   imageUri,
@@ -31,7 +34,7 @@ const ImageAnalysisButton = ({
       const mimeType = getMimeType(imageUri);
 
       const base64Image = await FileSystem.readAsStringAsync(imageUri, {
-        encoding: 'base64', // Safe cross-version encoding string
+        encoding: 'base64',
       });
 
       const analysisResult = await CarAnalysisService.analyzeCarImage(base64Image, mimeType);
@@ -44,9 +47,7 @@ const ImageAnalysisButton = ({
       const make = analysisResult?.make;
       const model = analysisResult?.model;
       const message = make || model ? `${make || ''} ${model || ''}`.trim() : 'Car not identified';
-      
-      //Alert.alert('Analysis complete', message);
-      
+
     } catch (error) {
       console.error('Error in button component:', error);
 
@@ -66,42 +67,64 @@ const ImageAnalysisButton = ({
   };
 
   return (
-    <View style={{ width: '100%' }}>
+    <View style={[styles.container, style]}>
       <TouchableOpacity
-        style={[
-          {
-            backgroundColor: isAnalyzing ? '#059669' : '#10B981',
-            padding: 15,
-            borderRadius: 10,
-            alignItems: 'center',
-            marginVertical: 10,
-            flexDirection: 'row',
-            justifyContent: 'center',
-            opacity: isAnalyzing ? 0.8 : 1,
-            shadowColor: '#000',
-            shadowOffset: { width: 0, height: 2 },
-            shadowOpacity: 0.25,
-            shadowRadius: 3.84,
-            elevation: 5,
-          },
-          style,
-        ]}
         onPress={handlePress}
         disabled={isAnalyzing}
+        activeOpacity={0.8}
+        style={styles.touchable}
       >
-        {isAnalyzing ? (
-          <>
-            <ActivityIndicator color="#FFFFFF" style={{ marginRight: 10 }} />
-            <Text style={{ color: '#FFFFFF', fontWeight: '600' }}>Analyzing...</Text>
-          </>
-        ) : (
-          <Text style={{ color: '#FFFFFF', fontWeight: 'bold', fontSize: 16 }}>
-            Auto-fill with AI
-          </Text>
-        )}
+        <LinearGradient
+          colors={isAnalyzing ? [palette.disabled, palette.disabled] : [palette.accent, palette.mustard]}
+          start={{ x: 0, y: 0 }}
+          end={{ x: 1, y: 1 }}
+          style={styles.gradient}
+        >
+          {isAnalyzing ? (
+            <>
+              <ActivityIndicator color={palette.textPrimary} size="small" style={{ marginRight: 8 }} />
+              <Text style={styles.text}>Analyzing...</Text>
+            </>
+          ) : (
+            <>
+              <Ionicons name="sparkles" size={18} color={palette.background} style={{ marginRight: 6 }} />
+              <Text style={styles.text}>AI Scan</Text>
+            </>
+          )}
+        </LinearGradient>
       </TouchableOpacity>
     </View>
   );
 };
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    height: 48,
+    borderRadius: 12,
+    overflow: 'hidden',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 4.65,
+    elevation: 8,
+  },
+  touchable: {
+    flex: 1,
+  },
+  gradient: {
+    flex: 1,
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingHorizontal: 16,
+  },
+  text: {
+    color: palette.background,
+    fontWeight: '700',
+    fontSize: 15,
+    letterSpacing: 0.5,
+  },
+});
 
 export default ImageAnalysisButton;
