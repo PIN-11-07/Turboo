@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react'
 import { useAuth } from '../../context/AuthContext'
-import { supabase } from '../../util/supabase'
+import { supabase } from '../../utils/supabase'
 
 const CLOUD_NAME = "di7ioytqx"
 const UPLOAD_PRESET = "vehiculos_upload"

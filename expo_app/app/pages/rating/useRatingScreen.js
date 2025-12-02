@@ -1,6 +1,6 @@
 import { useCallback, useMemo, useState } from 'react'
 import { useNavigation, useRoute } from '@react-navigation/native'
-import { supabase } from '../../util/supabase'
+import { supabase } from '../../utils/supabase'
 
 const normalizeTitle = (title) =>
   typeof title === 'string' && title.trim().length ? title.trim() : 'Vehicle acquired'

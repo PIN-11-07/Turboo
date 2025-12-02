@@ -1,4 +1,4 @@
-import { supabase } from '../util/supabase'
+import { supabase } from '../utils/supabase'
 
 /**
  * Récupère l'historique des transactions d'un utilisateur

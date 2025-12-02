@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useNavigation, useRoute } from '@react-navigation/native'
-import { supabase } from '../../util/supabase'
+import { supabase } from '../../utils/supabase'
 import { processPurchaseTransaction } from '../../services/payments'
 import { useAuth } from '../../context/AuthContext'
 

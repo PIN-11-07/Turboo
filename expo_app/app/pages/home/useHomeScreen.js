@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
-import { supabase } from '../../util/supabase'
+import { supabase } from '../../utils/supabase'
 import { useSearch } from '../../hooks/useSearch'
 
 // Number of listings to fetch per page. Increased to show more results per request.

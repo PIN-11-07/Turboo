@@ -5,7 +5,7 @@ import { useNavigation } from '@react-navigation/native'
 import { palette } from '../../theme/palette'
 import FavoriteButton from '../../components/FavoriteButton'
 import { useAuth } from '../../context/AuthContext'
-import recommender from '../../util/recommender'
+import recommender from '../../utils/recommender'
 import { styles } from "./RecommendationsStyles"
 import { LinearGradient } from 'expo-linear-gradient'
 
