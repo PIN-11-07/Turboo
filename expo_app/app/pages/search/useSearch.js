@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
-import { normalizeForSearch } from '../utils/format'
+import { normalizeForSearch } from '../../utils/format'
 
 /**
  * Custom hook for advanced search functionality with filters and suggestions
