@@ -733,10 +733,9 @@ export default function ProfileScreen() {
             {activeTab === 'history' && renderTransactionHistorySection()}
 
             <TouchableOpacity style={styles.signOutButton} onPress={signOut}>
-              <Text style={styles.signOutButtonText}>Cerrar sesión</Text>
+              <Text style={styles.signOutButtonText}>Log Out</Text>
             </TouchableOpacity>
 
-            {/* Espace vide pour permettre de scroller au-delà du bouton de déconnexion */}
             <View style={{ height: 100 }} />
           </View>
         </ScrollView>

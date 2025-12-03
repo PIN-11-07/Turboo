@@ -16,16 +16,11 @@ export const useLoginScreen = () => {
     setMessage(null)
 
     if (isSignup) {
-      const trimmedName = name.trim()
-      if (!trimmedName) {
-        setError('Please enter your name to complete registration.')
-        return
-      }
       if (!acceptedTerms) {
         setError('You must accept the Terms and Conditions to continue.')
         return
       }
-      const { error } = await signUp(email, password, trimmedName)
+      const { error } = await signUp(email, password, email)
       if (error) {
         setError(error.message)
       } else {
