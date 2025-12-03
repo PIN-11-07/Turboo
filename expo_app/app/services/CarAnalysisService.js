@@ -1,11 +1,10 @@
 import axios from 'axios';
 
-// Assure-toi que cette clé est bien chargée. Redémarre le serveur Expo si tu la changes.
 const GEMINI_API_KEY = process.env.EXPO_PUBLIC_GEMINI_API_KEY;
 
-// Utilisation directe du modèle Flash, plus rapide et stable pour l'analyse d'image
 const GEMINI_MODEL = 'gemini-2.0-flash';
 const GEMINI_URL = `https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:generateContent?key=${GEMINI_API_KEY}`;
+
 
 export class CarAnalysisService {
   /**
@@ -64,17 +63,17 @@ export class CarAnalysisService {
 
       // Response extraction
       const candidate = response.data?.candidates?.[0];
-      
+
       if (!candidate || !candidate.content || !candidate.content.parts) {
         console.error("Unexpected Gemini response structure:", JSON.stringify(response.data));
         throw new Error('Empty response from AI.');
       }
 
       const rawText = candidate.content.parts[0].text;
-      
+
       // Since response_mime_type is set to JSON, we parse the raw text
       const parsedData = JSON.parse(rawText);
-      
+
       return this.normalizeData(parsedData);
 
     } catch (error) {
@@ -82,7 +81,7 @@ export class CarAnalysisService {
       if (error.response) {
         console.error('Gemini API Error (Status):', error.response.status);
         console.error('Gemini API Error (Data):', JSON.stringify(error.response.data, null, 2));
-        
+
         let message = error.response.data?.error?.message || 'Unknown error';
         if (error.response.status === 404) {
           message = "AI model not found or invalid API key.";
@@ -126,7 +125,7 @@ export class CarAnalysisService {
       };
 
       const response = await axios.post(GEMINI_URL, requestBody, {
-         headers: { 'Content-Type': 'application/json' }
+        headers: { 'Content-Type': 'application/json' }
       });
 
       return response.data?.candidates?.[0]?.content?.parts?.[0]?.text?.trim() || "";

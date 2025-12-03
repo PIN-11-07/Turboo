@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { TouchableOpacity, Text, ActivityIndicator, Alert, View, StyleSheet } from 'react-native';
+import React, { useState, useEffect, useRef } from 'react';
+import { TouchableOpacity, Text, ActivityIndicator, Alert, View, StyleSheet, Animated } from 'react-native';
 import * as FileSystem from 'expo-file-system/legacy';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
@@ -13,6 +13,8 @@ const ImageAnalysisButton = ({
   style,
 }) => {
   const [isAnalyzing, setIsAnalyzing] = useState(false);
+  const [isSuccess, setIsSuccess] = useState(false);
+  const fadeAnim = useRef(new Animated.Value(1)).current;
 
   const getMimeType = (uri) => {
     const extension = uri.split('.').pop().toLowerCase();
@@ -29,6 +31,7 @@ const ImageAnalysisButton = ({
     }
 
     setIsAnalyzing(true);
+    setIsSuccess(false);
 
     try {
       const mimeType = getMimeType(imageUri);
@@ -43,10 +46,13 @@ const ImageAnalysisButton = ({
       onAnalysisComplete?.(analysisResult);
       onDescriptionGenerated?.(description);
 
-      // Simple alert
-      const make = analysisResult?.make;
-      const model = analysisResult?.model;
-      const message = make || model ? `${make || ''} ${model || ''}`.trim() : 'Car not identified';
+      // Trigger success animation
+      setIsSuccess(true);
+
+      // Reset after 3 seconds
+      setTimeout(() => {
+        setIsSuccess(false);
+      }, 3000);
 
     } catch (error) {
       console.error('Error in button component:', error);
@@ -70,12 +76,18 @@ const ImageAnalysisButton = ({
     <View style={[styles.container, style]}>
       <TouchableOpacity
         onPress={handlePress}
-        disabled={isAnalyzing}
+        disabled={isAnalyzing || isSuccess}
         activeOpacity={0.8}
         style={styles.touchable}
       >
         <LinearGradient
-          colors={isAnalyzing ? [palette.disabled, palette.disabled] : [palette.accent, palette.mustard]}
+          colors={
+            isSuccess
+              ? ['#4CAF50', '#45a049'] // Green for success
+              : isAnalyzing
+                ? [palette.disabled, palette.disabled]
+                : [palette.accent, palette.mustard]
+          }
           start={{ x: 0, y: 0 }}
           end={{ x: 1, y: 1 }}
           style={styles.gradient}
@@ -84,6 +96,11 @@ const ImageAnalysisButton = ({
             <>
               <ActivityIndicator color={palette.textPrimary} size="small" style={{ marginRight: 8 }} />
               <Text style={styles.text}>Analyzing...</Text>
+            </>
+          ) : isSuccess ? (
+            <>
+              <Ionicons name="checkmark-circle" size={20} color="#fff" style={{ marginRight: 6 }} />
+              <Text style={styles.text}>Identified!</Text>
             </>
           ) : (
             <>
