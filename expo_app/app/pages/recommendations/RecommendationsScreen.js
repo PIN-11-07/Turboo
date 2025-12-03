@@ -1,41 +1,23 @@
-import React, { useEffect, useState, useCallback, useMemo } from 'react'
+import React, { useCallback } from 'react'
 import { View, Text, FlatList, TouchableOpacity, Image, TouchableWithoutFeedback } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { useNavigation } from '@react-navigation/native'
 import { palette } from '../../theme/palette'
 import FavoriteButton from '../../components/FavoriteButton'
-import { useAuth } from '../../context/AuthContext'
-import recommender from '../../utils/recommender'
 import { styles } from "./RecommendationsStyles"
 import { LinearGradient } from 'expo-linear-gradient'
+import { useRecommendationsScreen } from './useRecommendationsScreen'
 
 const getMainImage = (images) => (Array.isArray(images) && images.length > 0 ? images[0] : null)
 
 export default function RecommendationsScreen() {
   const navigation = useNavigation()
-  const { user } = useAuth()
-  const [recommendations, setRecommendations] = useState([])
-  const [visibleCount, setVisibleCount] = useState(1) // show top item first
-
-  useEffect(() => {
-    let mounted = true
-
-    const load = async () => {
-      try {
-        const recs = await recommender.getRecommendationsForUser(user?.id, { limit: 24 })
-        // recommender returns scored list (best first)
-        if (mounted) setRecommendations(recs || [])
-      } catch (e) {
-        console.warn('[RecommendationsScreen] load error', e)
-      }
-    }
-
-    load()
-
-    return () => {
-      mounted = false
-    }
-  }, [user?.id])
+  const {
+    recommendations,
+    featured,
+    visibleItems,
+    onEndReached,
+  } = useRecommendationsScreen()
 
    const renderItem = useCallback(
    ({ item, index }) => {  
@@ -77,17 +59,6 @@ export default function RecommendationsScreen() {
     [navigation]
   )
 
-  const featured = useMemo(() => (recommendations && recommendations.length > 0 ? recommendations[0] : null), [recommendations])
-
-  const remaining = useMemo(() => (recommendations && recommendations.length > 1 ? recommendations.slice(1) : []), [recommendations])
-
-  const dataToShow = remaining.slice(0, Math.max(0, visibleCount - (featured ? 1 : 0)))
-
-  const onEndReached = () => {
-    // reveal 3 more items each time
-    setVisibleCount((v) => Math.min(recommendations.length, v + 3))
-  }
-
   return (
     <SafeAreaView style={styles.safeArea}>
       <View style={styles.headerContainer}>
@@ -107,7 +78,7 @@ export default function RecommendationsScreen() {
         </View>
       ) : (
         <FlatList
-          data={dataToShow}
+          data={visibleItems}
           keyExtractor={(item) => String(item.id)}
           renderItem={renderItem}
           horizontal
