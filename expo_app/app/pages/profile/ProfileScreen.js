@@ -607,10 +607,10 @@ export default function ProfileScreen() {
             <View style={styles.statsRow}>
               <View style={styles.statColumn}>
                 <View style={styles.iconRow}>
-                  <Feather name="truck" size={20} color={palette.accent} />
+                  <Feather name="check-square" size={20} color={palette.accent} />
                   <Text style={styles.statNumber}>{publishedCount}</Text>
                 </View>
-                <Text style={styles.statLabel}>Publicaciones</Text>
+                <Text style={styles.statLabel}>My Cars</Text>
               </View>
 
               <View style={styles.statColumn}>
@@ -639,7 +639,7 @@ export default function ProfileScreen() {
             >
               <View style={styles.tabContent}>
                 <Feather
-                  name="truck"
+                  name="check-square"
                   size={18}
                   color={activeTab === 'published' ? 'black' : palette.accent}
                 />
@@ -650,7 +650,7 @@ export default function ProfileScreen() {
                   ]}
                 >
                   {' '}
-                  Mis Coches
+                  My Cars
                 </Text>
                 <Text
                   style={[
@@ -735,6 +735,9 @@ export default function ProfileScreen() {
             <TouchableOpacity style={styles.signOutButton} onPress={signOut}>
               <Text style={styles.signOutButtonText}>Cerrar sesión</Text>
             </TouchableOpacity>
+
+            {/* Espace vide pour permettre de scroller au-delà du bouton de déconnexion */}
+            <View style={{ height: 100 }} />
           </View>
         </ScrollView>
       </View>

@@ -3,7 +3,7 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs'
 import HomeNavigator from '../pages/home/HomeNavigator'
 import PublishNavigator from '../pages/publish/PublishNavigator'
 import ProfileNavigator from '../pages/profile/ProfileNavigator'
-import SearchScreen from '../pages/search/SearchScreen'
+import SearchNavigator from '../pages/search/SearchNavigator'
 import MessagesScreen from '../pages/messages/MessagesScreen'
 import CustomTabBar from './CustomTabBar'
 import { palette } from '../theme/palette'
@@ -31,7 +31,7 @@ export default function AppNavigator() {
       />
       <Tab.Screen
         name="Search"
-        component={SearchScreen}
+        component={SearchNavigator}
         options={{ tabBarLabel: 'Buscar' }}
       />
       <Tab.Screen

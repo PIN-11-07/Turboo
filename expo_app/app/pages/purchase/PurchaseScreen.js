@@ -46,6 +46,10 @@ export default function PurchaseScreen() {
     handleGoBack,
     disableReason,
     payingWithBalanceOnly,
+    savedCards,
+    selectedCardId,
+    setSelectedCardId,
+    addNewCard,
   } = usePurchaseScreen()
 
   const renderSummary = () => (
@@ -93,6 +97,9 @@ export default function PurchaseScreen() {
     </View>
   )
 
+  const { useNavigation } = require('@react-navigation/native')
+  const navigation = useNavigation()
+
   const renderCardForm = () => {
     if (payingWithBalanceOnly) {
       return (
@@ -111,56 +118,40 @@ export default function PurchaseScreen() {
 
     return (
       <View style={styles.card}>
-        <Text style={styles.sectionTitle}>Datos de la tarjeta</Text>
-        <View style={styles.formGroup}>
-          <Text style={styles.inputLabel}>Titular</Text>
-          <TextInput
-            style={styles.input}
-            placeholder="Nombre en la tarjeta"
-            placeholderTextColor={PLACEHOLDER_COLOR}
-            value={cardData.holder}
-            onChangeText={(text) => setCardField('holder', text)}
-            editable={!submitting}
-          />
-        </View>
-        <View style={styles.formGroup}>
-          <Text style={styles.inputLabel}>Número</Text>
-          <TextInput
-            style={styles.input}
-            placeholder="1234 5678 9012 3456"
-            placeholderTextColor={PLACEHOLDER_COLOR}
-            keyboardType="number-pad"
-            value={cardData.number}
-            onChangeText={(text) => setCardField('number', text)}
-            editable={!submitting}
-          />
-        </View>
-        <View style={styles.row}>
-          <View style={styles.rowItem}>
-            <Text style={styles.inputLabel}>Caducidad</Text>
-            <TextInput
-              style={styles.input}
-              placeholder="MM/AA"
-              placeholderTextColor={PLACEHOLDER_COLOR}
-              value={cardData.expiry}
-              onChangeText={(text) => setCardField('expiry', text)}
-              editable={!submitting}
-            />
-          </View>
-          <View style={styles.rowItem}>
-            <Text style={styles.inputLabel}>CVC</Text>
-            <TextInput
-              style={styles.input}
-              placeholder="123"
-              placeholderTextColor={PLACEHOLDER_COLOR}
-              keyboardType="number-pad"
-              secureTextEntry
-              value={cardData.cvc}
-              onChangeText={(text) => setCardField('cvc', text)}
-              editable={!submitting}
-            />
-          </View>
-        </View>
+        <Text style={styles.sectionTitle}>Método de pago</Text>
+
+        {savedCards.map((card) => (
+          <TouchableOpacity
+            key={card.id}
+            style={[
+              styles.paymentOption,
+              selectedCardId === card.id && styles.paymentOptionSelected
+            ]}
+            onPress={() => setSelectedCardId(card.id)}
+            activeOpacity={0.8}
+          >
+            <View style={styles.paymentOptionLeft}>
+              <View style={[
+                styles.radioButton,
+                selectedCardId === card.id && styles.radioButtonSelected
+              ]}>
+                {selectedCardId === card.id && <View style={styles.radioButtonInner} />}
+              </View>
+              <View style={styles.cardDetails}>
+                <Text style={styles.cardBrand}>{card.brand} •••• {card.last4}</Text>
+                <Text style={styles.cardExpiry}>Expira {card.expiry}</Text>
+              </View>
+            </View>
+          </TouchableOpacity>
+        ))}
+
+        <TouchableOpacity
+          style={styles.addCardButton}
+          onPress={() => navigation.navigate('AddCard', { onSave: addNewCard })}
+          activeOpacity={0.8}
+        >
+          <Text style={styles.addCardText}>+ Agregar nueva tarjeta</Text>
+        </TouchableOpacity>
       </View>
     )
   }

@@ -9,6 +9,7 @@ export const useLoginScreen = () => {
   const [error, setError] = useState(null)
   const [message, setMessage] = useState(null)
   const [isSignup, setIsSignup] = useState(false)
+  const [acceptedTerms, setAcceptedTerms] = useState(false)
 
   const handleSubmit = useCallback(async () => {
     setError(null)
@@ -17,7 +18,11 @@ export const useLoginScreen = () => {
     if (isSignup) {
       const trimmedName = name.trim()
       if (!trimmedName) {
-        setError('Ingresa tu nombre para completar el registro.')
+        setError('Please enter your name to complete registration.')
+        return
+      }
+      if (!acceptedTerms) {
+        setError('You must accept the Terms and Conditions to continue.')
         return
       }
       const { error } = await signUp(email, password, trimmedName)
@@ -25,11 +30,12 @@ export const useLoginScreen = () => {
         setError(error.message)
       } else {
         setMessage(
-          '¡Registro exitoso! Revisa tu correo electrónico para confirmar tu cuenta.'
+          'Registration successful! Check your email to confirm your account.'
         )
         setIsSignup(false)
         setPassword('')
         setName('')
+        setAcceptedTerms(false)
       }
       return
     }
@@ -38,12 +44,13 @@ export const useLoginScreen = () => {
     if (error) {
       setError(error.message)
     }
-  }, [email, isSignup, name, password, signIn, signUp])
+  }, [email, isSignup, name, password, acceptedTerms, signIn, signUp])
 
   const toggleAuthMode = useCallback(() => {
     setError(null)
     setMessage(null)
     setName('')
+    setAcceptedTerms(false)
     setIsSignup((prev) => !prev)
   }, [])
 
@@ -57,6 +64,8 @@ export const useLoginScreen = () => {
     error,
     message,
     isSignup,
+    acceptedTerms,
+    setAcceptedTerms,
     handleSubmit,
     toggleAuthMode,
   }
