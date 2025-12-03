@@ -264,9 +264,30 @@ Revool
 - **UX details:** Each transaction shows vehicle details, counterpart information, transaction type badge (purchase/sale), price, and date, all styled according to the Revvol design system (dark background, gold accents).
 - **Navigation:** Transactions can be tapped to navigate to the original listing detail if it still exists.
 
+### l) Chat & Messaging
+- **Description:** Real-time chat interface for buyers and sellers to communicate. Includes a conversation list (`MessagesScreen`) and a detailed chat view (`ChatScreen`) with context about the vehicle.
+- **Components:** `MessagesScreen`, `ChatScreen`.
+- **Notes:** Currently uses mock data for conversations and messages.
 
+### m) Seller Rating
+- **Description:** Allows buyers to rate their experience with a seller after a transaction.
+- **Components:** `RatingScreen`.
+- **Features:** Star rating system (1-5), feedback submission.
+
+### n) Recommendations
+- **Description:** A "Selected for you" section displaying curated vehicle recommendations based on user interests.
+- **Components:** `RecommendationsScreen`.
+- **Features:** Horizontal scrolling list, featured item highlight.
 
 ## 6. Components
+### AnimatedAISearchButton (`app/components/AnimatedAISearchButton.js`)
+- **Responsibility:** Renders a pulsing and rotating button used for triggering AI search features.
+- **Animation:** Uses `Animated.loop` and `Easing` for continuous pulse and rotation effects.
+
+### CarItem (`app/components/CarItem.js`)
+- **Responsibility:** Reusable card component for displaying vehicle listings in feeds and lists.
+- **Features:** Displays main image (or placeholder), price formatting, vehicle details (make, model, year, mileage, etc.), and integrates the `FavoriteButton`.
+
 ### FavoriteButton (`app/components/FavoriteButton.js`)
 - **Responsibility:** renders the heart icon, loads the initial favorite status, sends Supabase mutations (`insert`/`delete`) and handles optimistic updates while keeping errors isolated per button.
 - **Shared cache:** keeps a `Map` keyed by listing + user; listeners subscribe/unsubscribe so every mounted button reacts instantly to status changes.
@@ -276,6 +297,10 @@ Revool
 - **Responsibility:** converts the picked image to base64, calls Gemini to extract car fields, and triggers description generation callbacks.
 - **Props:** `imageUri`, `onAnalysisComplete`, `onDescriptionGenerated`, `style`.
 - **Notes:** requires `EXPO_PUBLIC_GEMINI_API_KEY`; only works once an image has been chosen in the publish flow.
+
+### SearchSuggestions (`app/components/SearchSuggestions.js`)
+- **Responsibility:** Displays autocomplete suggestions for the search input.
+- **Features:** Supports different suggestion types (e.g., 'make', 'model') and handles user selection.
 
 ### TransactionItem (`app/components/TransactionItem.js`)
 - **Responsibility:** renders individual transaction cards in the history tab showing purchase/sale details with elegant Revvol styling.
