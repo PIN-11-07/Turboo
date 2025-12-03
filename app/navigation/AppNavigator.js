@@ -3,7 +3,7 @@ import { View, TouchableOpacity, StyleSheet } from 'react-native'
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs'
 import { createNativeStackNavigator } from '@react-navigation/native-stack'
 import { Ionicons } from '@expo/vector-icons'
-import HomeScreen from '../pages/home/HomeScreen'
+import FeedScreen from '../pages/feed/FeedScreen'
 import ListingDetailScreen from '../pages/listingDetails/ListingDetailScreen'
 import PurchaseScreen from '../pages/purchase/PurchaseScreen'
 import PurchaseConfirmationScreen from '../pages/purchase/PurchaseConfirmationScreen'
@@ -17,7 +17,7 @@ import ProfileScreen from '../pages/profile/ProfileScreen'
 import { palette } from '../theme/palette'
 
 const Tab = createBottomTabNavigator()
-const HomeStack = createNativeStackNavigator()
+const FeedStack = createNativeStackNavigator()
 const SearchStack = createNativeStackNavigator()
 const PublishStack = createNativeStackNavigator()
 const MessagesStack = createNativeStackNavigator()
@@ -104,44 +104,44 @@ const CustomTabBar = ({ state, descriptors, navigation }) => (
   </View>
 )
 
-const HomeStackNavigator = () => (
-  <HomeStack.Navigator screenOptions={stackScreenOptions}>
-    <HomeStack.Screen
+const FeedStackNavigator = () => (
+  <FeedStack.Navigator screenOptions={stackScreenOptions}>
+    <FeedStack.Screen
       name="HomeMain"
-      component={HomeScreen}
+      component={FeedScreen}
       options={{ headerShown: false }}
     />
-    <HomeStack.Screen
+    <FeedStack.Screen
       name="ListingDetail"
       component={ListingDetailScreen}
       options={{ headerShown: false }}
     />
-    <HomeStack.Screen
+    <FeedStack.Screen
       name="Purchase"
       component={PurchaseScreen}
       options={{ title: 'Confirmar compra' }}
     />
-    <HomeStack.Screen
+    <FeedStack.Screen
       name="PurchaseConfirmation"
       component={PurchaseConfirmationScreen}
       options={{ title: 'Compra completada', headerBackVisible: false }}
     />
-    <HomeStack.Screen
+    <FeedStack.Screen
       name="Recommendations"
       component={RecommendationsScreen}
       options={{ title: '' }}
     />
-    <HomeStack.Screen
+    <FeedStack.Screen
       name="RatingScreen"
       component={RatingScreen}
       options={{ headerShown: false }}
     />
-    <HomeStack.Screen
+    <FeedStack.Screen
       name="Chat"
       component={ChatScreen}
       options={{ headerShown: false }}
     />
-  </HomeStack.Navigator>
+  </FeedStack.Navigator>
 )
 
 const SearchStackNavigator = () => (
@@ -245,7 +245,7 @@ export default function AppNavigator() {
     >
       <Tab.Screen
         name="Home"
-        component={HomeStackNavigator}
+        component={FeedStackNavigator}
         options={{ tabBarLabel: 'Inicio' }}
       />
       <Tab.Screen

@@ -13,16 +13,16 @@ import { SafeAreaView } from 'react-native-safe-area-context'
 import { useFocusEffect, useNavigation, useRoute } from '@react-navigation/native'
 import { useAuth } from '../../context/AuthContext'
 import { Ionicons } from '@expo/vector-icons'
-import { homeScreenStyles as styles } from './HomeStyles'
+import { feedScreenStyles as styles } from './FeedStyles'
 import { palette } from '../../theme/palette'
 import FavoriteButton from '../../components/FavoriteButton'
-import { useHome } from './useHome'
+import { useFeed } from './useFeed'
 import { formatPrice } from '../../utils/format'
 import { LinearGradient } from 'expo-linear-gradient'
 
 const getMainImage = (images) => (Array.isArray(images) && images.length > 0 ? images[0] : null)
 
-export default function HomeScreen() {
+export default function FeedScreen() {
   const navigation = useNavigation()
   const route = useRoute()
   const { user } = useAuth()
@@ -47,7 +47,7 @@ export default function HomeScreen() {
     handleRefresh,
     handleLoadMore,
     removeListingById,
-  } = useHome()
+  } = useFeed()
 
   useFocusEffect(
     useCallback(() => {

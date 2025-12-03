@@ -112,7 +112,7 @@ export const searchStyles = StyleSheet.create({
         paddingBottom: 80,
     },
 
-    // Card Styles (Matched to HomeStyles)
+    // Card Styles (Matched to FeedStyles)
     card: {
         backgroundColor: palette.surface,
         borderRadius: 18,

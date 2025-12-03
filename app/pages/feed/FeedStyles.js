@@ -3,7 +3,7 @@ import { palette } from '../../theme/palette'
 
 const { width } = Dimensions.get('window')
 
-export const homeScreenStyles = StyleSheet.create({
+export const feedScreenStyles = StyleSheet.create({
   safeArea: {
     flex: 1,
     backgroundColor: "transparent",

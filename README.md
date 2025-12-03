@@ -104,10 +104,10 @@ Revool
 │   │   │   ├── AuthStyles.js
 │   │   │   ├── LoginScreen.js
 │   │   │   └── useLogin.js
-│   │   ├── home
-│   │   │   ├── HomeScreen.js
-│   │   │   ├── HomeStyles.js
-│   │   │   └── useHome.js
+│   │   ├── feed
+│   │   │   ├── FeedScreen.js
+│   │   │   ├── FeedStyles.js
+│   │   │   └── useFeed.js
 │   │   ├── listingDetails
 │   │   │   ├── ListingDetailScreen.js
 │   │   │   ├── ListingDetailStyles.js
@@ -172,7 +172,7 @@ Revool
 - `app/config`: one-off configuration helpers such as `cloudinary.js` that centralize third-party keys or builders.
 - `app/context`: global providers; `AuthContext` exposes Supabase auth state and helpers to the whole tree.
 - `app/navigation`: React Navigation wiring with `RootNavigator` delegating to `AuthNavigator` or the signed-in `AppNavigator` stacks.
-- `app/pages/<feature>`: feature folders (auth, home, publish, profile, search, etc.) that always bundle `Screen`, `Styles`, and `use<Feature>` hook files so UI, styling, and logic travel together.
+- `app/pages/<feature>`: feature folders (auth, feed, publish, profile, search, etc.) that always bundle `Screen`, `Styles`, and `use<Feature>` hook files so UI, styling, and logic travel together.
 - `app/services`: data/side-effect helpers (Supabase CRUD, payments, AI car analysis) so screens call high-level APIs only.
 - `app/theme`: design tokens like the Revvol palette, gradients, typography helpers.
 - `app/utils`: infrastructure utilities (`supabase.js`, formatting helpers, recommender logic).
