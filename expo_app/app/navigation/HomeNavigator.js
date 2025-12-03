@@ -1,12 +1,12 @@
 import React from 'react'
 import { createNativeStackNavigator } from '@react-navigation/native-stack'
-import HomeScreen from './HomeScreen'
-import ListingDetailScreen from '../listingDetails/ListingDetailScreen'
-import PurchaseScreen from '../purchase/PurchaseScreen'
-import PurchaseConfirmationScreen from '../purchase/PurchaseConfirmationScreen'
-import RecommendationsScreen from './RecommendationsScreen'
-import { palette } from '../../theme/palette'
-import RatingScreen from '../rating/ratingScreen'
+import HomeScreen from '../pages/home/HomeScreen'
+import ListingDetailScreen from '../pages/listingDetails/ListingDetailScreen'
+import PurchaseScreen from '../pages/purchase/PurchaseScreen'
+import PurchaseConfirmationScreen from '../pages/purchase/PurchaseConfirmationScreen'
+import RecommendationsScreen from '../pages/home/RecommendationsScreen'
+import RatingScreen from '../pages/rating/ratingScreen'
+import { palette } from '../theme/palette'
 
 const Stack = createNativeStackNavigator()
 

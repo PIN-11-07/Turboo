@@ -1,7 +1,7 @@
 import React from 'react'
 import { createNativeStackNavigator } from '@react-navigation/native-stack'
-import LoginScreen from './LoginScreen'
-import { palette } from '../../theme/palette'
+import PublishScreen from '../pages/publish/PublishScreen'
+import { palette } from '../theme/palette'
 
 const Stack = createNativeStackNavigator()
 
@@ -23,15 +23,14 @@ const stackScreenOptions = {
   },
 }
 
-export default function AuthNavigator() {
+export default function PublishNavigator() {
   return (
-    <Stack.Navigator
-      screenOptions={{
-        ...stackScreenOptions,
-        headerShown: false,
-      }}
-    >
-      <Stack.Screen name="Login" component={LoginScreen} />
+    <Stack.Navigator screenOptions={stackScreenOptions}>
+      <Stack.Screen
+        name="PublishMain"
+        component={PublishScreen}
+        options={{ headerShown: false }}
+      />
     </Stack.Navigator>
   )
 }
