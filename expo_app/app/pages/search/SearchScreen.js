@@ -26,6 +26,7 @@ import FavoriteButton from '../../components/FavoriteButton'
 import SearchSuggestions from '../../components/SearchSuggestions'
 import SearchFilters from '../../components/SearchFilters'
 import ImageAnalysisButton from '../../components/ImageAnalisisButton'
+import ActiveFiltersChips from '../../components/ActiveFiltersChips'
 
 const getMainImage = (images) => (Array.isArray(images) && images.length > 0 ? images[0] : null)
 
@@ -33,8 +34,6 @@ const CATEGORIES = [
     { id: 'classics', title: 'Classics', image: 'https://images.unsplash.com/photo-1552519507-da3b142c6e3d?q=80&w=2070&auto=format&fit=crop', filter: { yearMax: 1990 } },
     { id: 'high-end', title: 'High-end', image: 'https://images.unsplash.com/photo-1563720360172-67b8f3dce741?q=80&w=2070&auto=format&fit=crop', filter: { priceMin: 50000 } },
     { id: 'sports', title: 'Sports', image: 'https://images.unsplash.com/photo-1583121274602-3e2820c69888?q=80&w=2070&auto=format&fit=crop', filter: { bodyType: 'Coupe' } },
-    { id: 'age', title: 'Age', image: 'https://images.unsplash.com/photo-1489824904134-891ab64532f1?q=80&w=1931&auto=format&fit=crop', action: 'filter_year' },
-    { id: 'condition', title: 'Condition', image: 'https://images.unsplash.com/photo-1503376763036-066120622c74?q=80&w=2070&auto=format&fit=crop', action: 'filter_condition' },
     { id: 'near-me', title: 'Near me', image: 'https://images.unsplash.com/photo-1449965408869-eaa3f722e40d?q=80&w=2070&auto=format&fit=crop', action: 'location' },
     { id: 'convertibles', title: 'Convertibles', image: 'https://images.unsplash.com/photo-1544636331-e26879cd4d9b?q=80&w=2074&auto=format&fit=crop', filter: { bodyType: 'Convertible' } },
     { id: 'suv', title: 'SUV & Off-road', image: 'https://images.unsplash.com/photo-1519641471654-76ce0107ad1b?q=80&w=2071&auto=format&fit=crop', filter: { bodyType: 'SUV' } },
@@ -339,6 +338,15 @@ export default function SearchScreen() {
                             <Ionicons name={search.viewMode === 'list' ? 'grid' : 'list'} size={16} color={palette.accent} />
                         </TouchableOpacity>
                     </View>
+
+                    {/* Active Filters Chips */}
+                    <ActiveFiltersChips
+                        filters={search.filters}
+                        priceRange={search.priceRange}
+                        yearRange={search.yearRange}
+                        onRemoveFilter={search.removeFilter}
+                        onClearAll={search.clearFilters}
+                    />
                 </View>
 
                 {/* Filters Modal */}
