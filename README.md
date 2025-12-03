@@ -6,16 +6,16 @@
 mobile marketplace used to publish and browse car listings. Users can authenticate with Supabase, scroll through the feed, publish their own vehicles and manage their profile.
 
 **Technology stack:** 
-- React Native 0.81 + React 19 via Expo 54 
-- Supabase (email/password Auth + Postgres + JSON storage for images) 
-- React Navigation 7 (bottom tabs + native stacks) 
-- AsyncStorage for session persistence + Expo Secure Store plugin 
-- Docker (Node 20 image) for the containerized development environment
+- React Native
+- Expo 
+- Supabase
+- React Navigation
 
 **General prerequisites:** 
 - Supabase account with an existing project (URL + anon key) 
 - Expo Go app on a physical device if you want to test through the QR code
 - Google AI Studio API key if you want AI auto-fill
+
 ## 2. Run the Project Locally with Docker
 
 1. Clone the repository and change into the folder:
