@@ -10,8 +10,9 @@ import {
   View,
 } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
+import { LinearGradient } from 'expo-linear-gradient'
 import * as ImagePicker from 'expo-image-picker'
-import { Feather, Ionicons } from '@expo/vector-icons'
+import { Ionicons } from '@expo/vector-icons'
 import FavoriteButton from '../../components/FavoriteButton'
 import TransactionItem from '../../components/TransactionItem'
 import { profileScreenStyles } from './profileStyles'
@@ -29,7 +30,7 @@ const editableAvatarStyle = {
   left: 0,
   right: 0,
   bottom: 0,
-  backgroundColor: 'rgba(0, 0, 0, 0.4)',
+  backgroundColor: palette.darkGrey,
   borderRadius: 75,
   justifyContent: 'center',
   alignItems: 'center',
@@ -80,7 +81,12 @@ export default function ProfileScreen() {
   )
   const [saving, setSaving] = useState(false)
   const [localError, setLocalError] = useState(null)
-  const [activeTab, setActiveTab] = useState('published')
+  const [activeTab, setActiveTab] = useState('personal')
+
+  // Mock recently viewed data - replace with actual data from context/storage
+  const recentlyViewed = useMemo(() => {
+    return activeListings.slice(0, 6)
+  }, [activeListings])
 
   useEffect(() => {
     if (fetchedProfile) {
@@ -99,7 +105,7 @@ export default function ProfileScreen() {
   const joinDate = useMemo(() => {
     if (user?.created_at) {
       try {
-        return new Date(user.created_at).toLocaleDateString('es-ES', {
+        return new Date(user.created_at).toLocaleDateString('en-US', {
           month: 'long',
           year: 'numeric',
         })
@@ -372,6 +378,7 @@ export default function ProfileScreen() {
     [handleFavoriteRemoval, handleListingPress, handleReactivate, reactivatingId, user?.id]
   )
 
+  // Loading and error states
   if (loading) {
     return (
       <SafeAreaView style={styles.safeArea} edges={['top']}>
@@ -403,8 +410,183 @@ export default function ProfileScreen() {
     )
   }
 
-  const renderPublishedSections = () => (
-    <>
+  const renderPersonalDataTab = () => (
+    <ScrollView style={styles.contentWrapper} contentContainerStyle={styles.scrollContent}>
+      {/* User Verification Card */}
+      {(profile?.rating !== undefined && profile?.rating !== null) && (
+        <View style={styles.verificationCard}>
+          <Text style={styles.verificationTitle}>User verification</Text>
+          <View style={styles.verificationContent}>
+            <View style={styles.verificationAvatar}>
+              {hasAvatar ? (
+                <Image source={{ uri: displayAvatarUri }} style={styles.verificationAvatarImage} />
+              ) : (
+                <View style={[styles.avatarPlaceholder, styles.verificationAvatarImage]}>
+                  <Text style={styles.avatarInitial}>{avatarInitial}</Text>
+                </View>
+              )}
+              {editing && (
+                <TouchableOpacity
+                  style={editableAvatarStyle}
+                  onPress={promptImageSelection}
+                >
+                  <Ionicons name="camera-outline" size={30} color="#fff" />
+                  <Text style={{ color: '#fff', fontSize: 12, marginTop: 4 }}>
+                    Cambiar
+                  </Text>
+                </TouchableOpacity>
+              )}
+              {profile?.verificationLevel && (
+                <View style={styles.verificationBadge}>
+                  <Text style={styles.verificationBadgeText}>{profile.verificationLevel}</Text>
+                </View>
+              )}
+            </View>
+            <View style={styles.verificationInfo}>
+              <View style={styles.verificationRatingRow}>
+                <Text style={styles.verificationRatingValue}>{Number(profile.rating).toFixed(1)}</Text>
+                <Image
+                  source={require('../../../assets/icon-estrella.png')}
+                  style={styles.starIcon}
+                  resizeMode="contain"
+                />
+              </View>
+              {profile?.reviewCount > 0 && (
+                <TouchableOpacity style={styles.reviewButton}>
+                  <Text style={styles.reviewButtonText}>
+                    See customer reviews ({profile.reviewCount})
+                  </Text>
+                </TouchableOpacity>
+              )}
+              <View style={styles.verificationDetails}>
+                <Text style={styles.verificationDetailsText}>
+                  User Verification levels:{'\n'}
+                  1. Basic: Email + phone number confirmed{'\n'}
+                  2. Full: ID + selfie verified{'\n'}
+                  3. Advanced: Payment + purchase history
+                </Text>
+              </View>
+            </View>
+          </View>
+        </View>
+      )}
+
+      {/* Personal Data Section Header */}
+      <View style={styles.personalDataHeader}>
+        <Text style={styles.personalDataTitle}>Personal data</Text>
+        <TouchableOpacity
+          style={styles.editIconButton}
+          onPress={() => editing ? handleCancelEdit() : setEditing(true)}
+        >
+          <Image
+            source={editing ? require('../../../assets/icon-close.png') : require('../../../assets/icon-lapiz-editar.png')}
+            style={editing ? styles.closeIcon : styles.editIcon}
+            resizeMode="contain"
+          />
+        </TouchableOpacity>
+      </View>
+
+      {/* Personal Data Section */}
+      <View style={styles.personalDataSection}>
+        {editing ? (
+          <>
+            <Text style={styles.personalDataLabel}>Full name</Text>
+            <TextInput
+              style={styles.personalDataInput}
+              value={name}
+              onChangeText={setName}
+              placeholder="Nombre"
+              placeholderTextColor={palette.textMuted}
+            />
+
+            <Text style={styles.personalDataLabel}>Contact</Text>
+            <TextInput
+              style={[styles.personalDataInput, { backgroundColor: palette.disabled, color: palette.textMuted }]}
+              value={email}
+              editable={false}
+              placeholder="Email (no editable)"
+              placeholderTextColor={palette.textMuted}
+            />
+
+            {localError ? <Text style={styles.errorText}>{localError}</Text> : null}
+
+            <TouchableOpacity
+              style={[styles.saveButton, saving && { opacity: 0.7 }]}
+              onPress={handleSaveProfile}
+              disabled={saving}
+            >
+              {saving ? (
+                <ActivityIndicator color={palette.background} />
+              ) : (
+                <Text style={styles.saveButtonText}>Guardar Cambios</Text>
+              )}
+            </TouchableOpacity>
+          </>
+        ) : (
+          <>
+            <Text style={styles.personalDataLabel}>Full name</Text>
+            <Text style={styles.personalDataValue}>{profile?.name || user?.email || 'Usuario'}</Text>
+
+            <Text style={styles.personalDataLabel}>Member since</Text>
+            <Text style={styles.personalDataValue}>{joinDate || 'N/A'}</Text>
+
+            <Text style={styles.personalDataLabel}>Contact</Text>
+            <Text style={styles.personalDataValue}>{email || 'No disponible'}</Text>
+
+            {profile?.balance !== undefined && (
+              <>
+                <Text style={styles.personalDataLabel}>Available balance</Text>
+                <Text style={styles.personalDataValue}>{formatPrice(profile.balance)}</Text>
+              </>
+            )}
+          </>
+        )}
+      </View>
+
+      {/* Recently Viewed */}
+      {recentlyViewed.length > 0 && (
+        <View style={styles.recentlyViewedSection}>
+          <Text style={styles.recentlyViewedTitle}>Recently viewed</Text>
+          <View style={styles.recentlyViewedGrid}>
+            {recentlyViewed.map((listing) => (
+              <TouchableOpacity
+                key={`recent-${listing.id}`}
+                style={styles.recentlyViewedCard}
+                onPress={() => handleListingPress(listing)}
+              >
+                <Image
+                  source={{ uri: listing.images?.[0] || DEFAULT_AVATAR_URI }}
+                  style={styles.recentlyViewedImage}
+                  resizeMode="cover"
+                />
+                <View style={styles.recentlyViewedInfo}>
+                  <Text style={styles.recentlyViewedName} numberOfLines={1}>
+                    {listing.title}
+                  </Text>
+                  <Text style={styles.recentlyViewedPrice}>{formatPrice(listing.price)}</Text>
+                </View>
+                <View style={styles.recentlyViewedHeart}>
+                  <FavoriteButton
+                    listingId={listing.id}
+                    variant="list"
+                    initialIsFavorite={false}
+                    fetchOnMount={true}
+                  />
+                </View>
+              </TouchableOpacity>
+            ))}
+          </View>
+        </View>
+      )}
+
+      <TouchableOpacity style={styles.signOutButton} onPress={signOut}>
+        <Text style={styles.signOutButtonText}>Cerrar sesión</Text>
+      </TouchableOpacity>
+    </ScrollView>
+  )
+
+  const renderPublishedCarsTab = () => (
+    <ScrollView style={styles.contentWrapper} contentContainerStyle={styles.scrollContent}>
       <View style={styles.section}>
         <Text style={styles.sectionTitle}>Tus anuncios activos</Text>
         {activeListings.length === 0 ? (
@@ -426,317 +608,147 @@ export default function ProfileScreen() {
           )
         )}
       </View>
-    </>
+
+      <TouchableOpacity style={styles.signOutButton} onPress={signOut}>
+        <Text style={styles.signOutButtonText}>Cerrar sesión</Text>
+      </TouchableOpacity>
+    </ScrollView>
   )
 
-  const renderFavoritesSection = () => (
-    <View style={styles.section}>
-      <Text style={styles.sectionTitle}>Tus favoritos</Text>
-      {favoriteListings.length === 0 ? (
-        <Text style={styles.emptyState}>Todavía no has marcado favoritos.</Text>
-      ) : (
-        favoriteListings.map((listing) =>
-          renderListingCard(listing, 'favorite', true)
-        )
-      )}
-    </View>
-  )
+  const renderFavoriteCarsTab = () => (
+    <ScrollView style={styles.contentWrapper} contentContainerStyle={styles.scrollContent}>
+      <View style={styles.section}>
+        <Text style={styles.sectionTitle}>Tus favoritos</Text>
+        {favoriteListings.length === 0 ? (
+          <Text style={styles.emptyState}>Todavía no has marcado favoritos.</Text>
+        ) : (
+          favoriteListings.map((listing) =>
+            renderListingCard(listing, 'favorite', true)
+          )
+        )}
+      </View>
 
-  const renderTransactionHistorySection = () => (
-    <View style={styles.section}>
-      <Text style={styles.sectionTitle}>Historial de transacciones</Text>
-      {transactionHistory.length === 0 ? (
-        <View style={styles.emptyStateContainer}>
-          <Feather name="clock" size={48} color={palette.textMuted} />
-          <Text style={styles.emptyStateText}>
-            No tienes transacciones aún.{'\n'}
-            Cuando compres o vendas un vehículo aparecerá aquí.
-          </Text>
-        </View>
-      ) : (
-        <View style={styles.listContainer}>
-          {transactionHistory.map((transaction) => (
-            <TransactionItem
-              key={transaction.id}
-              transaction={transaction}
-              onPress={handleTransactionPress}
-            />
-          ))}
-        </View>
-      )}
-    </View>
+      <TouchableOpacity style={styles.signOutButton} onPress={signOut}>
+        <Text style={styles.signOutButtonText}>Cerrar sesión</Text>
+      </TouchableOpacity>
+    </ScrollView>
   )
 
   return (
     <SafeAreaView style={styles.safeArea} edges={['top']}>
       <View style={styles.container}>
-        <ScrollView contentContainerStyle={styles.scrollContent}>
-          <View style={styles.header}>
-            <View style={styles.avatarWrapper}>
-              {hasAvatar ? (
-                <Image source={{ uri: displayAvatarUri }} style={styles.avatar} />
-              ) : (
-                <View style={styles.avatarPlaceholder}>
-                  <Text style={styles.avatarInitial}>{avatarInitial}</Text>
-                </View>
-              )}
-              {editing && (
-                <TouchableOpacity
-                  style={editableAvatarStyle}
-                  onPress={promptImageSelection}
-                >
-                  <Ionicons name="camera-outline" size={30} color="#fff" />
-                  <Text style={{ color: '#fff', fontSize: 12, marginTop: 4 }}>
-                    Cambiar
-                  </Text>
-                </TouchableOpacity>
-              )}
-            </View>
-
-            {editing ? (
-              <>
-                <TextInput
-                  style={styles.input}
-                  value={name}
-                  onChangeText={setName}
-                  placeholder="Nombre"
-                  placeholderTextColor={palette.textMuted}
-                />
-                <TextInput
-                  style={[
-                    styles.input,
-                    { backgroundColor: palette.disabled, color: palette.textMuted },
-                  ]}
-                  value={email}
-                  editable={false}
-                  placeholder="Email (no editable)"
-                  placeholderTextColor={palette.textMuted}
-                />
-
-                {localError ? <Text style={styles.errorText}>{localError}</Text> : null}
-
-                <TouchableOpacity
-                  style={[styles.saveButton, saving && { opacity: 0.7 }]}
-                  onPress={handleSaveProfile}
-                  disabled={saving}
-                >
-                  {saving ? (
-                    <ActivityIndicator color="#1a1a1a" />
-                  ) : (
-                    <Text style={styles.saveButtonText}>Guardar Cambios</Text>
-                  )}
-                </TouchableOpacity>
-
-                <TouchableOpacity
-                  style={styles.cancelButton}
-                  onPress={handleCancelEdit}
-                >
-                  <Text style={styles.cancelButtonText}>Cancelar</Text>
-                </TouchableOpacity>
-              </>
-            ) : (
-              <>
-                <Text style={styles.name}>{profile?.name || 'Usuario'}</Text>
-
-                <View style={styles.ratingRow}>
-                  {[1, 2, 3, 4, 5].map((star) => {
-                    const ratingValue = Number(profile?.rating ?? 0)
-                    const fill = Math.min(Math.max(ratingValue - (star - 1), 0), 1)
-
-                    return (
-                      <View key={star} style={styles.ratingStar}>
-                        <Ionicons name="star-outline" size={STAR_SIZE} color="#ccc" />
-                        <View
-                          style={[styles.ratingStarFill, { width: STAR_SIZE * fill }]}
-                        >
-                          <Ionicons name="star" size={STAR_SIZE} color={STAR_COLOR} />
-                        </View>
-                      </View>
-                    )
-                  })}
-                  <Text style={styles.ratingValue}>
-                    {Number(profile?.rating ?? 0).toFixed(1)}
-                  </Text>
-                </View>
-
-                <View
-                  style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 8 }}
-                >
-                  <Feather name="mail" size={15} color={palette.accent} />
-                  <Text style={styles.email}>{email || 'No disponible'}</Text>
-                </View>
-                <View style={styles.row}>
-                  <Feather name="user" size={15} color={palette.accent} />
-                  <Text style={styles.joiningDate}>
-                    {joinDate ? `Miembro desde ${joinDate}` : 'Miembro'}
-                  </Text>
-                </View>
-
-                {localError ? <Text style={styles.errorText}>{localError}</Text> : null}
-
-                <TouchableOpacity
-                  style={styles.button}
-                  onPress={() => setEditing(true)}
-                >
-                  <Feather name="edit" size={20} color="white" />
-                  <Text style={styles.buttonText}> Editar perfil</Text>
-                </TouchableOpacity>
-              </>
-            )}
-
-            <View style={styles.separator} />
-
-            <View style={styles.card}>
-              <Text style={styles.cardLabel}>Nombre</Text>
-              <Text style={styles.cardValue}>{profile?.name || 'No disponible'}</Text>
-
-              <Text style={styles.cardLabel}>Correo electrónico</Text>
-              <Text style={styles.cardValue}>{email || 'No disponible'}</Text>
-
-              <Text style={styles.cardLabel}>Saldo disponible</Text>
-              <View style={styles.balanceRow}>
-                <Text style={styles.balanceValue}>
-                  {formatPrice(profile?.balance ?? fetchedProfile?.balance ?? 0)}
-                </Text>
-                <Text style={styles.balanceHint}>
-                  Usa este saldo para pagar vehículos en Turboo.
-                </Text>
-              </View>
-            </View>
-
-            <View style={styles.statsRow}>
-              <View style={styles.statColumn}>
-                <View style={styles.iconRow}>
-                  <Feather name="truck" size={20} color={palette.accent} />
-                  <Text style={styles.statNumber}>{publishedCount}</Text>
-                </View>
-                <Text style={styles.statLabel}>Publicaciones</Text>
-              </View>
-
-              <View style={styles.statColumn}>
-                <View style={styles.iconRow}>
-                  <Feather name="heart" size={20} color={palette.accent} />
-                  <Text style={styles.statNumber}>{favoriteListings.length}</Text>
-                </View>
-                <Text style={styles.statLabel}>Favoritos</Text>
-              </View>
-            </View>
-
-            <View style={styles.sectionDivider} />
+        {/* Gradient Header with Welcome and Tabs */}
+        <LinearGradient
+          colors={[palette.darkGrey, palette.darkMustard, palette.darkMustard]}
+          start={{ x: 0, y: 0 }}
+          end={{ x: 0, y: 1 }}
+          style={styles.gradientHeader}
+        >
+          <View style={styles.welcomeContainer}>
+            <Text style={styles.welcomeText}>Welcome back</Text>
+            <Text style={styles.welcomeName}>{profile?.name || user?.email?.split('@')[0] || 'User'}</Text>
           </View>
 
-          <View style={styles.activitySection}>
-            <Text style={styles.activityTitle}>Mi Actividad</Text>
-            <Text style={styles.activitySubtitle}>
-              Revisa tus publicaciones, favoritos e historial de transacciones
-            </Text>
-          </View>
-
-          <View style={styles.tabBar}>
+          {/* Top Tab Navigation */}
+          <View style={styles.topTabBar}>
             <TouchableOpacity
+              style={[
+                styles.topTab,
+                activeTab === 'personal' && styles.topTabActiveNoBottomBorder,
+                activeTab === 'published' && styles.topTabLeftAdjacentToActive,
+              ]}
+              onPress={() => setActiveTab('personal')}
+            >
+              {activeTab === 'personal' && (
+                <LinearGradient
+                  colors={[palette.darkMustard, palette.darkGrey]}
+                  start={{ x: 0, y: 0 }}
+                  end={{ x: 0, y: 1 }}
+                  style={styles.topTabGradientBg}
+                />
+              )}
+              <View style={styles.topTabContent}>
+                <Text style={[styles.topTabLabel, activeTab === 'personal' && styles.topTabLabelActive]}>
+                  Personal{'\n'}data
+                </Text>
+                <View style={[styles.topTabIcon, activeTab === 'personal' && styles.topTabIconActive]}>
+                  <Image
+                    source={require('../../../assets/icon-info.png')}
+                    style={styles.topTabIconImage}
+                    resizeMode="contain"
+                  />
+                </View>
+              </View>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              style={[
+                styles.topTab,
+                styles.topTabMiddle,
+                activeTab === 'published' && styles.topTabActiveNoBottomBorder,
+                activeTab === 'personal' && styles.topTabRightAdjacentToActive,
+                activeTab === 'favorites' && styles.topTabLeftAdjacentToActive,
+              ]}
               onPress={() => setActiveTab('published')}
-              style={[styles.tab, activeTab === 'published' && styles.activeTab]}
             >
-              <View style={styles.tabContent}>
-                <Feather
-                  name="truck"
-                  size={18}
-                  color={activeTab === 'published' ? 'black' : palette.accent}
+              {activeTab === 'published' && (
+                <LinearGradient
+                  colors={[palette.darkMustard, palette.darkGrey]}
+                  start={{ x: 0, y: 0 }}
+                  end={{ x: 0, y: 1 }}
+                  style={styles.topTabGradientBg}
                 />
-                <Text
-                  style={[
-                    styles.tabText,
-                    activeTab === 'published' && styles.tabTabTextActive,
-                  ]}
-                >
-                  {' '}
-                  Mis Coches
+              )}
+              <View style={styles.topTabContent}>
+                <Text style={[styles.topTabLabel, activeTab === 'published' && styles.topTabLabelActive]}>
+                  Published{'\n'}cars
                 </Text>
-                <Text
-                  style={[
-                    styles.tabNumber,
-                    activeTab === 'published' && styles.tabNumberActive,
-                  ]}
-                >
-                  {' '}
-                  {publishedCount}{' '}
-                </Text>
+                <View style={[styles.topTabIcon, activeTab === 'published' && styles.topTabIconActive]}>
+                  <Image
+                    source={require('../../../assets/icon-coche.png')}
+                    style={styles.topTabIconImage}
+                    resizeMode="contain"
+                  />
+                </View>
               </View>
             </TouchableOpacity>
 
             <TouchableOpacity
+              style={[
+                styles.topTab,
+                activeTab === 'favorites' && styles.topTabActiveNoBottomBorder,
+                activeTab === 'published' && styles.topTabRightAdjacentToActive,
+              ]}
               onPress={() => setActiveTab('favorites')}
-              style={[styles.tab, activeTab === 'favorites' && styles.activeTab]}
             >
-              <View style={styles.tabContent}>
-                <Feather
-                  name="heart"
-                  size={18}
-                  color={activeTab === 'favorites' ? 'black' : palette.accent}
+              {activeTab === 'favorites' && (
+                <LinearGradient
+                  colors={[palette.darkMustard, palette.darkGrey]}
+                  start={{ x: 0, y: 0 }}
+                  end={{ x: 0, y: 1 }}
+                  style={styles.topTabGradientBg}
                 />
-                <Text
-                  style={[
-                    styles.tabText,
-                    activeTab === 'favorites' && styles.tabTabTextActive,
-                  ]}
-                >
-                  {' '}
-                  Favoritos
+              )}
+              <View style={styles.topTabContent}>
+                <Text style={[styles.topTabLabel, activeTab === 'favorites' && styles.topTabLabelActive]}>
+                  Favorite{'\n'}cars
                 </Text>
-                <Text
-                  style={[
-                    styles.tabNumber,
-                    activeTab === 'favorites' && styles.tabNumberActive,
-                  ]}
-                >
-                  {' '}
-                  {favoriteListings.length}{' '}
-                </Text>
-              </View>
-            </TouchableOpacity>
-
-            <TouchableOpacity
-              onPress={() => setActiveTab('history')}
-              style={[styles.tab, activeTab === 'history' && styles.activeTab]}
-            >
-              <View style={styles.tabContent}>
-                <Feather
-                  name="clock"
-                  size={18}
-                  color={activeTab === 'history' ? 'black' : palette.accent}
-                />
-                <Text
-                  style={[
-                    styles.tabText,
-                    activeTab === 'history' && styles.tabTabTextActive,
-                  ]}
-                >
-                  {' '}
-                  Historial
-                </Text>
-                <Text
-                  style={[
-                    styles.tabNumber,
-                    activeTab === 'history' && styles.tabNumberActive,
-                  ]}
-                >
-                  {' '}
-                  {transactionHistory.length}{' '}
-                </Text>
+                <View style={[styles.topTabIcon, activeTab === 'favorites' && styles.topTabIconActive]}>
+                  <Image
+                    source={require('../../../assets/icon-heart-filled.png')}
+                    style={styles.topTabIconImage}
+                    resizeMode="contain"
+                  />
+                </View>
               </View>
             </TouchableOpacity>
           </View>
+        </LinearGradient>
 
-          <View style={styles.listWrapper}>
-            {activeTab === 'published' && renderPublishedSections()}
-            {activeTab === 'favorites' && renderFavoritesSection()}
-            {activeTab === 'history' && renderTransactionHistorySection()}
-
-            <TouchableOpacity style={styles.signOutButton} onPress={signOut}>
-              <Text style={styles.signOutButtonText}>Cerrar sesión</Text>
-            </TouchableOpacity>
-          </View>
-        </ScrollView>
+        {/* Tab Content */}
+        {activeTab === 'personal' && renderPersonalDataTab()}
+        {activeTab === 'published' && renderPublishedCarsTab()}
+        {activeTab === 'favorites' && renderFavoriteCarsTab()}
       </View>
     </SafeAreaView>
   )
