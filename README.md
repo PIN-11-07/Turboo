@@ -80,94 +80,91 @@ mobile marketplace used to publish and browse car listings. Users can authentica
 ## 4. Project Structure
 **Main folder tree:**
 ```text
-Turboo/
-├── Dockerfile
-├── README.md
-├── docker-compose.yml
-└── expo_app
-    ├── App.js
-    ├── app
-    │   ├── components
-    │   │   ├── AnimatedAISearchButton.js
-    │   │   ├── CarItem.js
-    │   │   ├── FavoriteButton.js
-    │   │   ├── ImageAnalisisButton.js
-    │   │   ├── SearchFilters.js
-    │   │   ├── SearchSuggestions.js
-    │   │   └── TransactionItem.js
-    │   ├── config
-    │   │   └── cloudinary.js
-    │   ├── context
-    │   │   └── AuthContext.js
-    │   ├── navigation
-    │   │   ├── AppNavigator.js
-    │   │   ├── AuthNavigator.js
-    │   │   └── RootNavigator.js
-    │   ├── pages
-    │   │   ├── auth
-    │   │   │   ├── AuthStyles.js
-    │   │   │   ├── LoginScreen.js
-    │   │   │   └── useLoginScreen.js
-    │   │   ├── home
-    │   │   │   ├── HomeScreen.js
-    │   │   │   ├── HomeStyles.js
-    │   │   │   └── useHomeScreen.js
-    │   │   ├── listingDetails
-    │   │   │   ├── ListingDetailScreen.js
-    │   │   │   ├── ListingDetailStyles.js
-    │   │   │   └── useListingDetailScreen.js
-    │   │   ├── messages
-    │   │   │   ├── ChatScreen.js
-    │   │   │   └── MessagesScreen.js
-    │   │   ├── profile
-    │   │   │   ├── ProfileScreen.js
-    │   │   │   ├── profileStyles.js
-    │   │   │   └── useProfileScreen.js
-    │   │   ├── publish
-    │   │   │   ├── PublishScreen.js
-    │   │   │   ├── PublishStyles.js
-    │   │   │   └── usePublishScreen.js
-    │   │   ├── purchase
-    │   │   │   ├── PurchaseConfirmationScreen.js
-    │   │   │   ├── PurchaseScreen.js
-    │   │   │   ├── PurchaseStyles.js
-    │   │   │   └── usePurchaseScreen.js
-    │   │   ├── rating
-    │   │   │   ├── ratingScreen.js
-    │   │   │   ├── ratingStyles.js
-    │   │   │   └── useRatingScreen.js
-    │   │   ├── recommendations
-    │   │   │   ├── RecommendationsScreen.js
-    │   │   │   ├── RecommendationsStyles.js
-    │   │   │   └── useRecommendationsScreen.js
-    │   │   ├── search
-    │   │   │   ├── SearchScreen.js
-    │   │   │   ├── SearchStyles.js
-    │   │   │   ├── useSearch.js
-    │   │   │   └── useSearchScreen.js
-    │   │   └── welcome
-    │   │       └── WelcomeScreen.js
-    │   ├── services
-    │   │   ├── CarAnalysisService.js
-    │   │   ├── payments.js
-    │   │   ├── transactions.js
-    │   │   └── users.js
-    │   ├── theme
-    │   │   └── palette.js
-    │   └── utils
-    │       ├── format.js
-    │       ├── recommender.js
-    │       └── supabase.js
-    ├── app.json
-    ├── assets
-    │   ├── adaptive-icon.png
-    │   ├── favicon.png
-    │   ├── icon.png
-    │   ├── splash-icon.png
-    │   └── welcome_hero.jpg
-    ├── index.js
-    ├── package-lock.json
-    └── package.json
+Revool
+├── App.js
+├── app
+│   ├── components
+│   │   ├── AnimatedAISearchButton.js
+│   │   ├── CarItem.js
+│   │   ├── FavoriteButton.js
+│   │   ├── ImageAnalisisButton.js
+│   │   ├── SearchFilters.js
+│   │   ├── SearchSuggestions.js
+│   │   └── TransactionItem.js
+│   ├── config
+│   │   └── cloudinary.js
+│   ├── context
+│   │   └── AuthContext.js
+│   ├── navigation
+│   │   ├── AppNavigator.js
+│   │   ├── AuthNavigator.js
+│   │   └── RootNavigator.js
+│   ├── pages
+│   │   ├── auth
+│   │   │   ├── AuthStyles.js
+│   │   │   ├── LoginScreen.js
+│   │   │   └── useLoginScreen.js
+│   │   ├── home
+│   │   │   ├── HomeScreen.js
+│   │   │   ├── HomeStyles.js
+│   │   │   └── useHomeScreen.js
+│   │   ├── listingDetails
+│   │   │   ├── ListingDetailScreen.js
+│   │   │   ├── ListingDetailStyles.js
+│   │   │   └── useListingDetailScreen.js
+│   │   ├── messages
+│   │   │   ├── ChatScreen.js
+│   │   │   └── MessagesScreen.js
+│   │   ├── profile
+│   │   │   ├── ProfileScreen.js
+│   │   │   ├── profileStyles.js
+│   │   │   └── useProfileScreen.js
+│   │   ├── publish
+│   │   │   ├── PublishScreen.js
+│   │   │   ├── PublishStyles.js
+│   │   │   └── usePublishScreen.js
+│   │   ├── purchase
+│   │   │   ├── PurchaseConfirmationScreen.js
+│   │   │   ├── PurchaseScreen.js
+│   │   │   ├── PurchaseStyles.js
+│   │   │   └── usePurchaseScreen.js
+│   │   ├── rating
+│   │   │   ├── ratingScreen.js
+│   │   │   ├── ratingStyles.js
+│   │   │   └── useRatingScreen.js
+│   │   ├── recommendations
+│   │   │   ├── RecommendationsScreen.js
+│   │   │   ├── RecommendationsStyles.js
+│   │   │   └── useRecommendationsScreen.js
+│   │   ├── search
+│   │   │   ├── SearchScreen.js
+│   │   │   ├── SearchStyles.js
+│   │   │   ├── useSearch.js
+│   │   │   └── useSearchScreen.js
+│   │   └── welcome
+│   │       └── WelcomeScreen.js
+│   ├── services
+│   │   ├── CarAnalysisService.js
+│   │   ├── payments.js
+│   │   ├── transactions.js
+│   │   └── users.js
+│   ├── theme
+│   │   └── palette.js
+│   └── utils
+│       ├── format.js
+│       ├── recommender.js
+│       └── supabase.js
+├── app.json
+├── assets
+│   ├── adaptive-icon.png
+│   ├── favicon.png
+│   ├── icon.png
+│   ├── splash-icon.png
+│   └── welcome_hero.jpg
+├── index.js
+├── package-lock.json
+├── package.json
+└── README.md 
 ```
 
 **Explanation of the key folders:**
