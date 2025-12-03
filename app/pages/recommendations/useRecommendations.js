@@ -2,7 +2,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useAuth } from '../../context/AuthContext'
 import recommender from '../../utils/recommender'
 
-export const useRecommendationsScreen = () => {
+export const useRecommendations = () => {
   const { user } = useAuth()
   const [recommendations, setRecommendations] = useState([])
   const [visibleCount, setVisibleCount] = useState(1) // start by showing only the featured card
@@ -13,7 +13,7 @@ export const useRecommendationsScreen = () => {
       // recommender returns scored list (best first)
       setRecommendations(recs || [])
     } catch (error) {
-      console.warn('[useRecommendationsScreen] load error', error)
+      console.warn('[useRecommendations] load error', error)
     }
   }, [user?.id])
 

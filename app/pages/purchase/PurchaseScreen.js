@@ -9,7 +9,7 @@ import {
 } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { purchaseScreenStyles as styles } from './PurchaseStyles'
-import { usePurchaseScreen } from './usePurchaseScreen'
+import { usePurchase } from './usePurchase'
 import { palette } from '../../theme/palette'
 
 const formatCurrency = (value) => {
@@ -46,7 +46,7 @@ export default function PurchaseScreen() {
     handleGoBack,
     disableReason,
     payingWithBalanceOnly,
-  } = usePurchaseScreen()
+  } = usePurchase()
 
   const renderSummary = () => (
     <View style={styles.card}>

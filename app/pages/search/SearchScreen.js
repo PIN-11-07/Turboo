@@ -20,7 +20,7 @@ import { LinearGradient } from 'expo-linear-gradient'
 
 import { searchStyles as styles } from './SearchStyles'
 import { palette } from '../../theme/palette'
-import { useSearchScreen } from './useSearchScreen'
+import { useSearch } from './useSearch'
 import { formatPrice } from '../../utils/format'
 import FavoriteButton from '../../components/FavoriteButton'
 import SearchSuggestions from '../../components/SearchSuggestions'
@@ -49,7 +49,7 @@ export default function SearchScreen() {
         handleRefresh,
         handleLoadMore,
         search,
-    } = useSearchScreen()
+    } = useSearch()
 
     const [image, setImage] = useState(null)
     const [aiMessageVisible, setAiMessageVisible] = useState(false)

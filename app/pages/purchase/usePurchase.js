@@ -16,7 +16,7 @@ const normalizeMoney = (value) => {
 
 const sanitizeCardNumber = (value) => value.replace(/\s+/g, '')
 
-export const usePurchaseScreen = () => {
+export const usePurchase = () => {
   const navigation = useNavigation()
   const route = useRoute()
   const { user } = useAuth()

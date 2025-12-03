@@ -3,7 +3,7 @@ import { Alert, Text, TouchableOpacity, View } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { Ionicons } from '@expo/vector-icons'
 import { ratingStyles as styles } from './ratingStyles'
-import { useRatingScreen } from './useRatingScreen'
+import { useRating } from './useRating'
 
 const STAR_SET = [1, 2, 3, 4, 5]
 
@@ -21,7 +21,7 @@ export default function RatingScreen() {
     navigateHome,
     resetRating,
     isSellerMissing,
-  } = useRatingScreen()
+  } = useRating()
 
   const handleSubmit = useCallback(async () => {
     const success = await submitRating()

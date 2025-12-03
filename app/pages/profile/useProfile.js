@@ -41,7 +41,7 @@ const listingIsActive = (listing) => {
   return true
 }
 
-export const useProfileScreen = () => {
+export const useProfile = () => {
   const { user, signOut } = useAuth()
   const navigation = useNavigation()
   const [loading, setLoading] = useState(true)

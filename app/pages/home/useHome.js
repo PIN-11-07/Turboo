@@ -4,7 +4,7 @@ import { supabase } from '../../utils/supabase'
 // Number of listings to fetch per page.
 const PAGE_SIZE = 50
 
-export const useHomeScreen = () => {
+export const useHome = () => {
   const [listings, setListings] = useState([])
   const [initialLoading, setInitialLoading] = useState(true)
   const [refreshing, setRefreshing] = useState(false)

@@ -6,7 +6,7 @@ import { palette } from '../../theme/palette'
 import FavoriteButton from '../../components/FavoriteButton'
 import { styles } from "./RecommendationsStyles"
 import { LinearGradient } from 'expo-linear-gradient'
-import { useRecommendationsScreen } from './useRecommendationsScreen'
+import { useRecommendations } from './useRecommendations'
 
 const getMainImage = (images) => (Array.isArray(images) && images.length > 0 ? images[0] : null)
 
@@ -17,7 +17,7 @@ export default function RecommendationsScreen() {
     featured,
     visibleItems,
     onEndReached,
-  } = useRecommendationsScreen()
+  } = useRecommendations()
 
    const renderItem = useCallback(
    ({ item, index }) => {  

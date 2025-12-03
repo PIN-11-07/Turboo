@@ -58,7 +58,7 @@ mobile marketplace used to publish and browse car listings. Users can authentica
    - When a page introduces a page, create `app/pages/<page>/` with:
      ```text
      app/pages/<page>/
-     ├── use<Page>.js       // Hooks
+     ├── use<Page>.js       // Page hook named use<PageName>
      ├── <Page>Styles.js    // Style
      └── <Page>Screen.js    // Effective page
      ```
@@ -103,44 +103,44 @@ Revool
 │   │   ├── auth
 │   │   │   ├── AuthStyles.js
 │   │   │   ├── LoginScreen.js
-│   │   │   └── useLoginScreen.js
+│   │   │   └── useLogin.js
 │   │   ├── home
 │   │   │   ├── HomeScreen.js
 │   │   │   ├── HomeStyles.js
-│   │   │   └── useHomeScreen.js
+│   │   │   └── useHome.js
 │   │   ├── listingDetails
 │   │   │   ├── ListingDetailScreen.js
 │   │   │   ├── ListingDetailStyles.js
-│   │   │   └── useListingDetailScreen.js
+│   │   │   └── useListingDetail.js
 │   │   ├── messages
 │   │   │   ├── ChatScreen.js
 │   │   │   └── MessagesScreen.js
 │   │   ├── profile
 │   │   │   ├── ProfileScreen.js
 │   │   │   ├── profileStyles.js
-│   │   │   └── useProfileScreen.js
+│   │   │   └── useProfile.js
 │   │   ├── publish
 │   │   │   ├── PublishScreen.js
 │   │   │   ├── PublishStyles.js
-│   │   │   └── usePublishScreen.js
+│   │   │   └── usePublish.js
 │   │   ├── purchase
 │   │   │   ├── PurchaseConfirmationScreen.js
 │   │   │   ├── PurchaseScreen.js
 │   │   │   ├── PurchaseStyles.js
-│   │   │   └── usePurchaseScreen.js
+│   │   │   └── usePurchase.js
 │   │   ├── rating
 │   │   │   ├── ratingScreen.js
 │   │   │   ├── ratingStyles.js
-│   │   │   └── useRatingScreen.js
+│   │   │   └── useRating.js
 │   │   ├── recommendations
 │   │   │   ├── RecommendationsScreen.js
 │   │   │   ├── RecommendationsStyles.js
-│   │   │   └── useRecommendationsScreen.js
+│   │   │   └── useRecommendations.js
 │   │   ├── search
 │   │   │   ├── SearchScreen.js
 │   │   │   ├── SearchStyles.js
 │   │   │   ├── useSearch.js
-│   │   │   └── useSearchScreen.js
+│   │   │   └── useSearchFilters.js
 │   │   └── welcome
 │   │       └── WelcomeScreen.js
 │   ├── services
@@ -181,6 +181,7 @@ Revool
 - Each feature (`auth`, `home`, `publish`, `profile`) keeps its own navigator, screens and dedicated styles inside `app/pages/<feature>`.
 - Native navigators live next to their feature, while `RootNavigator` decides whether to render the auth stack or the main app based on the session.
 - Style files aggregate StyleSheet definitions to avoid inline logic inside the screens.
+- Each page exposes its own hook named `use<PageName>` next to the screen file (no `Screen` suffix).
 - The Supabase client is centralized to share storage configuration and token auto-refresh.
 
 **Critical files:**
@@ -252,7 +253,7 @@ Revool
   - **Welcome Screen:** New background and "Slide to Explore" interaction.
 
 ##Search & filters enhancements
-- The search/filter system (`useSearch` + `SearchFilters`) was extended to support additional options: **body type**, **condition**, **doors**, **fuel type** and **transmission**. These options are exposed in the `SearchFilters` component as selectable chips and sliders.
+- The search/filter system (`useSearchFilters` + `SearchFilters`) was extended to support additional options: **body type**, **condition**, **doors**, **fuel type** and **transmission**. These options are exposed in the `SearchFilters` component as selectable chips and sliders.
 
 ### k) Transaction history
 - **Description:** Users can view their complete purchase and sales history through a dedicated "Historial" tab in the profile screen, showing chronological transactions with clear "Comprado"/"Vendido" labels.

@@ -16,7 +16,7 @@ import { Ionicons } from '@expo/vector-icons'
 import { homeScreenStyles as styles } from './HomeStyles'
 import { palette } from '../../theme/palette'
 import FavoriteButton from '../../components/FavoriteButton'
-import { useHomeScreen } from './useHomeScreen'
+import { useHome } from './useHome'
 import { formatPrice } from '../../utils/format'
 import { LinearGradient } from 'expo-linear-gradient'
 
@@ -47,7 +47,7 @@ export default function HomeScreen() {
     handleRefresh,
     handleLoadMore,
     removeListingById,
-  } = useHomeScreen()
+  } = useHome()
 
   useFocusEffect(
     useCallback(() => {
