@@ -11,7 +11,7 @@ import RecommendationsScreen from '../pages/recommendations/RecommendationsScree
 import RatingScreen from '../pages/rating/ratingScreen'
 import SearchScreen from '../pages/search/SearchScreen'
 import MessagesScreen from '../pages/messages/MessagesScreen'
-import ChatScreen from '../pages/messages/ChatScreen'
+import ChatScreen from '../pages/chat/ChatScreen'
 import PublishScreen from '../pages/publish/PublishScreen'
 import ProfileScreen from '../pages/profile/ProfileScreen'
 import { palette } from '../theme/palette'
