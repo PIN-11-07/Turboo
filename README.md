@@ -168,27 +168,30 @@ Revool
 ```
 
 **Explanation of the key folders:**
-- `app/components`: reusable UI components.
-- `app/context`: global providers; `AuthContext` wraps the Supabase client and exposes the session.
-- `app/navigation`: React Navigation configuration (`RootNavigator`, `AppNavigator`, `AuthNavigator`).
-- `app/pages/<page>`: feature-based structure; every folder groups `screens` and a style file (`<Page>Styles.js`).
-- `app/theme`: shared design tokens such as the color palette.
-- `app/util`: infrastructure helpers (`supabase.js` instantiates the client with AsyncStorage).
-- `assets`: icons, splash art and favicons used by Expo (`app.json` describes how they are used).
-- `Dockerfile` / `Docker-compose.yml`: define the Node/Expo container and port mapping.
+- `app/components`: reusable, Revvol-styled UI pieces (favorites button, AI search button, transaction card, etc.) shared across pages.
+- `app/config`: one-off configuration helpers such as `cloudinary.js` that centralize third-party keys or builders.
+- `app/context`: global providers; `AuthContext` exposes Supabase auth state and helpers to the whole tree.
+- `app/navigation`: React Navigation wiring with `RootNavigator` delegating to `AuthNavigator` or the signed-in `AppNavigator` stacks.
+- `app/pages/<feature>`: feature folders (auth, home, publish, profile, search, etc.) that always bundle `Screen`, `Styles`, and `use<Feature>` hook files so UI, styling, and logic travel together.
+- `app/services`: data/side-effect helpers (Supabase CRUD, payments, AI car analysis) so screens call high-level APIs only.
+- `app/theme`: design tokens like the Revvol palette, gradients, typography helpers.
+- `app/utils`: infrastructure utilities (`supabase.js`, formatting helpers, recommender logic).
+- `assets`: Expo-managed media (icons, splash, hero image) referenced from `app.json` and preloaded on boot.
 
 **Architecture rules and conventions:**
-- Each feature (`auth`, `home`, `publish`, `profile`) keeps its own navigator, screens and dedicated styles inside `app/pages/<feature>`.
-- Native navigators live next to their feature, while `RootNavigator` decides whether to render the auth stack or the main app based on the session.
-- Style files aggregate StyleSheet definitions to avoid inline logic inside the screens.
-- Each page exposes its own hook named `use<PageName>` next to the screen file (no `Screen` suffix).
-- The Supabase client is centralized to share storage configuration and token auto-refresh.
+- Every folder in `app/pages` follows the triad `FeatureScreen + FeatureStyles + useFeature` (e.g., `auth/AuthScreen`, `search/useSearch`) to co-locate UI, styling, and business logic.
+- `App.js` wraps `RootNavigator` with `AuthProvider`, so navigation automatically reacts to Supabase session changes.
+- `RootNavigator` switches between `AuthNavigator` and the signed-in `AppNavigator`, whose tabs/stacks (Home, Publish, Profile, etc.) own their internal routes such as Listing Detail or Purchase.
+- `StyleSheet` definitions stay in `<Feature>Styles.js`, keeping components declarative and making the Revvol theme easy to tweak.
+- Shared side effects (Supabase queries, AI requests, payments) are implemented inside `app/services` or `app/utils` and consumed from the feature hooks to keep screens thin.
+- The Supabase client lives in `app/utils/supabase.js` and is reused everywhere via the context/hook pattern to guarantee consistent auth persistence.
 
 **Critical files:**
-- `app.json` – Expo configuration (icons, orientation, Secure Store plugin).
-- `Dockerfile` and `Docker-compose.yml` – Docker infrastructure for the Dev/Tunnel workflow.
-- `app/util/supabase.js` – client initialization and session management.
-- `app/navigation/RootNavigator.js` – navigation entry point and authentication guard.
+- `App.js` – bootstraps the Expo app, preloads hero assets, and mounts `AuthProvider` + `RootNavigator`.
+- `app/context/AuthContext.js` – centralizes Supabase session management plus `signIn`, `signUp`, and `signOut` helpers.
+- `app/navigation/RootNavigator.js` – entry point that toggles `AuthNavigator` or the signed-in stacks.
+- `app/utils/supabase.js` – single Supabase client configured with AsyncStorage persistence.
+- `app/pages/auth/AuthScreen.js` – unified login/sign-up UI that powers the entire authentication entry flow.
 
 ## 5. Application Features
 
