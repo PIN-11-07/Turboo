@@ -436,11 +436,16 @@ export default function ProfileScreen() {
                   </Text>
                 </TouchableOpacity>
               )}
-              {profile?.verificationLevel && (
-                <View style={styles.verificationBadge}>
-                  <Text style={styles.verificationBadgeText}>{profile.verificationLevel}</Text>
-                </View>
-              )}
+              <View style={styles.verificationBadge}>
+                <LinearGradient
+                  colors={[palette.mustard, palette.darkGrey]}
+                  start={{ x: 0, y: 0 }}
+                  end={{ x: 1, y: 0 }}
+                  style={styles.verificationBadgeGradient}
+                >
+                  <Text style={styles.verificationBadgeText}>3</Text>
+                </LinearGradient>
+              </View>
             </View>
             <View style={styles.verificationInfo}>
               <View style={styles.verificationRatingRow}>
@@ -451,22 +456,26 @@ export default function ProfileScreen() {
                   resizeMode="contain"
                 />
               </View>
-              {profile?.reviewCount > 0 && (
-                <TouchableOpacity style={styles.reviewButton}>
-                  <Text style={styles.reviewButtonText}>
-                    See customer reviews ({profile.reviewCount})
-                  </Text>
-                </TouchableOpacity>
-              )}
-              <View style={styles.verificationDetails}>
-                <Text style={styles.verificationDetailsText}>
-                  User Verification levels:{'\n'}
-                  1. Basic: Email + phone number confirmed{'\n'}
-                  2. Full: ID + selfie verified{'\n'}
-                  3. Advanced: Payment + purchase history
+              <TouchableOpacity 
+                style={styles.reviewButton}
+                onPress={() => {
+                  // TODO: Navigate to reviews screen
+                  console.log('Navigate to reviews')
+                }}
+              >
+                <Text style={styles.reviewButtonText}>
+                  See customer reviews ({profile.ratingCount})
                 </Text>
-              </View>
+              </TouchableOpacity>
             </View>
+          </View>
+          <View style={styles.verificationDetails}>
+            <Text style={styles.verificationDetailsText}>
+              User verification levels:{'\n'}
+              1. Basic: Email + phone number confirmed{'\n'}
+              2. Full: 1 + ID + selfie verified{'\n'}
+              3. Advanced: 2 + payment info + purchase history
+            </Text>
           </View>
         </View>
       )}
@@ -543,41 +552,21 @@ export default function ProfileScreen() {
         )}
       </View>
 
-      {/* Recently Viewed */}
-      {recentlyViewed.length > 0 && (
-        <View style={styles.recentlyViewedSection}>
-          <Text style={styles.recentlyViewedTitle}>Recently viewed</Text>
-          <View style={styles.recentlyViewedGrid}>
-            {recentlyViewed.map((listing) => (
-              <TouchableOpacity
-                key={`recent-${listing.id}`}
-                style={styles.recentlyViewedCard}
-                onPress={() => handleListingPress(listing)}
-              >
-                <Image
-                  source={{ uri: listing.images?.[0] || DEFAULT_AVATAR_URI }}
-                  style={styles.recentlyViewedImage}
-                  resizeMode="cover"
-                />
-                <View style={styles.recentlyViewedInfo}>
-                  <Text style={styles.recentlyViewedName} numberOfLines={1}>
-                    {listing.title}
-                  </Text>
-                  <Text style={styles.recentlyViewedPrice}>{formatPrice(listing.price)}</Text>
-                </View>
-                <View style={styles.recentlyViewedHeart}>
-                  <FavoriteButton
-                    listingId={listing.id}
-                    variant="list"
-                    initialIsFavorite={false}
-                    fetchOnMount={true}
-                  />
-                </View>
-              </TouchableOpacity>
-            ))}
-          </View>
-        </View>
-      )}
+      {/* Smart Car Alerts */}
+      <View style={styles.personalDataSection}>
+        <TouchableOpacity 
+          style={styles.smartAlertsCard}
+          onPress={() => {
+            // TODO: Navigate to smart alerts settings
+            console.log('Navigate to smart alerts')
+          }}
+        >
+          <Text style={styles.smartAlertsTitle}>Smart car alerts</Text>
+        </TouchableOpacity>
+        <Text style={styles.smartAlertsDescription}>
+          Keep this enabled to receive alerts for cars that match your interests and to help us improve your "Selected for You" recommendations.
+        </Text>
+      </View>
 
       <TouchableOpacity style={styles.signOutButton} onPress={signOut}>
         <Text style={styles.signOutButtonText}>Cerrar sesión</Text>
@@ -587,25 +576,125 @@ export default function ProfileScreen() {
 
   const renderPublishedCarsTab = () => (
     <ScrollView style={styles.contentWrapper} contentContainerStyle={styles.scrollContent}>
-      <View style={styles.section}>
-        <Text style={styles.sectionTitle}>Tus anuncios activos</Text>
+      {/* Active Listings */}
+      <View style={styles.publishedSection}>
+        <Text style={styles.publishedSectionTitle}>Published cars</Text>
+        
         {activeListings.length === 0 ? (
-          <Text style={styles.emptyState}>No tienes anuncios activos.</Text>
+          <View style={styles.emptyStateContainer}>
+            <Text style={styles.emptyStateText}>No active listings.</Text>
+          </View>
         ) : (
-          activeListings.map((listing) =>
-            renderListingCard(listing, 'own-active')
-          )
+          <View style={styles.publishedGrid}>
+            {activeListings.map((listing) => {
+              if (!listing?.id) return null
+
+              const hasImage = Array.isArray(listing.images) && listing.images.length > 0
+              const firstImage = hasImage ? listing.images[0] : null
+
+              return (
+                <TouchableOpacity
+                  key={`published-active-${listing.id}`}
+                  style={styles.publishedCard}
+                  onPress={() => handleListingPress(listing)}
+                  activeOpacity={0.8}
+                >
+                  <View style={styles.publishedImageWrapper}>
+                    {firstImage ? (
+                      <Image
+                        source={{ uri: firstImage }}
+                        style={styles.publishedImage}
+                        resizeMode="cover"
+                      />
+                    ) : (
+                      <View style={styles.publishedImagePlaceholder}>
+                        <Text style={styles.publishedImagePlaceholderText}>Sin foto</Text>
+                      </View>
+                    )}
+                  </View>
+                  <View style={styles.publishedInfo}>
+                    <Text style={styles.publishedTitle} numberOfLines={2}>
+                      {listing.title}
+                    </Text>
+                    <Text style={styles.publishedPrice}>
+                      {formatPrice(listing.price)}
+                    </Text>
+                  </View>
+                </TouchableOpacity>
+              )
+            })}
+          </View>
         )}
       </View>
 
-      <View style={styles.section}>
-        <Text style={styles.sectionTitle}>Tus anuncios inactivos</Text>
+      {/* Drafts / Inactive Listings */}
+      <View style={styles.publishedSection}>
+        <Text style={styles.publishedSectionTitleInactive}>Drafts</Text>
+        
         {inactiveListings.length === 0 ? (
-          <Text style={styles.emptyState}>No tienes anuncios inactivos.</Text>
+          <View style={styles.emptyStateContainer}>
+            <Text style={styles.emptyStateText}>No drafts yet.</Text>
+          </View>
         ) : (
-          inactiveListings.map((listing) =>
-            renderListingCard(listing, 'own-inactive')
-          )
+          <View style={styles.publishedGrid}>
+            {inactiveListings.map((listing) => {
+              if (!listing?.id) return null
+
+              const hasImage = Array.isArray(listing.images) && listing.images.length > 0
+              const firstImage = hasImage ? listing.images[0] : null
+
+              return (
+                <TouchableOpacity
+                  key={`published-inactive-${listing.id}`}
+                  style={styles.publishedCardInactive}
+                  onPress={() => handleListingPress(listing)}
+                  activeOpacity={0.8}
+                >
+                  <View style={styles.publishedImageWrapper}>
+                    {firstImage ? (
+                      <Image
+                        source={{ uri: firstImage }}
+                        style={styles.publishedImage}
+                        resizeMode="cover"
+                      />
+                    ) : (
+                      <View style={styles.publishedImagePlaceholder}>
+                        <Text style={styles.publishedImagePlaceholderText}>Sin foto</Text>
+                      </View>
+                    )}
+                    <View style={styles.inactiveOverlay}>
+                      <Text style={styles.inactiveOverlayText}>Draft</Text>
+                    </View>
+                  </View>
+                  <View style={styles.publishedInfoInactive}>
+                    <Text style={styles.publishedTitleInactive} numberOfLines={2}>
+                      {listing.title}
+                    </Text>
+                    <View style={styles.publishedBottomRowInactive}>
+                      <Text style={styles.publishedPriceInactive}>
+                        {formatPrice(listing.price)}
+                      </Text>
+                      <TouchableOpacity
+                        style={styles.reactivateButton}
+                        disabled={reactivatingId === listing.id}
+                        onPress={(e) => {
+                          e.stopPropagation()
+                          handleReactivate(listing.id)
+                        }}
+                        //disabled={reactivatingId === listing.id}
+                      >
+                        {reactivatingId === listing.id ? (
+                          <ActivityIndicator size="small" color="#000" />
+                        ) : (
+                          <Text style={styles.reactivateButtonText}>Publish</Text>
+                        )}
+                      </TouchableOpacity>
+                    </View>
+                  </View>
+                </TouchableOpacity>
+              )
+            })}
+          </View>
         )}
       </View>
 
@@ -617,14 +706,66 @@ export default function ProfileScreen() {
 
   const renderFavoriteCarsTab = () => (
     <ScrollView style={styles.contentWrapper} contentContainerStyle={styles.scrollContent}>
-      <View style={styles.section}>
-        <Text style={styles.sectionTitle}>Tus favoritos</Text>
+      <View style={styles.favoriteSection}>
+        <Text style={styles.favoriteSectionTitle}>Favorite cars</Text>
         {favoriteListings.length === 0 ? (
-          <Text style={styles.emptyState}>Todavía no has marcado favoritos.</Text>
+          <View style={styles.emptyStateContainer}>
+            <Text style={styles.emptyStateText}>Todavía no has marcado favoritos.</Text>
+          </View>
         ) : (
-          favoriteListings.map((listing) =>
-            renderListingCard(listing, 'favorite', true)
-          )
+          <View style={styles.favoriteGrid}>
+            {favoriteListings.map((listing) => {
+              if (!listing?.id) return null
+
+              const hasImage = Array.isArray(listing.images) && listing.images.length > 0
+              const firstImage = hasImage ? listing.images[0] : null
+
+              return (
+                <TouchableOpacity
+                  key={`favorite-${listing.id}`}
+                  style={styles.favoriteCard}
+                  onPress={() => handleListingPress(listing)}
+                  activeOpacity={0.8}
+                >
+                  <View style={styles.favoriteImageWrapper}>
+                    {firstImage ? (
+                      <Image
+                        source={{ uri: firstImage }}
+                        style={styles.favoriteImage}
+                        resizeMode="cover"
+                      />
+                    ) : (
+                      <View style={styles.favoriteImagePlaceholder}>
+                        <Text style={styles.favoriteImagePlaceholderText}>Sin foto</Text>
+                      </View>
+                    )}
+                  </View>
+                  <View style={styles.favoriteInfo}>
+                    <Text style={styles.favoriteTitle} numberOfLines={2}>
+                      {listing.title}
+                    </Text>
+                    <View style={styles.favoritePriceRow}>
+                      <FavoriteButton
+                        listingId={listing.id}
+                        variant="list"
+                        initialIsFavorite
+                        fetchOnMount={false}
+                        onStatusChange={(nextValue) => {
+                          if (!nextValue) {
+                            handleFavoriteRemoval(listing.id)
+                          }
+                        }}
+                        style={styles.favoriteHeartButton}
+                      />
+                      <Text style={styles.favoritePrice}>
+                        {formatPrice(listing.price)}
+                      </Text>
+                    </View>
+                  </View>
+                </TouchableOpacity>
+              )
+            })}
+          </View>
         )}
       </View>
 

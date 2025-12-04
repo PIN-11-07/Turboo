@@ -86,7 +86,7 @@ export const useProfileScreen = () => {
           supabase.auth.getUser(),
           supabase
             .from('profiles')
-            .select('profile_image_url, saldo, full_name, rating_avg')
+            .select('profile_image_url, saldo, full_name, rating_avg, rating_count')
             .eq('id', user.id)
             .maybeSingle(),
           supabase
@@ -141,6 +141,10 @@ export const useProfileScreen = () => {
         const ratingAvg = Number.isFinite(Number(profileData?.rating_avg))
           ? Number(profileData.rating_avg)
           : 0
+        
+        const ratingCount = Number.isFinite(Number(profileData?.rating_count))
+          ? Number(profileData.rating_count)
+          : 0
 
         setProfile({
           name: profileName,
@@ -151,6 +155,7 @@ export const useProfileScreen = () => {
               ? Number(profileData.saldo)
               : 0,
           rating: ratingAvg,
+          ratingCount: ratingCount,
         })
         setListings(Array.isArray(listingsData) ? listingsData : [])
         setFavoriteListings(mapFavoritesToListings(favoritesData))
@@ -176,8 +181,72 @@ export const useProfileScreen = () => {
 
   useFocusEffect(
     useCallback(() => {
-      refreshProfile()
-    }, [refreshProfile])
+      // Refresh silencieusement sans bloquer l'UI si données existent
+      if (profile) {
+        // Données déjà chargées : rafraîchir en arrière-plan
+        const backgroundRefresh = async () => {
+          if (!user) return
+
+          try {
+            const [
+              { data: profileData },
+              { data: listingsData },
+              { data: favoritesData },
+              transactionHistoryData,
+            ] = await Promise.all([
+              supabase
+                .from('profiles')
+                .select('profile_image_url, saldo, full_name, rating_avg, rating_count')
+                .eq('id', user.id)
+                .maybeSingle()
+                .then(r => r),
+              supabase
+                .from('listings')
+                .select(LISTING_FIELDS)
+                .eq('user_id', user.id)
+                .order('created_at', { ascending: false })
+                .then(r => r),
+              supabase
+                .from('favorites')
+                .select(`listing:listing_id (${LISTING_FIELDS})`)
+                .eq('user_id', user.id)
+                .order('created_at', { ascending: false })
+                .then(r => r),
+              getUserTransactionHistory(user.id).catch(() => []),
+            ])
+
+            // Mettre à jour uniquement si montée
+            const profileName =
+              (typeof profileData?.full_name === 'string' &&
+                profileData.full_name.trim()) ||
+              extractName(user) ||
+              null
+
+            setProfile({
+              name: profileName || profile.name,
+              mail: profile.mail,
+              profileImageUrl: profileData?.profile_image_url || profile.profileImageUrl,
+              balance: profileData?.saldo != null ? Number(profileData.saldo) : profile.balance,
+              rating: Number.isFinite(Number(profileData?.rating_avg))
+                ? Number(profileData.rating_avg)
+                : profile.rating,
+              ratingCount: Number.isFinite(Number(profileData?.rating_count))
+                ? Number(profileData.rating_count)
+                : profile.ratingCount || 0,
+            })
+            setListings(Array.isArray(listingsData) ? listingsData : [])
+            setFavoriteListings(mapFavoritesToListings(favoritesData))
+            setTransactionHistory(transactionHistoryData || [])
+          } catch (err) {
+            console.warn('Background refresh failed:', err)
+          }
+        }
+        backgroundRefresh()
+      } else {
+        // Données pas encore chargées : refresh complet
+        refreshProfile()
+      }
+    }, [refreshProfile, profile, user])
   )
 
   const avatarInitial = useMemo(() => {

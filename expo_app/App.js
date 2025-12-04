@@ -25,6 +25,7 @@ export default function App() {
           'OTJubileeGolden-ExtralightItalic': require('./assets/fonts/OTJubilee-GoldenExtralightItalic.otf'),
           'OTJubileeGolden-Extrabold': require('./assets/fonts/OTJubilee-GoldenExtrabold.otf'),
           'OTJubileeGolden-ExtraboldItalic': require('./assets/fonts/OTJubilee-GoldenExtraboldItalic.otf'),
+          'BaiJamjuree-Regular': require('./assets/fonts/BaiJamjuree-Regular.ttf'),
         })
       } catch (e) {
         console.warn(e)

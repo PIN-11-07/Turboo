@@ -147,10 +147,10 @@ const variantStyles = StyleSheet.create({
     },
     icon: {
       fontSize: 18,
-      color: palette.textPrimary,
+      color: palette.darkMustard,
     },
     iconActive: {
-      color: palette.danger,
+      color: palette.mustard,
     },
   },
 })
@@ -295,13 +295,23 @@ export function FavoriteButton({
           throw error
         }
       } else {
-        const { error } = await supabase.from('favorites').insert({
-          user_id: user.id,
-          listing_id: listingId,
-        })
+        // Vérifier d'abord si le favori existe déjà
+        const { data: existing } = await supabase
+          .from('favorites')
+          .select('id')
+          .eq('user_id', user.id)
+          .eq('listing_id', listingId)
+          .maybeSingle()
 
-        if (error) {
-          throw error
+        if (!existing) {
+          const { error } = await supabase.from('favorites').insert({
+            user_id: user.id,
+            listing_id: listingId,
+          })
+
+          if (error && error.code !== '23505') {
+            throw error
+          }
         }
       }
 
