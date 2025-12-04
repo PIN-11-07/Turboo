@@ -56,7 +56,30 @@ export const searchStyles = StyleSheet.create({
         borderColor: palette.border,
     },
 
+    // AI Info Section
+    aiInfoSection: {
+        backgroundColor: 'rgba(198, 133, 21, 0.1)',
+        paddingVertical: 12,
+        paddingHorizontal: 16,
+        borderRadius: 12,
+        marginHorizontal: 16,
+        marginBottom: 16,
+        borderWidth: 1,
+        borderColor: 'rgba(198, 133, 21, 0.2)',
+    },
+    aiInfoText: {
+        color: palette.textSecondary,
+        fontSize: 13,
+        textAlign: 'center',
+        lineHeight: 18,
+        fontWeight: '500',
+    },
+
     // Categories
+    categoriesSection: {
+        backgroundColor: 'transparent',
+        marginBottom: 16,
+    },
     sectionTitle: {
         fontSize: 20,
         fontWeight: '700',
@@ -67,18 +90,23 @@ export const searchStyles = StyleSheet.create({
     },
     categoriesGrid: {
         paddingHorizontal: 11, // Adjusted to balance with card margins
-        paddingBottom: 20,
+        paddingBottom: 8,
     },
     categoryCard: {
         flex: 1,
         margin: 5,
-        height: 110,
-        borderRadius: 14,
+        height: 120,
+        borderRadius: 16,
         overflow: 'hidden',
         backgroundColor: palette.surface,
         position: 'relative',
         borderWidth: 1,
         borderColor: palette.border,
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 4 },
+        shadowOpacity: 0.2,
+        shadowRadius: 8,
+        elevation: 3,
     },
     categoryImage: {
         width: '100%',
@@ -88,18 +116,18 @@ export const searchStyles = StyleSheet.create({
     },
     categoryOverlay: {
         ...StyleSheet.absoluteFillObject,
-        backgroundColor: 'rgba(0,0,0,0.35)',
+        backgroundColor: 'rgba(0,0,0,0.4)',
         justifyContent: 'center',
         alignItems: 'center',
     },
     categoryTitle: {
         color: '#FFFFFF',
-        fontSize: 16,
+        fontSize: 17,
         fontWeight: '700',
         textAlign: 'center',
-        textShadowColor: 'rgba(0, 0, 0, 0.75)',
-        textShadowOffset: { width: 0, height: 1 },
-        textShadowRadius: 3,
+        textShadowColor: 'rgba(0, 0, 0, 0.85)',
+        textShadowOffset: { width: 0, height: 2 },
+        textShadowRadius: 4,
     },
 
     // Results List Styles

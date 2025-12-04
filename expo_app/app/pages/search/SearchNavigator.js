@@ -1,0 +1,54 @@
+import React from 'react'
+import { createNativeStackNavigator } from '@react-navigation/native-stack'
+import SearchScreen from './SearchScreen'
+import ListingDetailScreen from '../listingDetails/ListingDetailScreen'
+import PurchaseScreen from '../purchase/PurchaseScreen'
+import PurchaseConfirmationScreen from '../purchase/PurchaseConfirmationScreen'
+import { palette } from '../../theme/palette'
+
+const Stack = createNativeStackNavigator()
+
+const stackScreenOptions = {
+    headerStyle: {
+        backgroundColor: palette.surface,
+    },
+    headerTintColor: palette.accent,
+    headerTitleStyle: {
+        color: palette.textPrimary,
+        fontSize: 16,
+        fontWeight: '600',
+        letterSpacing: 0.3,
+    },
+    headerShadowVisible: false,
+    headerBackTitleVisible: false,
+    contentStyle: {
+        backgroundColor: palette.background,
+    },
+}
+
+export default function SearchNavigator() {
+    return (
+        <Stack.Navigator screenOptions={stackScreenOptions}>
+            <Stack.Screen
+                name="SearchMain"
+                component={SearchScreen}
+                options={{ headerShown: false }}
+            />
+            <Stack.Screen
+                name="ListingDetail"
+                component={ListingDetailScreen}
+                options={{ headerShown: false }}
+            />
+            <Stack.Screen
+                name="Purchase"
+                component={PurchaseScreen}
+                options={{ title: 'Confirmar compra' }}
+            />
+            <Stack.Screen
+                name="PurchaseConfirmation"
+                component={PurchaseConfirmationScreen}
+                options={{ title: 'Compra completada', headerBackVisible: false }}
+            />
+        </Stack.Navigator>
+    )
+}

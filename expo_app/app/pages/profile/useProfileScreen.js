@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useFocusEffect, useNavigation } from '@react-navigation/native'
 import { useAuth } from '../../context/AuthContext'
+import { useDataCache } from '../../context/DataCacheContext'
 import { supabase } from '../../utils/supabase'
 import { getUserTransactionHistory } from '../../services/transactions'
 
@@ -43,6 +44,7 @@ const listingIsActive = (listing) => {
 
 export const useProfileScreen = () => {
   const { user, signOut } = useAuth()
+  const { profileCache, prefetchProfile } = useDataCache()
   const navigation = useNavigation()
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
@@ -69,6 +71,46 @@ export const useProfileScreen = () => {
           setTransactionHistory([])
           setLoading(false)
         }
+        return
+      }
+
+      // Load from cache immediately if available
+      if (profileCache && isMounted) {
+        const authUser = profileCache.authData?.user ?? null
+        const profileData = profileCache.profileData
+
+        const profileName =
+          (typeof profileData?.full_name === 'string' &&
+            profileData.full_name.trim()) ||
+          extractName(authUser) ||
+          extractName(user) ||
+          null
+
+        const mail =
+          (typeof authUser?.email === 'string' && authUser.email.trim()) ||
+          (typeof user?.email === 'string' && user.email.trim()) ||
+          null
+
+        const ratingAvg = Number.isFinite(Number(profileData?.rating_avg))
+          ? Number(profileData.rating_avg)
+          : 0
+
+        setProfile({
+          name: profileName,
+          mail,
+          profileImageUrl: profileData?.profile_image_url || null,
+          balance:
+            profileData && profileData.saldo != null
+              ? Number(profileData.saldo)
+              : 0,
+          rating: ratingAvg,
+        })
+        setListings(Array.isArray(profileCache.listingsData) ? profileCache.listingsData : [])
+        setFavoriteListings(mapFavoritesToListings(profileCache.favoritesData))
+        setTransactionHistory(profileCache.transactionHistoryData || [])
+        setLoading(false)
+        // Refresh in background
+        await prefetchProfile()
         return
       }
 

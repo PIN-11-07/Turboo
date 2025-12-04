@@ -1,10 +1,12 @@
 import { useCallback, useEffect, useState } from 'react'
 import { supabase } from '../../utils/supabase'
+import { useDataCache } from '../../context/DataCacheContext'
 
 // Number of listings to fetch per page.
 const PAGE_SIZE = 50
 
 export const useHomeScreen = () => {
+  const { homeCache, prefetchHome } = useDataCache()
   const [listings, setListings] = useState([])
   const [initialLoading, setInitialLoading] = useState(true)
   const [refreshing, setRefreshing] = useState(false)
@@ -14,6 +16,16 @@ export const useHomeScreen = () => {
 
   const fetchListings = useCallback(
     async ({ cursor, refresh } = {}) => {
+      // If we have cache and this is initial load, use it immediately
+      if (!refresh && !cursor && homeCache && homeCache.listings.length > 0) {
+        setListings(homeCache.listings)
+        setHasMore(homeCache.listings.length === PAGE_SIZE)
+        setInitialLoading(false)
+        // Refresh in background
+        prefetchHome()
+        return
+      }
+
       if (refresh) {
         setRefreshing(true)
       } else if (cursor) {
@@ -69,7 +81,7 @@ export const useHomeScreen = () => {
         }
       }
     },
-    []
+    [homeCache, prefetchHome]
   )
 
   useEffect(() => {

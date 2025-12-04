@@ -227,4 +227,72 @@ export const purchaseScreenStyles = StyleSheet.create({
     textAlign: 'center',
     marginBottom: 12,
   },
+  // Payment Selection Styles
+  paymentOption: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    padding: 16,
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: palette.border,
+    marginBottom: 12,
+    backgroundColor: palette.overlay,
+  },
+  paymentOptionSelected: {
+    borderColor: palette.mustard,
+    backgroundColor: 'rgba(187, 126, 29, 0.1)',
+  },
+  paymentOptionLeft: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  radioButton: {
+    width: 20,
+    height: 20,
+    borderRadius: 10,
+    borderWidth: 2,
+    borderColor: palette.textSecondary,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginRight: 12,
+  },
+  radioButtonSelected: {
+    borderColor: palette.mustard,
+  },
+  radioButtonInner: {
+    width: 10,
+    height: 10,
+    borderRadius: 5,
+    backgroundColor: palette.mustard,
+  },
+  cardDetails: {
+    justifyContent: 'center',
+  },
+  cardBrand: {
+    color: palette.textPrimary,
+    fontSize: 16,
+    fontWeight: '600',
+  },
+  cardExpiry: {
+    color: palette.textSecondary,
+    fontSize: 12,
+    marginTop: 2,
+  },
+  addCardButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: 16,
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: palette.border,
+    borderStyle: 'dashed',
+    marginTop: 8,
+  },
+  addCardText: {
+    color: palette.textPrimary,
+    fontSize: 15,
+    fontWeight: '500',
+  },
 })

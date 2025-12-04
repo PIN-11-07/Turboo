@@ -4,6 +4,7 @@ import HomeScreen from './HomeScreen'
 import ListingDetailScreen from '../listingDetails/ListingDetailScreen'
 import PurchaseScreen from '../purchase/PurchaseScreen'
 import PurchaseConfirmationScreen from '../purchase/PurchaseConfirmationScreen'
+import AddCardScreen from '../purchase/AddCardScreen'
 import RecommendationsScreen from './RecommendationsScreen'
 import { palette } from '../../theme/palette'
 import RatingScreen from '../rating/ratingScreen'
@@ -50,6 +51,11 @@ export default function HomeNavigator() {
         name="PurchaseConfirmation"
         component={PurchaseConfirmationScreen}
         options={{ title: 'Compra completada', headerBackVisible: false }}
+      />
+      <Stack.Screen
+        name="AddCard"
+        component={AddCardScreen}
+        options={{ headerShown: false }}
       />
       <Stack.Screen
         name="Recommendations"

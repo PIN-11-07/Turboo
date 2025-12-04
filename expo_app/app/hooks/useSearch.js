@@ -13,32 +13,32 @@ export const useSearch = (listings = []) => {
   const [sortDir, setSortDir] = useState('desc') // 'asc' or 'desc'
   const [viewMode, setViewMode] = useState('grid') // 'list' or 'grid'
   const [showFilters, setShowFilters] = useState(false)
-  
+
   // Calculate price and year ranges from listings data
   const priceRange = useMemo(() => {
     if (!listings || listings.length === 0) return { min: 0, max: 1000000 }
-    
+
     const prices = listings
       .map(listing => Number(listing.price))
       .filter(price => !isNaN(price) && price > 0)
-    
+
     if (prices.length === 0) return { min: 0, max: 1000000 }
-    
+
     const min = Math.min(...prices)
     const max = Math.max(...prices)
-    
+
     return { min, max }
   }, [listings])
 
   const yearRange = useMemo(() => {
     if (!listings || listings.length === 0) return { min: 2000, max: new Date().getFullYear() }
-    
+
     const years = listings
       .map(listing => Number(listing.year))
       .filter(year => !isNaN(year) && year > 0)
-    
+
     if (years.length === 0) return { min: 2000, max: new Date().getFullYear() }
-    
+
     return { min: Math.min(...years), max: Math.max(...years) }
   }, [listings])
 
@@ -106,12 +106,12 @@ export const useSearch = (listings = []) => {
 
     const query = normalizeForSearch(searchText)
     const matches = []
-    
+
     // Add matching makes
     makeOptions
       .filter(make => normalizeForSearch(make).startsWith(query))
       .forEach(make => matches.push({ type: 'make', value: make }))
-    
+
     // Add matching models
     const models = new Set()
     listings.forEach(listing => {
@@ -119,7 +119,7 @@ export const useSearch = (listings = []) => {
         models.add(listing.model.toString().trim())
       }
     })
-    
+
     Array.from(models)
       .forEach(model => matches.push({ type: 'model', value: model }))
 
@@ -188,32 +188,32 @@ export const useSearch = (listings = []) => {
     // Price filter
     if (Number(listing.price ?? 0) < filters.priceMin) return false
     if (Number(listing.price ?? 0) > filters.priceMax) return false
-    
+
     // Year filter
     if (Number(listing.year ?? 0) < filters.yearMin) return false
     if (Number(listing.year ?? 0) > filters.yearMax) return false
-    
+
     // Make filter (multi-select OR condition)
     if (Array.isArray(filters.make) && filters.make.length > 0) {
       const listingMake = normalizeForSearch(listing.make)
       const selectedMakes = filters.make.map(m => normalizeForSearch(m))
       if (!selectedMakes.includes(listingMake)) return false
     }
-    
+
     // Color filter (multi-select OR condition)
     if (Array.isArray(filters.color) && filters.color.length > 0) {
       const listingColor = normalizeForSearch(listing.color)
       const selectedColors = filters.color.map(c => normalizeForSearch(c))
       if (!selectedColors.includes(listingColor)) return false
     }
-    
+
     // Fuel type filter (multi-select OR condition)
     if (Array.isArray(filters.fuelType) && filters.fuelType.length > 0) {
       const listingFuelType = normalizeForSearch(listing.fuel_type)
       const selectedFuelTypes = filters.fuelType.map(f => normalizeForSearch(f))
       if (!selectedFuelTypes.includes(listingFuelType)) return false
     }
-    
+
     // Transmission filter (multi-select OR condition)
     if (Array.isArray(filters.transmission) && filters.transmission.length > 0) {
       const listingTransmission = normalizeForSearch(listing.transmission)
@@ -245,20 +245,20 @@ export const useSearch = (listings = []) => {
       })
       if (!matchesDoor) return false
     }
-    
+
     // Mileage filter
     if (filters.mileageMax) {
       const maxMileage = Number(filters.mileageMax)
       if (!isNaN(maxMileage) && Number(listing.mileage ?? 0) > maxMileage) return false
     }
-    
+
     return true
   }, [filters])
 
   // Apply search and filters
   const filteredListings = useMemo(() => {
     let result = [...listings]
-    
+
     // Apply filters first
     const hasActiveFilters = Object.entries(filters).some(([key, val]) => {
       if (key === 'priceMin' && val === priceRange.min) return false
@@ -268,11 +268,11 @@ export const useSearch = (listings = []) => {
       if (Array.isArray(val) && val.length === 0) return false
       return val !== '' && val !== null && val !== undefined
     })
-    
+
     if (hasActiveFilters) {
       result = result.filter(passesFilters)
     }
-    
+
     // Apply search
     const query = normalizeForSearch(searchText)
     if (query) {
@@ -291,7 +291,7 @@ export const useSearch = (listings = []) => {
         return searchableFields.includes(query) || searchableFields.startsWith(query)
       })
     }
-    
+
     // Apply sorting
     return sortListings(result, sortBy, sortDir)
   }, [listings, filters, searchText, sortBy, sortDir, passesFilters, sortListings, priceRange, yearRange])
@@ -313,6 +313,33 @@ export const useSearch = (listings = []) => {
       doors: [],
     })
     setShowFilters(false)
+  }, [priceRange, yearRange])
+
+  // Remove individual filter
+  const removeFilter = useCallback((filterKey, value) => {
+    setFilters(prevFilters => {
+      const newFilters = { ...prevFilters }
+
+      // Handle array filters (make, color, fuelType, transmission, bodyType, condition, doors)
+      if (Array.isArray(newFilters[filterKey])) {
+        newFilters[filterKey] = newFilters[filterKey].filter(item => item !== value)
+      }
+      // Handle range filters
+      else if (filterKey === 'price') {
+        newFilters.priceMin = priceRange.min
+        newFilters.priceMax = priceRange.max
+      }
+      else if (filterKey === 'year') {
+        newFilters.yearMin = yearRange.min
+        newFilters.yearMax = yearRange.max
+      }
+      // Handle mileage
+      else if (filterKey === 'mileageMax') {
+        newFilters.mileageMax = ''
+      }
+
+      return newFilters
+    })
   }, [priceRange, yearRange])
 
   // Clear search
@@ -350,6 +377,7 @@ export const useSearch = (listings = []) => {
     filters,
     setFilters,
     clearFilters,
+    removeFilter,
 
     // Options
     makeOptions,

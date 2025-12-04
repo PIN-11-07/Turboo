@@ -31,6 +31,18 @@ export const usePurchaseScreen = () => {
   const [submitting, setSubmitting] = useState(false)
   const [error, setError] = useState(null)
   const [successMessage, setSuccessMessage] = useState(null)
+  const [savedCards, setSavedCards] = useState([
+    {
+      id: '1',
+      brand: 'VISA',
+      last4: '4242',
+      holder: 'JOHN DOE',
+      expiry: '12/25',
+      cvc: '123',
+    },
+  ])
+  const [selectedCardId, setSelectedCardId] = useState('1')
+
   const [cardData, setCardData] = useState({
     holder: '',
     number: '',
@@ -97,10 +109,10 @@ export const usePurchaseScreen = () => {
 
         const buyerPromise = user?.id
           ? supabase
-              .from('profiles')
-              .select('full_name, saldo')
-              .eq('id', user.id)
-              .maybeSingle()
+            .from('profiles')
+            .select('full_name, saldo')
+            .eq('id', user.id)
+            .maybeSingle()
           : Promise.resolve({ data: null, error: null })
 
         const [{ data: sellerData, error: sellerError }, { data: buyerData, error: buyerError }] =
@@ -144,6 +156,33 @@ export const usePurchaseScreen = () => {
     }
   }, [initialListing, listingId, user?.id])
 
+  // Update cardData when selectedCardId changes
+  useEffect(() => {
+    if (selectedCardId) {
+      const card = savedCards.find((c) => c.id === selectedCardId)
+      if (card) {
+        setCardData({
+          holder: card.holder,
+          number: `**** **** **** ${card.last4}`,
+          expiry: card.expiry,
+          cvc: card.cvc,
+        })
+      }
+    } else {
+      setCardData({
+        holder: '',
+        number: '',
+        expiry: '',
+        cvc: '',
+      })
+    }
+  }, [selectedCardId, savedCards])
+
+  const addNewCard = useCallback((newCard) => {
+    setSavedCards((prev) => [...prev, newCard])
+    setSelectedCardId(newCard.id)
+  }, [])
+
   const totals = useMemo(() => {
     const price = normalizeMoney(listing?.price)
     const fee = normalizeMoney((price * PLATFORM_FEE_PERCENTAGE) / 100)
@@ -176,7 +215,7 @@ export const usePurchaseScreen = () => {
       cardData.expiry.trim().length >= 4 &&
       cardData.cvc.trim().length >= 3
     )
-  }, [cardData.cvc, cardData.expiry, cardData.holder, cardData.number, payingWithBalanceOnly])
+  }, [cardData.cvc, cardData.expiry, cardData.holder, cardData.number, payingWithBalanceOnly, selectedCardId])
 
   const canSubmit =
     Boolean(user && listing && totals.price > 0 && !loading && !isOwner) &&
@@ -438,5 +477,9 @@ export const usePurchaseScreen = () => {
     handleGoBack,
     disableReason,
     payingWithBalanceOnly,
+    savedCards,
+    selectedCardId,
+    setSelectedCardId,
+    addNewCard,
   }
 }

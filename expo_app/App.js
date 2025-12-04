@@ -1,6 +1,7 @@
-import React, { useEffect, useState, useCallback } from 'react'
+import React, { useEffect, useState } from 'react'
 import { View } from 'react-native'
 import { AuthProvider } from './app/context/AuthContext'
+import { DataCacheProvider } from './app/context/DataCacheContext'
 import RootNavigator from './app/navigation/RootNavigator'
 import * as SplashScreen from 'expo-splash-screen'
 import { Asset } from 'expo-asset'
@@ -45,7 +46,9 @@ export default function App() {
   return (
     <View style={{ flex: 1 }}>
       <AuthProvider>
-        <RootNavigator />
+        <DataCacheProvider>
+          <RootNavigator />
+        </DataCacheProvider>
       </AuthProvider>
     </View>
   )
