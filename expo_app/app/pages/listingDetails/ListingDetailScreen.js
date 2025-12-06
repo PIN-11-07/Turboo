@@ -16,7 +16,7 @@ import { Ionicons } from '@expo/vector-icons'
 import { listingDetailScreenStyles as styles } from './ListingDetailStyles'
 import FavoriteButton from '../../components/FavoriteButton'
 import { useAuth } from '../../context/AuthContext'
-import { useListingDetailScreen } from './useListingDetailScreen'
+import { useListingDetail } from './useListingDetail'
 
 const formatPrice = (value) => {
   const numericValue = Number(value)
@@ -43,7 +43,7 @@ const STAR_COLOR = ACCENT_COLOR
 
 export default function ListingDetailScreen() {
   const { listing, listingId, loading, error, images, sellerName, sellerRating, sellerProfileImageUrl } =
-    useListingDetailScreen()
+    useListingDetail()
   const navigation = useNavigation()
   const { user } = useAuth()
 

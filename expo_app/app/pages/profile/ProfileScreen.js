@@ -17,7 +17,7 @@ import FavoriteButton from '../../components/FavoriteButton'
 import TransactionItem from '../../components/TransactionItem'
 import { profileScreenStyles } from './profileStyles'
 import { palette } from '../../theme/palette'
-import { useProfileScreen } from './useProfileScreen'
+import { useProfile } from './useProfile'
 import { uploadToCloudinary } from '../../config/cloudinary'
 import { updateProfile } from '../../services/users'
 
@@ -70,7 +70,7 @@ export default function ProfileScreen() {
     reactivateListing,
     reactivatingId,
     refreshProfile,
-  } = useProfileScreen()
+  } = useProfile()
 
   const [profile, setProfile] = useState(fetchedProfile)
   const [editing, setEditing] = useState(false)

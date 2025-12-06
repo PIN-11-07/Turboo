@@ -52,7 +52,7 @@ const normalizeImages = (value) => {
   return []
 }
 
-export const useListingDetailScreen = () => {
+export const useListingDetail = () => {
   const route = useRoute()
   const params = route.params ?? {}
   const listingId = params.listingId ?? params?.listing?.id ?? null

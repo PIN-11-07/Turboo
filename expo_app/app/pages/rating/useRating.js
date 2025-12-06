@@ -5,7 +5,7 @@ import { supabase } from '../../utils/supabase'
 const normalizeTitle = (title) =>
   typeof title === 'string' && title.trim().length ? title.trim() : 'Vehicle acquired'
 
-export const useRatingScreen = () => {
+export const useRating = () => {
   const navigation = useNavigation()
   const route = useRoute()
   const { sellerId, sellerName, listingTitle } = route.params ?? {}
