@@ -1,11 +1,11 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
-import { normalizeForSearch } from '../utils/format'
+import { normalizeForSearch } from '../../utils/format'
 
 /**
  * Custom hook for advanced search functionality with filters and suggestions
  * Adapts the search logic to work with Turboo's listing structure
  */
-export const useSearch = (listings = []) => {
+export const useSearchFilters = (listings = []) => {
   const [searchText, setSearchText] = useState('')
   const [isFocused, setIsFocused] = useState(false)
   const [showSuggestions, setShowSuggestions] = useState(false)

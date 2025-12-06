@@ -3,7 +3,7 @@ import { View, Text, TextInput, TouchableOpacity, ScrollView } from 'react-nativ
 import { LinearGradient } from 'expo-linear-gradient'
 import { Ionicons } from '@expo/vector-icons'
 import { loginScreenStyles } from './AuthStyles'
-import { useLoginScreen } from './useLoginScreen'
+import { useLogin } from './useAuth'
 
 export default function LoginScreen() {
   const {
@@ -20,7 +20,7 @@ export default function LoginScreen() {
     setAcceptedTerms,
     handleSubmit,
     toggleAuthMode,
-  } = useLoginScreen()
+  } = useLogin()
 
   const [showPassword, setShowPassword] = useState(false)
   const [showRepeatPassword, setShowRepeatPassword] = useState(false)

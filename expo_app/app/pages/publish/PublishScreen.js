@@ -14,7 +14,7 @@ import {
 import * as ImagePicker from 'expo-image-picker';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { publishScreenStyles as styles } from './PublishStyles';
-import { usePublishScreen } from './usePublishScreen';
+import { usePublish } from './usePublish';
 import ImageAnalysisButton from '../../components/ImageAnalisisButton';
 
 const MAKE_OPTIONS = [
@@ -64,7 +64,7 @@ export default function PublishScreen() {
     submittingAction,
     image,
     setImage,
-  } = usePublishScreen();
+  } = usePublish();
 
   const handleAnalysisComplete = (data) => {
     handleChange('make', data.make || '');

@@ -47,7 +47,7 @@ const sanitizeInteger = (value) => {
   return Number.isFinite(numericValue) ? Math.round(numericValue) : null
 }
 
-export const usePublishScreen = () => {
+export const usePublish = () => {
   const { user } = useAuth()
 
   const [form, setForm] = useState(createInitialForm)

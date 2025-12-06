@@ -17,35 +17,28 @@ export const ratingStyles = StyleSheet.create({
   safeArea: {
     flex: 1,
     backgroundColor: palette.background,
-    justifyContent: 'center',
-    padding: 24,
   },
-  card: {
-    backgroundColor: palette.surface,
-    borderRadius: 28,
-    paddingVertical: 34,
-    paddingHorizontal: 24,
-    borderWidth: 1,
-    borderColor: palette.border,
+  contentContainer: {
+    flexGrow: 1,
+    paddingHorizontal: 22,
+    paddingVertical: 20,
+    justifyContent: 'space-between',
   },
-  close: {
-    position: 'absolute',
-    top: 18,
-    right: 18,
-    padding: 6,
+  topContent: {
+    gap: 18,
+  },
+  header: {
+    gap: 8,
   },
   title: {
-    textAlign: 'center',
-    fontSize: 22,
+    fontSize: 26,
     fontWeight: '700',
     color: palette.accent,
-    marginBottom: 6,
   },
   subtitle: {
-    textAlign: 'center',
-    fontSize: 16,
+    fontSize: 15,
     color: palette.textSecondary,
-    marginBottom: 22,
+    lineHeight: 20,
   },
   vehicleBox: {
     borderRadius: 18,
@@ -53,7 +46,6 @@ export const ratingStyles = StyleSheet.create({
     borderWidth: 1,
     borderColor: palette.border,
     padding: 16,
-    marginBottom: 22,
   },
   vehicleLabel: {
     color: palette.textSecondary,
@@ -64,19 +56,21 @@ export const ratingStyles = StyleSheet.create({
     color: palette.textPrimary,
     fontSize: 17,
     fontWeight: '600',
+    lineHeight: 22,
+  },
+  ratingSection: {
+    gap: 12,
   },
   prompt: {
-    textAlign: 'center',
     color: palette.textPrimary,
     fontSize: 16,
-    fontWeight: '600',
-    marginBottom: 14,
+    fontWeight: '700',
   },
   starsRow: {
     flexDirection: 'row',
-    justifyContent: 'center',
+    justifyContent: 'space-between',
     gap: 12,
-    marginBottom: 20,
+    paddingHorizontal: 6,
   },
   infoBox: {
     borderRadius: 18,
@@ -84,17 +78,17 @@ export const ratingStyles = StyleSheet.create({
     borderColor: palette.border,
     backgroundColor: palette.overlay,
     padding: 14,
-    marginBottom: 16,
   },
   infoText: {
     color: palette.textSecondary,
-    textAlign: 'center',
     lineHeight: 20,
   },
   errorText: {
     color: palette.danger,
-    textAlign: 'center',
-    marginBottom: 12,
+    marginTop: -4,
+  },
+  buttonGroup: {
+    gap: 12,
   },
   primaryButton: {
     backgroundColor: palette.accent,
@@ -108,7 +102,6 @@ export const ratingStyles = StyleSheet.create({
     fontWeight: '700',
   },
   secondaryButton: {
-    marginTop: 12,
     borderRadius: 16,
     borderWidth: 1,
     borderColor: palette.border,

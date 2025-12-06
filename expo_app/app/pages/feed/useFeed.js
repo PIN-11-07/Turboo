@@ -1,10 +1,12 @@
 import { useCallback, useEffect, useState } from 'react'
 import { supabase } from '../../utils/supabase'
-import { useSearch } from '../../hooks/useSearch'
+import { useDataCache } from '../../context/DataCacheContext'
 
+// Number of listings to fetch per page.
 const PAGE_SIZE = 50
 
-export const useSearchScreen = () => {
+export const useFeed = () => {
+  const { homeCache, prefetchHome } = useDataCache()
   const [listings, setListings] = useState([])
   const [initialLoading, setInitialLoading] = useState(true)
   const [refreshing, setRefreshing] = useState(false)
@@ -12,11 +14,18 @@ export const useSearchScreen = () => {
   const [hasMore, setHasMore] = useState(true)
   const [error, setError] = useState(null)
 
-  // Initialize advanced search functionality
-  const search = useSearch(listings)
-
   const fetchListings = useCallback(
     async ({ cursor, refresh } = {}) => {
+      // If we have cache and this is initial load, use it immediately
+      if (!refresh && !cursor && homeCache && homeCache.listings.length > 0) {
+        setListings(homeCache.listings)
+        setHasMore(homeCache.listings.length === PAGE_SIZE)
+        setInitialLoading(false)
+        // Refresh in background
+        prefetchHome()
+        return
+      }
+
       if (refresh) {
         setRefreshing(true)
       } else if (cursor) {
@@ -61,7 +70,7 @@ export const useSearchScreen = () => {
         }
       } catch (fetchError) {
         console.error(fetchError)
-        setError('No es posible cargar los anuncios. Inténtalo de nuevo más tarde.')
+        setError('Unable to load listings. Please try again later.')
       } finally {
         if (refresh) {
           setRefreshing(false)
@@ -72,15 +81,12 @@ export const useSearchScreen = () => {
         }
       }
     },
-    []
+    [homeCache, prefetchHome]
   )
 
   useEffect(() => {
     fetchListings()
   }, [fetchListings])
-
-  // Use advanced search exclusively
-  const filteredListings = search.filteredListings
 
   const handleRefresh = useCallback(() => {
     if (!refreshing) {
@@ -89,11 +95,6 @@ export const useSearchScreen = () => {
   }, [fetchListings, refreshing])
 
   const handleLoadMore = useCallback(() => {
-    // Disable load more when using search or filters
-    if (search.searchText.trim() || search.showFilters) {
-      return
-    }
-
     if (!loadingMore && hasMore && listings.length > 0 && !initialLoading) {
       const cursor = listings[listings.length - 1]
       fetchListings({ cursor })
@@ -104,13 +105,17 @@ export const useSearchScreen = () => {
     initialLoading,
     listings,
     loadingMore,
-    search.searchText,
-    search.showFilters,
   ])
+
+  const removeListingById = useCallback((listingId) => {
+    if (!listingId) {
+      return
+    }
+    setListings((prev) => prev.filter((listing) => listing.id !== listingId))
+  }, [])
 
   return {
     listings,
-    filteredListings,
     initialLoading,
     refreshing,
     loadingMore,
@@ -118,6 +123,6 @@ export const useSearchScreen = () => {
     error,
     handleRefresh,
     handleLoadMore,
-    search,
+    removeListingById,
   }
 }

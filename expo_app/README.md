@@ -6,46 +6,27 @@
 mobile marketplace used to publish and browse car listings. Users can authenticate with Supabase, scroll through the feed, publish their own vehicles and manage their profile.
 
 **Technology stack:** 
-- React Native 0.81 + React 19 via Expo 54 
-- Supabase (email/password Auth + Postgres + JSON storage for images) 
-- React Navigation 7 (bottom tabs + native stacks) 
-- AsyncStorage for session persistence + Expo Secure Store plugin 
-- Docker (Node 20 image) for the containerized development environment
+- React Native
+- Expo 
+- Supabase
+- React Navigation
 
 **General prerequisites:** 
-- Docker and Docker Compose installed 
 - Supabase account with an existing project (URL + anon key) 
 - Expo Go app on a physical device if you want to test through the QR code
-- Google AI Studio API key if you want AI auto-fill (`EXPO_PUBLIC_GEMINI_API_KEY`)
-## 2. Run the Project Locally with Docker
+- Google AI Studio API key if you want AI auto-fill
 
-> [!NOTE]
-> **Windows only:** open WSL from PowerShell or CMD:
-> ```powershell
-> wsl
-> ```
+## 2. Run the Project Locally with Docker
 
 1. Clone the repository and change into the folder:
     ```bash
     git clone https://github.com/PIN-11-07/Turboo.git
     cd Turboo
     ```
-2. Build the Docker image:
-    ```bash
-    docker compose build
-    ```
-3. Start the services:
-    ```bash
-    docker compose up -d
-    ```
-4. Enter the `expo` container:
-    ```bash
-    docker compose exec expo bash
-    ```
-5. Inside the container run:
+
+2. Inside the container run:
     ```bash
     npm i
-    apt-get update -y && apt-get upgrade -y
     npx expo start --tunnel
     ```
 
@@ -60,11 +41,13 @@ mobile marketplace used to publish and browse car listings. Users can authentica
 3. **Publish the Branch Early**  
 
 4. **Assess Supabase Configuration Impact**  
-   - List every dashboard change you expect: database schema, RLS policies, triggers, functions, storage buckets, authentication settings, or Edge Functions.  
-   - Prepare SQL snippets or detailed UI steps for each change and save them under `SQL → Shared snippets` so they are reproducible by the team; add comments in the snippet description if future runs require manual tweaks or additional context.
-   - When updating an existing table choose one of these approaches and save the snippet accordingly:
-     1. Re-create the table from scratch and store the new SQL using the same command name as the original plus a version suffix (e.g., `listings table 2`). Expect to re-run every SQL snippet in order afterward, effectively rebuilding the full database.
-     2. Change an existing table with an SQL snippet, then update the original creation snippet so that, if executed today, it would build the table exactly as it currently exists, even if that was not the command originally executed.
+  - List every dashboard change you expect: database schema, RLS policies, triggers, functions, storage buckets, authentication settings, or Edge Functions.  
+  - Prepare SQL snippets or detailed UI steps for each change and save them under `SQL → Shared snippets` so they are reproducible by the team; add comments in the snippet description if future runs require manual tweaks or additional context.
+  - When updating an existing table choose one of these approaches and save the snippet accordingly:
+    1. Re-create the table from scratch and store the new SQL using the same command name as the original plus a version suffix (e.g., `listings table 2`).
+    2. Change an existing table with an SQL snippet, then update the original creation snippet so that, if executed today, it would build the table exactly as it currently exists, even if that was not the command originally executed.
+    
+  > Expect to re-run every SQL snippet in order afterward, effectively rebuilding the full database.
 
 5. **Document Database Structure Changes**  
    - After editing Supabase, update Section “Database Structure” for each touched entity.  
@@ -72,12 +55,12 @@ mobile marketplace used to publish and browse car listings. Users can authentica
    - Amend the Relationships list whenever foreign keys change, and never leave placeholder rows—use the same formatting seen in the existing tables.
 
 6. **Scaffold New App Pages (or Shared Components)**  
-   - When a feature introduces a page, create `app/pages/<feature>/` with:
+   - When a page introduces a page, create `app/pages/<page>/` with:
      ```text
-     app/pages/<feature>/
-     ├── <Feature>Navigator.js
-     ├── <Feature>Styles.js
-     └── <Feature>Screen.js
+     app/pages/<page>/
+     ├── use<Page>.js       // Page hook named use<PageName>
+     ├── <Page>Styles.js    // Style
+     └── <Page>Screen.js    // Effective page
      ```
    - When you only need a reusable UI element, place it under `app/components/` (e.g., `app/components/<ComponentName>.js` . Keep shared components free of feature-specific dependencies so they stay portable across pages.
 
@@ -97,83 +80,118 @@ mobile marketplace used to publish and browse car listings. Users can authentica
 ## 4. Project Structure
 **Main folder tree:**
 ```text
-Turboo/
-├── Docker-compose.yml
-├── Dockerfile
-├── README.md
-└── expo_app/
-    ├── App.js
-    ├── app/
-    │   ├── components/
-    │   │   └── FavoriteButton.js
-    │   ├── context/
-    │   │   └── AuthContext.js
-    │   ├── hooks/
-    │   │   └── ...
-    │   ├── navigation/
-    │   │   ├── AppNavigator.js
-    │   │   ├── AuthNavigator.js
-    │   │   └── RootNavigator.js
-    │   ├── pages
-    │   │   ├── auth/
-    │   │   │   ├── AuthNavigator.js
-    │   │   │   ├── AuthStyles.js
-    │   │   │   └── LoginScreen.js
-    │   │   ├── home/
-    │   │   │   ├── HomeNavigator.js
-    │   │   │   ├── HomeStyles.js
-    │   │   │   └── HomeScreen.js
-    │   │   ├── listingDetails/
-    │   │   │   ├── ListingDetailStyles.js
-    │   │   │   └── ListingDetailScreen.js
-    │   │   ├── profile/
-    │   │   │   ├── ProfileNavigator.js
-    │   │   │   ├── profileStyles.js
-    │   │   │   └── ProfileScreen.js
-    │   │   └── publish
-    │   │       ├── PublishNavigator.js
-    │   │       ├── PublishStyles.js
-    │   │       └── PublishScreen.js
-    │   ├── services/
-    │   │   └── ...
-    │   ├── theme/
-    │   │   └── palette.js
-    │   └── util/
-    │       └── supabase.js
-    ├── app.json
-    ├── assets/
-    │   ├── adaptive-icon.png
-    │   ├── favicon.png
-    │   ├── icon.png
-    │   └── splash-icon.png
-    ├── node_modules/
-    │   └── ...
-    ├── index.js
-    ├── package-lock.json
-    └── package.json
+Revool
+├── App.js
+├── app
+│   ├── components
+│   │   ├── AnimatedAISearchButton.js
+│   │   ├── CarItem.js
+│   │   ├── FavoriteButton.js
+│   │   ├── ImageAnalisisButton.js
+│   │   ├── SearchFilters.js
+│   │   ├── SearchSuggestions.js
+│   │   └── TransactionItem.js
+│   ├── config
+│   │   └── cloudinary.js
+│   ├── context
+│   │   └── AuthContext.js
+│   ├── navigation
+│   │   ├── AppNavigator.js
+│   │   ├── AuthNavigator.js
+│   │   └── RootNavigator.js
+│   ├── pages
+│   │   ├── auth
+│   │   │   ├── AuthStyles.js
+│   │   │   ├── LoginScreen.js
+│   │   │   └── useLogin.js
+│   │   ├── feed
+│   │   │   ├── FeedScreen.js
+│   │   │   ├── FeedStyles.js
+│   │   │   └── useFeed.js
+│   │   ├── listingDetails
+│   │   │   ├── ListingDetailScreen.js
+│   │   │   ├── ListingDetailStyles.js
+│   │   │   └── useListingDetail.js
+│   │   ├── messages
+│   │   │   ├── ChatScreen.js
+│   │   │   └── MessagesScreen.js
+│   │   ├── profile
+│   │   │   ├── ProfileScreen.js
+│   │   │   ├── profileStyles.js
+│   │   │   └── useProfile.js
+│   │   ├── publish
+│   │   │   ├── PublishScreen.js
+│   │   │   ├── PublishStyles.js
+│   │   │   └── usePublish.js
+│   │   ├── purchase
+│   │   │   ├── PurchaseConfirmationScreen.js
+│   │   │   ├── PurchaseScreen.js
+│   │   │   ├── PurchaseStyles.js
+│   │   │   └── usePurchase.js
+│   │   ├── rating
+│   │   │   ├── ratingScreen.js
+│   │   │   ├── ratingStyles.js
+│   │   │   └── useRating.js
+│   │   ├── recommendations
+│   │   │   ├── RecommendationsScreen.js
+│   │   │   ├── RecommendationsStyles.js
+│   │   │   └── useRecommendations.js
+│   │   ├── search
+│   │   │   ├── SearchScreen.js
+│   │   │   ├── SearchStyles.js
+│   │   │   ├── useSearch.js
+│   │   │   └── useSearchFilters.js
+│   │   └── welcome
+│   │       └── WelcomeScreen.js
+│   ├── services
+│   │   ├── CarAnalysisService.js
+│   │   ├── payments.js
+│   │   ├── transactions.js
+│   │   └── users.js
+│   ├── theme
+│   │   └── palette.js
+│   └── utils
+│       ├── format.js
+│       ├── recommender.js
+│       └── supabase.js
+├── app.json
+├── assets
+│   ├── adaptive-icon.png
+│   ├── favicon.png
+│   ├── icon.png
+│   ├── splash-icon.png
+│   └── welcome_hero.jpg
+├── index.js
+├── package-lock.json
+├── package.json
+└── README.md 
 ```
 
 **Explanation of the key folders:**
-- `app/components`: reusable UI components.
-- `app/context`: global providers; `AuthContext` wraps the Supabase client and exposes the session.
-- `app/navigation`: React Navigation configuration (`RootNavigator`, `AppNavigator`, `AuthNavigator`).
-- `app/pages/<page>`: feature-based structure; every folder groups `screens` and a style file (`<Page>Styles.js`).
-- `app/theme`: shared design tokens such as the color palette.
-- `app/util`: infrastructure helpers (`supabase.js` instantiates the client with AsyncStorage).
-- `assets`: icons, splash art and favicons used by Expo (`app.json` describes how they are used).
-- `Dockerfile` / `Docker-compose.yml`: define the Node/Expo container and port mapping.
+- `app/components`: reusable, Revvol-styled UI pieces (favorites button, AI search button, transaction card, etc.) shared across pages.
+- `app/config`: one-off configuration helpers such as `cloudinary.js` that centralize third-party keys or builders.
+- `app/context`: global providers; `AuthContext` exposes Supabase auth state and helpers to the whole tree.
+- `app/navigation`: React Navigation wiring with `RootNavigator` delegating to `AuthNavigator` or the signed-in `AppNavigator` stacks.
+- `app/pages/<feature>`: feature folders (auth, feed, publish, profile, search, etc.) that always bundle `Screen`, `Styles`, and `use<Feature>` hook files so UI, styling, and logic travel together.
+- `app/services`: data/side-effect helpers (Supabase CRUD, payments, AI car analysis) so screens call high-level APIs only.
+- `app/theme`: design tokens like the Revvol palette, gradients, typography helpers.
+- `app/utils`: infrastructure utilities (`supabase.js`, formatting helpers, recommender logic).
+- `assets`: Expo-managed media (icons, splash, hero image) referenced from `app.json` and preloaded on boot.
 
 **Architecture rules and conventions:**
-- Each feature (`auth`, `home`, `publish`, `profile`) keeps its own navigator, screens and dedicated styles inside `app/pages/<feature>`.
-- Native navigators live next to their feature, while `RootNavigator` decides whether to render the auth stack or the main app based on the session.
-- Style files aggregate StyleSheet definitions to avoid inline logic inside the screens.
-- The Supabase client is centralized to share storage configuration and token auto-refresh.
+- Every folder in `app/pages` follows the triad `FeatureScreen + FeatureStyles + useFeature` (e.g., `auth/AuthScreen`, `search/useSearch`) to co-locate UI, styling, and business logic.
+- `App.js` wraps `RootNavigator` with `AuthProvider`, so navigation automatically reacts to Supabase session changes.
+- `RootNavigator` switches between `AuthNavigator` and the signed-in `AppNavigator`, whose tabs/stacks (Home, Publish, Profile, etc.) own their internal routes such as Listing Detail or Purchase.
+- `StyleSheet` definitions stay in `<Feature>Styles.js`, keeping components declarative and making the Revvol theme easy to tweak.
+- Shared side effects (Supabase queries, AI requests, payments) are implemented inside `app/services` or `app/utils` and consumed from the feature hooks to keep screens thin.
+- The Supabase client lives in `app/utils/supabase.js` and is reused everywhere via the context/hook pattern to guarantee consistent auth persistence.
 
 **Critical files:**
-- `app.json` – Expo configuration (icons, orientation, Secure Store plugin).
-- `Dockerfile` and `Docker-compose.yml` – Docker infrastructure for the Dev/Tunnel workflow.
-- `app/util/supabase.js` – client initialization and session management.
-- `app/navigation/RootNavigator.js` – navigation entry point and authentication guard.
+- `App.js` – bootstraps the Expo app, preloads hero assets, and mounts `AuthProvider` + `RootNavigator`.
+- `app/context/AuthContext.js` – centralizes Supabase session management plus `signIn`, `signUp`, and `signOut` helpers.
+- `app/navigation/RootNavigator.js` – entry point that toggles `AuthNavigator` or the signed-in stacks.
+- `app/utils/supabase.js` – single Supabase client configured with AsyncStorage persistence.
+- `app/pages/auth/AuthScreen.js` – unified login/sign-up UI that powers the entire authentication entry flow.
 
 ## 5. Application Features
 
@@ -225,41 +243,11 @@ Turboo/
 - **Behavior & UX:** filters are applied silently (the filters panel does not open), a professional banner summarizing the applied filters is shown, and the picked image is cleared after the search is applied.
 - **Rationale:** limiting the AI-applied filters reduces over-constraining and finds visually similar listings more reliably.
 - **Config:** requires `EXPO_PUBLIC_GEMINI_API_KEY` in `.env` and the `ImageAnalisisButton` component to be available in the publish flow.
-
-### j) Data generator script
-- **Location:** `scripts/generate_luxury_listings.py`
-- **Purpose:** generate fake luxury car listings for development/testing. Outputs SQL INSERT, JSONL (one object per line), or optionally inserts directly into Supabase via the REST API.
-- **Key features:**
-  - Proper SQL escaping for text fields.
-  - Ensures output directories exist before writing files.
-  - CLI flags: `-n/--num`, `--sql-out`, `--jsonl-out`, `--api`, `--supabase-url`, `--supabase-key`, `--prefer-return`.
-  - Helpful errors when Python dependencies are missing.
-- **Dependencies:** Python 3 and the `faker` and `requests` packages. Install with:
-
-```powershell
-python -m pip install faker requests
-```
-
-- **Usage examples:**
-
-Write SQL file (safe to inspect before running against DB):
-```powershell
-python scripts/generate_luxury_listings.py -n 40 --sql-out tmp/luxury_insert.sql
-```
-
-Write JSONL (one JSON object per line):
-```powershell
-python scripts/generate_luxury_listings.py -n 40 --jsonl-out tmp/luxury.jsonl
-```
-
-Insert directly into Supabase via REST (requires a service role key):
-```powershell
-python scripts/generate_luxury_listings.py -n 40 --api --supabase-url "https://your-project.supabase.co" --supabase-key "SERVICE_ROLE_KEY" --prefer-return
-```
+-supabase-key "SERVICE_ROLE_KEY" --prefer-return
 
 - **Important:** for direct API insertion you must use a Supabase `service_role` key (or an account with write permissions). The public/anon key is likely blocked by Row Level Security for inserts. Always verify `--jsonl-out` or `--sql-out` before using `--api` in production-like environments.
 
-### k) UI & Design System (REVVOL)
+### j) UI & Design System (REVVOL)
 - **Theme:** The app now follows the premium **REVVOL** design language, featuring a deep black background (`#090809`) with **Mustard** (`#887E1D`) and **Dark Mustard** (`#85570F`) accents.
 - **Typography:** Elegant Serif fonts (50px titles) paired with clean Sans-serif body text.
 - **Components:** Custom headers, capsule buttons, and gradient cards.
@@ -267,8 +255,8 @@ python scripts/generate_luxury_listings.py -n 40 --api --supabase-url "https://y
   - **Listing Detail:** Complete overhaul with hero image, specs grid, and seller info card.
   - **Welcome Screen:** New background and "Slide to Explore" interaction.
 
-### Search & filters enhancements
-- The search/filter system (`useSearch` + `SearchFilters`) was extended to support additional options: **body type**, **condition**, **doors**, **fuel type** and **transmission**. These options are exposed in the `SearchFilters` component as selectable chips and sliders.
+##Search & filters enhancements
+- The search/filter system (`useSearchFilters` + `SearchFilters`) was extended to support additional options: **body type**, **condition**, **doors**, **fuel type** and **transmission**. These options are exposed in the `SearchFilters` component as selectable chips and sliders.
 
 ### k) Transaction history
 - **Description:** Users can view their complete purchase and sales history through a dedicated "Historial" tab in the profile screen, showing chronological transactions with clear "Comprado"/"Vendido" labels.
@@ -276,9 +264,30 @@ python scripts/generate_luxury_listings.py -n 40 --api --supabase-url "https://y
 - **UX details:** Each transaction shows vehicle details, counterpart information, transaction type badge (purchase/sale), price, and date, all styled according to the Revvol design system (dark background, gold accents).
 - **Navigation:** Transactions can be tapped to navigate to the original listing detail if it still exists.
 
+### l) Chat & Messaging
+- **Description:** Real-time chat interface for buyers and sellers to communicate. Includes a conversation list (`MessagesScreen`) and a detailed chat view (`ChatScreen`) with context about the vehicle.
+- **Components:** `MessagesScreen`, `ChatScreen`.
+- **Notes:** Currently uses mock data for conversations and messages.
 
+### m) Seller Rating
+- **Description:** Allows buyers to rate their experience with a seller after a transaction.
+- **Components:** `RatingScreen`.
+- **Features:** Star rating system (1-5), feedback submission.
+
+### n) Recommendations
+- **Description:** A "Selected for you" section displaying curated vehicle recommendations based on user interests.
+- **Components:** `RecommendationsScreen`.
+- **Features:** Horizontal scrolling list, featured item highlight.
 
 ## 6. Components
+### AnimatedAISearchButton (`app/components/AnimatedAISearchButton.js`)
+- **Responsibility:** Renders a pulsing and rotating button used for triggering AI search features.
+- **Animation:** Uses `Animated.loop` and `Easing` for continuous pulse and rotation effects.
+
+### CarItem (`app/components/CarItem.js`)
+- **Responsibility:** Reusable card component for displaying vehicle listings in feeds and lists.
+- **Features:** Displays main image (or placeholder), price formatting, vehicle details (make, model, year, mileage, etc.), and integrates the `FavoriteButton`.
+
 ### FavoriteButton (`app/components/FavoriteButton.js`)
 - **Responsibility:** renders the heart icon, loads the initial favorite status, sends Supabase mutations (`insert`/`delete`) and handles optimistic updates while keeping errors isolated per button.
 - **Shared cache:** keeps a `Map` keyed by listing + user; listeners subscribe/unsubscribe so every mounted button reacts instantly to status changes.
@@ -288,6 +297,10 @@ python scripts/generate_luxury_listings.py -n 40 --api --supabase-url "https://y
 - **Responsibility:** converts the picked image to base64, calls Gemini to extract car fields, and triggers description generation callbacks.
 - **Props:** `imageUri`, `onAnalysisComplete`, `onDescriptionGenerated`, `style`.
 - **Notes:** requires `EXPO_PUBLIC_GEMINI_API_KEY`; only works once an image has been chosen in the publish flow.
+
+### SearchSuggestions (`app/components/SearchSuggestions.js`)
+- **Responsibility:** Displays autocomplete suggestions for the search input.
+- **Features:** Supports different suggestion types (e.g., 'make', 'model') and handles user selection.
 
 ### TransactionItem (`app/components/TransactionItem.js`)
 - **Responsibility:** renders individual transaction cards in the history tab showing purchase/sale details with elegant Revvol styling.
@@ -423,123 +436,3 @@ Additional constraints: `unique (user_id, listing_id)` enforces one favorite per
 * `public.profiles.id` → `public.transactions.seller_id` (1:N)
 * `public.profiles.id` → `public.transactions.user_id` (1:N)
 * `public.listings.id` → `public.transactions.listing_id` (1:N)
-
-### Supabase SQL (wallet transfer)
-Add this function so the app can mover saldo entre usuarios respetando RLS y marcar el anuncio como vendido (`is_active = false`):
-
-```sql
-drop function if exists public.process_vehicle_purchase(uuid, uuid, numeric, numeric);
-
-create or replace function public.process_vehicle_purchase(
-  buyer_id uuid,
-  seller_id uuid,
-  price numeric,
-  fee_percent numeric default 5,
-  listing_id uuid default null
-) returns table (buyer_balance numeric, seller_balance numeric, listing_inactive boolean)
-language plpgsql
-security definer
-set search_path = public
-as $$
-declare
-  v_price numeric := coalesce(price, 0);
-  v_fee numeric := greatest(coalesce(fee_percent, 0), 0);
-  v_payout numeric;
-  v_buyer_balance numeric;
-  v_seller_balance numeric;
-  v_listing_deactivated boolean := false;
-begin
-  if auth.uid() is null then
-    raise exception 'Not authenticated';
-  end if;
-
-  if auth.uid() <> buyer_id then
-    raise exception 'Caller must match buyer_id';
-  end if;
-
-  if buyer_id = seller_id then
-    raise exception 'Buyer and seller cannot match';
-  end if;
-
-  if v_price <= 0 then
-    raise exception 'Invalid price';
-  end if;
-
-  v_payout := v_price - (v_price * v_fee / 100);
-  if v_payout < 0 then
-    v_payout := 0;
-  end if;
-
-  update public.profiles
-  set saldo = saldo - v_price
-  where id = buyer_id
-  returning saldo into v_buyer_balance;
-
-  if not found then
-    raise exception 'Buyer not found';
-  end if;
-
-  if v_buyer_balance < 0 then
-    update public.profiles set saldo = saldo + v_price where id = buyer_id;
-    raise exception 'Insufficient balance';
-  end if;
-
-  update public.profiles
-  set saldo = saldo + v_payout
-  where id = seller_id
-  returning saldo into v_seller_balance;
-
-  if not found then
-    update public.profiles set saldo = saldo + v_price where id = buyer_id;
-    raise exception 'Seller not found';
-  end if;
-
-  if listing_id is not null then
-    update public.listings
-    set is_active = false
-    where id = listing_id
-      and user_id = seller_id
-    returning true into v_listing_deactivated;
-  end if;
-
-  return query select v_buyer_balance, v_seller_balance, v_listing_deactivated;
-end;
-$$;
-
-grant execute on function public.process_vehicle_purchase(uuid, uuid, numeric, numeric, uuid) to authenticated;
-```
-
-## 8. Useful Commands
-**Docker commands:**
-- `docker compose build expo` – builds the Expo image based on Node 20.
-- `docker compose up -d expo` – starts the container in the background.
-- `docker compose exec -it expo bash` – interactive shell to run Expo or custom scripts.
-- `docker compose logs -f expo` – streaming logs from the dev server.
-- `docker compose down` – stop and remove the containers.
-
-**Expo commands:**
-- `npx expo start --tunnel` – starts the dev server and generates a QR code reachable from different networks.
-- `npx expo start --localhost --android/ios/web` – target-specific launches from the container or host machine.
-
-## 9. TO DO
-### Sprint 1
-- [x] Publish vehicles  
-- [x] Vehicle detail sheet  
-- [x] Profile  
-- [x] Login  
-- [x] User registration  
-- [x] Favorites
-- [x] Main feed  
-
-### Sprint 2
-- [ ] Database design, implementation and seeding increment  
-- [x] Buy vehicle flow  
-- [x] Text search  
-- [x] Search filters  
-- [x] AI auto-fill  
-- [ ] Save draft  
-- [ ] Vehicle matchmaking  
-- [ ] Ratings
-
-### Sprint 3
-- [x] Transaction history  

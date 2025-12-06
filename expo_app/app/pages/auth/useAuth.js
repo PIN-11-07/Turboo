@@ -1,7 +1,7 @@
 import { useCallback, useState } from 'react'
 import { useAuth } from '../../context/AuthContext'
 
-export const useLoginScreen = () => {
+export const useLogin = () => {
   const { signIn, signUp } = useAuth()
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')

@@ -1,9 +1,9 @@
 import React, { useCallback } from 'react'
-import { Alert, Text, TouchableOpacity, View } from 'react-native'
+import { ScrollView, Text, TouchableOpacity, View } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { Ionicons } from '@expo/vector-icons'
 import { ratingStyles as styles } from './ratingStyles'
-import { useRatingScreen } from './useRatingScreen'
+import { useRating } from './useRating'
 
 const STAR_SET = [1, 2, 3, 4, 5]
 
@@ -17,87 +17,110 @@ export default function RatingScreen() {
     submitting,
     error,
     submitRating,
-    closeScreen,
     navigateHome,
     resetRating,
     isSellerMissing,
-  } = useRatingScreen()
+  } = useRating()
 
   const handleSubmit = useCallback(async () => {
     const success = await submitRating()
-    if (!success) return
+    if (!success) {
+      return
+    }
 
-    Alert.alert('Thanks!', 'Your rating was submitted successfully.', [
-      { text: 'OK', onPress: () => (resetRating(), navigateHome()) },
-    ])
+    resetRating()
+    navigateHome()
   }, [submitRating, navigateHome, resetRating])
+
+  const handleSkip = useCallback(() => {
+    resetRating()
+    navigateHome()
+  }, [navigateHome, resetRating])
 
   if (isSellerMissing) {
     return (
       <SafeAreaView style={styles.safeArea}>
-        <View style={styles.card}>
-          <Text style={styles.title}>Rate your experience</Text>
-          <Text style={styles.subtitle}>
-            We could not load the seller information. Return and try again.
-          </Text>
-          <TouchableOpacity style={styles.secondaryButton} onPress={closeScreen}>
-            <Text style={styles.secondaryText}>Back</Text>
-          </TouchableOpacity>
-        </View>
+        <ScrollView contentContainerStyle={styles.contentContainer}>
+          <View style={styles.topContent}>
+            <Text style={styles.title}>Rate your experience</Text>
+            <Text style={styles.subtitle}>
+              We could not load the seller information. Return and try again.
+            </Text>
+          </View>
+          <View style={styles.buttonGroup}>
+            <TouchableOpacity style={styles.secondaryButton} onPress={handleSkip}>
+              <Text style={styles.secondaryText}>Back to feed</Text>
+            </TouchableOpacity>
+          </View>
+        </ScrollView>
       </SafeAreaView>
     )
   }
 
   return (
     <SafeAreaView style={styles.safeArea}>
-      <View style={styles.card}>
-        <TouchableOpacity style={styles.close} onPress={closeScreen} disabled={submitting}>
-          <Ionicons name="close" size={20} color="#C58A1A" />
-        </TouchableOpacity>
+      <ScrollView contentContainerStyle={styles.contentContainer}>
+        <View style={styles.topContent}>
+          <View style={styles.header}>
+            <Text style={styles.title}>Rate your experience</Text>
+            <Text style={styles.subtitle}>
+              {`How was your experience with ${sellerName || 'this seller'}?`}
+            </Text>
+          </View>
 
-        <Text style={styles.title}>Rate your experience</Text>
-        <Text style={styles.subtitle}>
-          {`How was your experience with ${sellerName || 'this seller'}?`}
-        </Text>
+          <View style={styles.vehicleBox}>
+            <Text style={styles.vehicleLabel}>Vehicle acquired</Text>
+            <Text style={styles.vehicleValue}>{formattedTitle}</Text>
+          </View>
 
-        <View style={styles.vehicleBox}>
-          <Text style={styles.vehicleLabel}>Vehicle acquired</Text>
-          <Text style={styles.vehicleValue}>{formattedTitle}</Text>
+          <View style={styles.ratingSection}>
+            <Text style={styles.prompt}>Select your score</Text>
+            <View style={styles.starsRow}>
+              {STAR_SET.map((star) => (
+                <TouchableOpacity
+                  key={star}
+                  onPress={() => setSelectedRating(star)}
+                  disabled={submitting}
+                >
+                  <Ionicons
+                    name={star <= selectedRating ? 'star' : 'star-outline'}
+                    size={40}
+                    color={star <= selectedRating ? '#C58A1A' : '#4C4C4C'}
+                  />
+                </TouchableOpacity>
+              ))}
+            </View>
+          </View>
+
+          <View style={styles.infoBox}>
+            <Text style={styles.infoText}>
+              Your rating helps other buyers make informed decisions and keeps the community safe.
+            </Text>
+          </View>
+
+          {error ? <Text style={styles.errorText}>{error}</Text> : null}
         </View>
 
-        <Text style={styles.prompt}>Select your score</Text>
-        <View style={styles.starsRow}>
-          {STAR_SET.map((star) => (
-            <TouchableOpacity
-              key={star}
-              onPress={() => setSelectedRating(star)}
-              disabled={submitting}
-            >
-              <Ionicons
-                name={star <= selectedRating ? 'star' : 'star-outline'}
-                size={40}
-                color={star <= selectedRating ? '#C58A1A' : '#4C4C4C'}
-              />
-            </TouchableOpacity>
-          ))}
+        <View style={styles.buttonGroup}>
+          <TouchableOpacity
+            style={[styles.primaryButton, submitting && styles.buttonDisabled]}
+            onPress={handleSubmit}
+            disabled={submitting}
+          >
+            <Text style={styles.primaryText}>
+              {submitting ? 'Sending…' : 'Send rating and return to feed'}
+            </Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            style={[styles.secondaryButton, submitting && styles.buttonDisabled]}
+            onPress={handleSkip}
+            disabled={submitting}
+          >
+            <Text style={styles.secondaryText}>Skip and go to feed</Text>
+          </TouchableOpacity>
         </View>
-
-        <View style={styles.infoBox}>
-          <Text style={styles.infoText}>
-            Your rating helps other buyers make informed decisions and keeps the community safe.
-          </Text>
-        </View>
-
-        {error ? <Text style={styles.errorText}>{error}</Text> : null}
-
-        <TouchableOpacity
-          style={[styles.primaryButton, submitting && styles.buttonDisabled]}
-          onPress={handleSubmit}
-          disabled={submitting}
-        >
-          <Text style={styles.primaryText}>{submitting ? 'Sending…' : 'Send rating'}</Text>
-        </TouchableOpacity>
-      </View>
+      </ScrollView>
     </SafeAreaView>
   )
 }
