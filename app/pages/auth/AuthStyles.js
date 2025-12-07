@@ -1,0 +1,160 @@
+import { StyleSheet } from 'react-native'
+import { palette } from '../../theme/palette'
+
+export const loginScreenStyles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#1A1A1A',
+  },
+  scrollContent: {
+    flexGrow: 1,
+  },
+  header: {
+    height: 210,
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingTop: 40,
+  },
+  welcomeText: {
+    fontSize: 32,
+    fontWeight: '300',
+    color: '#F7F7F0',
+    marginBottom: 4,
+  },
+  revvolText: {
+    fontSize: 42,
+    fontWeight: '700',
+    color: '#F7F7F0',
+    fontStyle: 'italic',
+    letterSpacing: 2,
+  },
+  socialContainer: {
+    paddingHorizontal: 36,
+    marginTop: 24,
+  },
+  socialLabel: {
+    fontSize: 14,
+    color: '#F7F7F0',
+    marginBottom: 12,
+  },
+  socialButtonsRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  socialButtons: {
+    flexDirection: 'row',
+    gap: 16,
+  },
+  socialButton: {
+    width: 48,
+    height: 48,
+    borderRadius: 8,
+    borderWidth: 1.5,
+    borderColor: '#F7F7F0',
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'transparent',
+  },
+  topRightButton: {
+    backgroundColor: '#BB7E1D',
+    borderRadius: 8,
+    paddingVertical: 10,
+    paddingHorizontal: 28,
+  },
+  formContainer: {
+    paddingHorizontal: 36,
+    paddingTop: 28,
+    flex: 1,
+  },
+  formTitle: {
+    fontSize: 18,
+    color: '#F7F7F0',
+    marginBottom: 20,
+  },
+  input: {
+    backgroundColor: 'transparent',
+    borderRadius: 8,
+    borderWidth: 1.5,
+    borderColor: '#BB7E1D',
+    padding: 14,
+    marginBottom: 16,
+    fontSize: 15,
+    color: '#F7F7F0',
+  },
+  passwordContainer: {
+    position: 'relative',
+    marginBottom: 16,
+  },
+  passwordInput: {
+    backgroundColor: 'transparent',
+    borderRadius: 8,
+    borderWidth: 1.5,
+    borderColor: '#BB7E1D',
+    padding: 14,
+    paddingRight: 50,
+    fontSize: 15,
+    color: '#F7F7F0',
+  },
+  eyeIcon: {
+    position: 'absolute',
+    right: 14,
+    top: 14,
+    padding: 4,
+  },
+  checkboxContainer: {
+    flexDirection: 'row',
+    marginBottom: 20,
+    alignItems: 'flex-start',
+  },
+  checkbox: {
+    width: 20,
+    height: 20,
+    borderRadius: 4,
+    borderWidth: 1.5,
+    borderColor: '#BB7E1D',
+    marginRight: 10,
+    marginTop: 2,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  checkboxChecked: {
+    backgroundColor: '#BB7E1D',
+  },
+  checkboxText: {
+    flex: 1,
+    fontSize: 11,
+    color: '#F7F7F0',
+    lineHeight: 16,
+  },
+  button: {
+    backgroundColor: '#BB7E1D',
+    borderRadius: 8,
+    paddingVertical: 14,
+    marginTop: 12,
+    alignItems: 'center',
+  },
+  buttonText: {
+    color: '#1A1A1A',
+    fontSize: 15,
+    fontWeight: '600',
+  },
+  error: {
+    color: palette.danger,
+    textAlign: 'center',
+    marginBottom: 10,
+    fontSize: 13,
+  },
+  success: {
+    color: palette.success,
+    textAlign: 'center',
+    marginBottom: 10,
+    fontSize: 13,
+  },
+  needHelp: {
+    textAlign: 'center',
+    marginTop: 20,
+    color: '#BB7E1D',
+    fontSize: 13,
+  },
+})
