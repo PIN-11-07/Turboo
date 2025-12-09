@@ -616,9 +616,11 @@ export default function ProfileScreen() {
                     <Text style={styles.publishedTitle} numberOfLines={2}>
                       {listing.title}
                     </Text>
-                    <Text style={styles.publishedPrice}>
-                      {formatPrice(listing.price)}
-                    </Text>
+                    <View style={styles.publishedPriceRow}>
+                      <Text style={styles.publishedPrice}>
+                        {formatPrice(listing.price)}
+                      </Text>
+                    </View>
                   </View>
                 </TouchableOpacity>
               )
@@ -662,15 +664,12 @@ export default function ProfileScreen() {
                         <Text style={styles.publishedImagePlaceholderText}>Sin foto</Text>
                       </View>
                     )}
-                    <View style={styles.inactiveOverlay}>
-                      <Text style={styles.inactiveOverlayText}>Draft</Text>
-                    </View>
                   </View>
                   <View style={styles.publishedInfoInactive}>
                     <Text style={styles.publishedTitleInactive} numberOfLines={2}>
                       {listing.title}
                     </Text>
-                    <View style={styles.publishedBottomRowInactive}>
+                    <View style={styles.publishedPriceRowInactive}>
                       <Text style={styles.publishedPriceInactive}>
                         {formatPrice(listing.price)}
                       </Text>
@@ -681,7 +680,6 @@ export default function ProfileScreen() {
                           e.stopPropagation()
                           handleReactivate(listing.id)
                         }}
-                        //disabled={reactivatingId === listing.id}
                       >
                         {reactivatingId === listing.id ? (
                           <ActivityIndicator size="small" color="#000" />

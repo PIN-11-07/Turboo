@@ -209,7 +209,7 @@ const ProfileStackNavigator = () => (
     <ProfileStack.Screen
       name="ListingDetail"
       component={ListingDetailScreen}
-      options={{ title: 'Detalles del vehículo' }}
+      options={{ headerShown: false }}
     />
     <ProfileStack.Screen
       name="Purchase"

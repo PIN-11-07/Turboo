@@ -23,6 +23,7 @@ export const publishScreenStyles = StyleSheet.create({
 
   scrollContent: {
     padding: 20,
+    paddingBottom: 80, // extra space so bottom buttons stay visible above tab bar
   },
 
   title: {
