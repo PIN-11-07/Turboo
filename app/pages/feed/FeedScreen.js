@@ -59,6 +59,7 @@ export default function FeedScreen() {
   const renderListing = useCallback(
     ({ item }) => {
       const mainImage = getMainImage(item.images)
+      const title = (item.title || `${item.make ?? ''} ${item.model ?? ''}`.trim()).trim() || 'Vehicle'
       return (
         <TouchableOpacity
           style={styles.card}
@@ -75,27 +76,15 @@ export default function FeedScreen() {
               <Image source={{ uri: mainImage }} style={styles.cardImage} />
             ) : (
               <View style={[styles.cardImage, styles.cardImagePlaceholder]}>
-                <Text style={styles.cardImagePlaceholderText}>No photo</Text>
+                <Text style={styles.cardImagePlaceholderText}>Sin foto</Text>
               </View>
             )}
-            <FavoriteButton listingId={item.id} variant="overlay" />
           </View>
-          <View style={styles.cardContent}>
-            <View style={styles.cardHeader}>
-              <Text style={styles.cardTitle}>{item.make}</Text>
+          <View style={styles.cardInfo}>
+            <Text style={styles.cardTitle} numberOfLines={2}>{title}</Text>
+            <View style={styles.cardPriceRow}>
+              <FavoriteButton listingId={item.id} variant="list" style={styles.favoriteHeartButton} />
               <Text style={styles.cardPrice}>{formatPrice(item.price)}</Text>
-            </View>
-            <Text style={styles.cardSubtitle}>
-              {item.make} {item.model} • {item.year}
-            </Text>
-            <View style={styles.cardBadgeRow}>
-              <Text style={styles.cardBadge}>{item.mileage ? `${item.mileage} km` : 'km N/A'}</Text>
-              {item.fuel_type ? <Text style={styles.cardBadge}>{item.fuel_type}</Text> : null}
-              {item.transmission ? <Text style={styles.cardBadge}>{item.transmission}</Text> : null}
-            </View>
-            <View style={styles.cardFooter}>
-              <Text style={styles.cardLocation}>{item.location}</Text>
-              <Text style={styles.cardMeta}>{item.doors ? `${item.doors} doors` : item.color || 'Details N/A'}</Text>
             </View>
           </View>
         </TouchableOpacity>
@@ -158,7 +147,7 @@ export default function FeedScreen() {
             activeOpacity={0.85}
             onPress={() => navigation.navigate('Recommendations')}
           >
-            <Ionicons name="sparkles-outline" size={16} color={palette.accent} />
+            <Ionicons name="sparkles-outline" size={16} color={palette.champagne} />
             <Text style={styles.recommendButtonText}>For you</Text>
           </TouchableOpacity>
 
@@ -169,6 +158,8 @@ export default function FeedScreen() {
           data={listings}
           keyExtractor={(item) => item.id.toString()}
           renderItem={renderListing}
+          numColumns={2}
+          columnWrapperStyle={styles.columnWrapper}
           contentContainerStyle={
             listings.length === 0 ? styles.emptyList : styles.listContent
           }

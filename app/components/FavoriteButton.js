@@ -131,9 +131,9 @@ const variantStyles = StyleSheet.create({
   },
   list: {
     button: {
-      width: 36,
-      height: 36,
-      borderRadius: 18,
+      width: 44,
+      height: 44,
+      borderRadius: 22,
       alignItems: 'center',
       justifyContent: 'center',
       backgroundColor: palette.surface,
@@ -146,7 +146,7 @@ const variantStyles = StyleSheet.create({
       opacity: 0.6,
     },
     icon: {
-      fontSize: 18,
+      fontSize: 24,
       color: palette.darkMustard,
     },
     iconActive: {

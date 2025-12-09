@@ -7,6 +7,7 @@ import FavoriteButton from '../../components/FavoriteButton'
 import { styles } from "./RecommendationsStyles"
 import { LinearGradient } from 'expo-linear-gradient'
 import { useRecommendations } from './useRecommendations'
+import { formatPrice } from '../../utils/format'
 
 const getMainImage = (images) => (Array.isArray(images) && images.length > 0 ? images[0] : null)
 
@@ -19,15 +20,16 @@ export default function RecommendationsScreen() {
     onEndReached,
   } = useRecommendations()
 
-   const renderItem = useCallback(
-   ({ item, index }) => {  
+  const renderItem = useCallback(
+    ({ item, index }) => {
       const mainImage = getMainImage(item.images)
+      const title = (item.title || `${item.make ?? ''} ${item.model ?? ''}`.trim()).trim() || 'Vehicle'
       return (
         <TouchableOpacity
           style={[
             styles.cardCarouselItem,
-            index === 0 && styles.firstCard,   // 👈 primera card con estilo único
-            { marginBottom: 12 }
+            index === 0 && styles.firstCard,
+            { marginBottom: 12 },
           ]}
           activeOpacity={0.9}
           onPress={() => navigation.navigate('ListingDetail', { listingId: item.id, listing: item })}
@@ -35,9 +37,6 @@ export default function RecommendationsScreen() {
           {mainImage ? (
             <View style={styles.cardImageWrapper}>
               <Image source={{ uri: mainImage }} style={[styles.cardImage, { height: 220 }]} />
-              <View style={styles.favoriteButton}>
-                <FavoriteButton listingId={item.id} variant="icon" />
-              </View>
             </View>
           ) : (
             <View style={[styles.cardImage, styles.cardImagePlaceholder]}>
@@ -45,13 +44,13 @@ export default function RecommendationsScreen() {
             </View>
           )}
           <View style={styles.cardContent}>
-            <View style={styles.cardHeader}>
-              <Text style={styles.cardTitle} numberOfLines={1} ellipsizeMode="tail">
-                {item.title || `${item.make || ''} ${item.model || ''}`}
-              </Text>
-              <Text style={styles.cardPrice}>{item.price ? `€ ${Number(item.price).toLocaleString('es-ES')}` : '-'}</Text>
+            <Text style={styles.cardTitle} numberOfLines={2}>
+              {title}
+            </Text>
+            <View style={styles.cardPriceRow}>
+              <FavoriteButton listingId={item.id} variant="list" style={styles.favoriteHeartButton} />
+              <Text style={styles.cardPrice}>{formatPrice(item.price)}</Text>
             </View>
-            <Text style={styles.cardSubtitle}>{item.year || ''} • {item.mileage ? `${item.mileage} km` : '-'} • {item.fuel_type || '-'}</Text>
           </View>
         </TouchableOpacity>
       )
@@ -90,24 +89,21 @@ export default function RecommendationsScreen() {
                   {getMainImage(featured.images) ? (
                     <View style={styles.cardImageWrapper}>
                       <Image source={{ uri: getMainImage(featured.images) }} style={styles.cardImage} />
-                      <View style={styles.favoriteButton}>
-                        <FavoriteButton listingId={featured.id} variant="icon" />
-                      </View>
                     </View>
                   ) : (
                     <View style={[styles.cardImage, styles.cardImagePlaceholder]}>
                       <Text style={styles.cardImagePlaceholderText}>Sin foto</Text>
                     </View>
                   )}
-                  <View style={styles.cardContent}>
-                    <View style={styles.cardHeader}>
-                      <Text style={styles.cardTitle} numberOfLines={1} ellipsizeMode="tail">
+                    <View style={styles.cardContent}>
+                      <Text style={styles.cardTitle} numberOfLines={2}>
                         {featured.title || `${featured.make || ''} ${featured.model || ''}`}
                       </Text>
-                      <Text style={styles.cardPrice}>{featured.price ? `€ ${Number(featured.price).toLocaleString('es-ES')}` : '-'}</Text>
+                      <View style={styles.cardPriceRow}>
+                        <FavoriteButton listingId={featured.id} variant="list" style={styles.favoriteHeartButton} />
+                        <Text style={styles.cardPrice}>{formatPrice(featured.price)}</Text>
+                      </View>
                     </View>
-                    <Text style={styles.cardSubtitle}>{featured.year || ''} • {featured.mileage ? `${featured.mileage} km` : '-'} • {featured.fuel_type || '-'}</Text>
-                  </View>
                 </View>
               </TouchableWithoutFeedback>
             ) : null
