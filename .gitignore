@@ -42,3 +42,4 @@ expo_app/.env
 # generated native folders
 /ios
 /android
+expo_app/package-lock.json

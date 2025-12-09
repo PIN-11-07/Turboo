@@ -183,7 +183,7 @@ export const usePublish = () => {
 
       setForm(createInitialForm())
       setImage(null)
-      setSuccessMessage("Publicado correctamente.")
+      setSuccessMessage("Your car has been successfully published.")
 
     } catch (e) {
       setError("Error al publicar. Inténtalo más tarde.")

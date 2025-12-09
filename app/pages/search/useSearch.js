@@ -29,7 +29,7 @@ export const useSearch = () => {
         const baseQuery = supabase
           .from('listings')
           .select(
-            'id, user_id, title, description, price, make, model, year, mileage, fuel_type, transmission, doors, color, location, images, created_at'
+            'id, user_id, title, description, price, make, model, year, mileage, fuel_type, transmission, doors, color, location, images, created_at, body_type, condition'
           )
           .eq('is_active', true)
           .order('created_at', { ascending: false })
