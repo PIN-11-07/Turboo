@@ -2,6 +2,7 @@ import { StyleSheet, Dimensions, Platform } from 'react-native'
 import { palette } from '../../theme/palette'
 
 const { width } = Dimensions.get('window')
+const FONT_FAMILY = 'OTJubileeGolden'
 
 export const feedScreenStyles = StyleSheet.create({
   safeArea: {
@@ -87,22 +88,27 @@ export const feedScreenStyles = StyleSheet.create({
     fontWeight: '700',
   },
   recommendButton: {
-    backgroundColor: palette.surface,
+    backgroundColor: palette.darkGrey,
     paddingHorizontal: 10,
-    borderRadius: 8,
+    borderRadius: 12,
     borderWidth: 1,
-    borderColor: palette.border,
-    height: 40,
+    height: 42,
     justifyContent: 'center',
     alignItems: 'center',
-
-    width: 90,
+    paddingVertical: 10,
+    width: 110,
     flexDirection: 'row',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 6 },
+    shadowOpacity: 0.25,
+    shadowRadius: 10,
+    elevation: 4,
   },
   recommendButtonText: {
-    color: palette.accent,
+    color: palette.champagne,
     fontWeight: '700',
-    marginLeft: 6,
+    marginLeft: 8,
+    fontFamily: FONT_FAMILY,
   },
 
 
@@ -141,27 +147,26 @@ export const feedScreenStyles = StyleSheet.create({
     marginLeft: 8,
   },
   card: {
-    backgroundColor: palette.surface,
-    borderRadius: 18,
+    borderRadius: 16,
     overflow: 'hidden',
-    marginBottom: 18,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 8 },
-    shadowOpacity: 0.35,
-    shadowRadius: 14,
+    marginBottom: 16,
     elevation: 5,
     borderWidth: 1,
-    borderColor: palette.border,
+    width: '48%',
+  },
+  columnWrapper: {
+    justifyContent: 'space-between',
+    marginBottom: 16,
   },
   cardImageWrapper: {
     position: 'relative',
   },
   cardImage: {
     width: '100%',
-    height: 200,
+    height: 160,
   },
   cardImagePlaceholder: {
-    backgroundColor: palette.overlay,
+    backgroundColor: palette.elevated,
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -169,86 +174,35 @@ export const feedScreenStyles = StyleSheet.create({
     color: palette.textSecondary,
     fontWeight: '600',
   },
-  favoriteButton: {
-    position: 'absolute',
-    top: 12,
-    right: 12,
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    backgroundColor: 'rgba(4, 4, 4, 0.65)',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  favoriteButtonActive: {
-    backgroundColor: palette.surface,
-    borderWidth: 1,
-    borderColor: palette.border,
-  },
-  favoriteButtonDisabled: {
-    opacity: 0.65,
-  },
-  favoriteIcon: {
-    fontSize: 20,
-    color: palette.textPrimary,
-  },
-  favoriteIconActive: {
-    color: palette.danger,
-  },
-  cardContent: {
-    padding: 18,
-  },
-  cardHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'flex-start',
-    marginBottom: 8,
+  cardInfo: {
+    paddingTop: 8,
+    paddingHorizontal: 12,
+    paddingBottom: 4,
+    backgroundColor: palette.lightGrey,
   },
   cardTitle: {
-    fontSize: 18,
-    fontWeight: '700',
-    color: palette.textPrimary,
+    fontSize: 20,
+    fontWeight: '600',
+    color: palette.darkGrey,
+    lineHeight: 21,
+    minHeight: 42,
+    fontFamily: FONT_FAMILY,
   },
-  cardSubtitle: {
-    fontSize: 15,
-    color: palette.textSecondary,
-    marginTop: 4,
+  cardPriceRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
   },
-  cardMeta: {
-    fontSize: 12,
-    color: palette.textMuted,
+  favoriteHeartButton: {
+    backgroundColor: 'transparent',
+    borderWidth: 0,
+    marginLeft: -8,
   },
   cardPrice: {
-    fontSize: 18,
-    fontWeight: '700',
-    color: palette.accent,
-  },
-  cardBadgeRow: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    marginTop: 12,
-  },
-  cardBadge: {
-    backgroundColor: 'rgba(245, 197, 24, 0.15)',
-    color: palette.accent,
-    fontSize: 12,
-    fontWeight: '600',
-    paddingHorizontal: 10,
-    paddingVertical: 6,
-    borderRadius: 999,
-    marginRight: 8,
-    marginBottom: 6,
-  },
-  cardFooter: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginTop: 14,
-  },
-  cardLocation: {
-    fontSize: 13,
-    color: palette.textMuted,
-    fontWeight: '500',
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: palette.darkGrey,
+    fontFamily: FONT_FAMILY,
   },
   emptyText: {
     fontSize: 16,
@@ -460,17 +414,19 @@ export const feedScreenStyles = StyleSheet.create({
 
 
   heroTitleMain: {
-    color: "#fff",
-    fontSize: 40,
+    color: palette.champagne,
+    fontSize: 50,
     fontWeight: "700",
+    fontFamily: "OTJubileeGolden-Extralight",
   },
 
 
   heroTitleSub: {
-    fontSize: 32,
+    fontSize: 50,
     fontStyle: "italic",
-    color: "#D6B170",
+    color: palette.champagne,
     marginTop: -6,
+    fontFamily: "OTJubileeGolden-Italic",
   },
 
   modalOverlay: {
