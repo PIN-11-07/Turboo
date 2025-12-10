@@ -1,27 +1,18 @@
-import { StyleSheet, Platform, Dimensions } from 'react-native'
+import { StyleSheet, Dimensions } from 'react-native'
+import { palette } from '../../theme/palette'
 
 const { width } = Dimensions.get('window')
-
-const COLORS = {
-  background: '#090809',
-  white: '#FFFFFF',
-  mustard: '#C58A1A',
-  mustardDark: '#8A5C0D',
-  mustardSoft: '#E3B45A',
-  charcoal: '#1C1C1C',
-  champagne: '#F4E3C3',
-  border: 'rgba(197, 138, 26, 0.35)',
-  overlay: 'rgba(197, 138, 26, 0.12)',
-}
+const borderColor = 'rgba(187, 126, 29, 0.35)'
+const overlayColor = 'rgba(187, 126, 29, 0.12)'
 
 export const listingDetailScreenStyles = StyleSheet.create({
   safeArea: {
     flex: 1,
-    backgroundColor: COLORS.background,
+    backgroundColor: palette.darkGrey,
   },
   scrollView: {
     flex: 1,
-    backgroundColor: COLORS.background,
+    backgroundColor: palette.darkGrey,
   },
   scrollContent: {
     paddingBottom: 40,
@@ -33,13 +24,13 @@ export const listingDetailScreenStyles = StyleSheet.create({
     alignItems: 'center',
     paddingHorizontal: 30, // REVVOL: 30 padding
     paddingVertical: 16,
-    backgroundColor: COLORS.background,
+    backgroundColor: palette.darkGrey,
     borderBottomWidth: 0, // Clean look
   },
   headerTitle: {
-    color: COLORS.mustard,
+    color: palette.white,
     fontSize: 16,
-    fontFamily: Platform.OS === 'ios' ? 'Georgia' : 'serif',
+    fontFamily: 'OTJubileeGolden-Italic',
     letterSpacing: 1,
     textTransform: 'uppercase',
   },
@@ -54,8 +45,8 @@ export const listingDetailScreenStyles = StyleSheet.create({
   },
   carTitle: {
     fontSize: 50, // REVVOL: H1 50px
-    color: COLORS.white,
-    fontFamily: Platform.OS === 'ios' ? 'Georgia' : 'serif',
+    color: palette.lightGrey,
+    fontFamily: 'OTJubileeGolden-Italic',
     fontWeight: '200', // Extralight feel
     marginBottom: 8,
     lineHeight: 56,
@@ -68,8 +59,8 @@ export const listingDetailScreenStyles = StyleSheet.create({
   },
   price: {
     fontSize: 27, // REVVOL: H2 27px
-    color: COLORS.mustard,
-    fontFamily: Platform.OS === 'ios' ? 'Georgia-Italic' : 'serif',
+    color: palette.mustard,
+    fontFamily: 'OTJubileeGolden',
     fontStyle: 'italic',
   },
   interactionRow: {
@@ -83,8 +74,9 @@ export const listingDetailScreenStyles = StyleSheet.create({
     gap: 4,
   },
   interactionText: {
-    color: COLORS.mustard,
+    color: palette.mustard,
     fontSize: 14,
+    fontFamily: 'OTJubileeGolden',
   },
   // Image Section
   imageSection: {
@@ -115,15 +107,13 @@ export const listingDetailScreenStyles = StyleSheet.create({
     borderRadius: 20,
     marginRight: 10,
     borderWidth: 1,
-    borderColor: COLORS.border,
+    borderColor: borderColor,
   },
   // About Section
   aboutSection: {
     marginHorizontal: 0,
     marginTop: -50,
     marginBottom: 20,
-    borderTopLeftRadius: 40,
-    borderTopRightRadius: 40,
     overflow: 'hidden',
   },
   aboutGradient: {
@@ -133,15 +123,18 @@ export const listingDetailScreenStyles = StyleSheet.create({
   },
   sectionTitleWhite: {
     fontSize: 27,
-    color: COLORS.white,
-    fontFamily: Platform.OS === 'ios' ? 'Georgia' : 'serif',
+    color: palette.white,
+    fontFamily: 'OTJubileeGolden-ExtralightItalic',
     marginBottom: 12,
   },
   descriptionText: {
-    color: COLORS.white,
+    color: palette.white,
     fontSize: 16,
     lineHeight: 24,
     opacity: 0.9,
+    fontFamily: 'BaiJamjuree-Regular',
+    marginLeft: 30,
+    marginRight: 10,
   },
   // Specs Section
   specsSection: {
@@ -150,11 +143,11 @@ export const listingDetailScreenStyles = StyleSheet.create({
   },
   sectionTitleGold: {
     fontSize: 27, // REVVOL: H2
-    color: COLORS.mustard,
-    fontFamily: Platform.OS === 'ios' ? 'Georgia' : 'serif',
+    color: palette.mustard,
+    fontFamily: 'OTJubileeGolden',
     marginBottom: 20,
     borderLeftWidth: 3,
-    borderLeftColor: COLORS.mustard,
+    borderLeftColor: palette.mustard,
     paddingLeft: 10,
   },
   specsGrid: {
@@ -165,173 +158,186 @@ export const listingDetailScreenStyles = StyleSheet.create({
   },
   specItem: {
     width: '48%',
-    marginBottom: 10,
-    backgroundColor: COLORS.overlay,
     padding: 16,
-    borderRadius: 20,
-    borderWidth: 1,
-    borderColor: COLORS.border,
   },
   specLabel: {
-    color: COLORS.mustardSoft,
-    fontSize: 12,
-    fontStyle: 'italic',
+    color: palette.lightGrey,
+    fontSize: 18,
     marginBottom: 4,
-    fontFamily: Platform.OS === 'ios' ? 'Georgia-Italic' : 'serif',
+    fontFamily: 'OTJubileeGolden-ExtralightItalic',
   },
   specValue: {
-    color: COLORS.white,
-    fontSize: 16,
+    color: palette.white,
+    fontSize: 27,
     fontWeight: '500',
+    fontFamily: 'OTJubileeGolden',
   },
   // Seller Section
   sellerSection: {
     marginHorizontal: 30,
     marginBottom: 30,
-    backgroundColor: COLORS.overlay,
-    borderRadius: 30,
-    padding: 20,
-    borderWidth: 1,
-    borderColor: COLORS.border,
+    backgroundColor: 'transparent',
+    paddingHorizontal: 4,
   },
-  sellerHeader: {
+  sellerLabel: {
+    color: palette.lightGrey,
+    fontSize: 18,
+    fontFamily: 'OTJubileeGolden-ExtralightItalic',
+    marginBottom: 10,
+  },
+  sellerCardPill: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 12,
+    backgroundColor: palette.darkMustard,
+    borderRadius: 18,
+    paddingVertical: 10,
+    paddingHorizontal: 14,
   },
-  sellerAvatar: {
-    width: 60,
-    height: 60,
-    borderRadius: 30,
-    backgroundColor: COLORS.charcoal,
-    marginRight: 16,
+  sellerBadge: {
+    width: 34,
+    height: 34,
+    borderRadius: 17,
+    backgroundColor: palette.mustard,
     justifyContent: 'center',
     alignItems: 'center',
+    marginRight: 12,
+  },
+  sellerBadgeText: {
+    color: palette.lightGrey,
+    fontSize: 18,
+    fontFamily: 'OTJubileeGolden',
+    fontWeight: '700',
+  },
+  sellerAvatarPill: {
+    width: 46,
+    height: 46,
+    borderRadius: 23,
+    overflow: 'hidden',
     borderWidth: 1,
-    borderColor: COLORS.mustard,
+    borderColor: palette.mustard,
+    marginRight: 12,
+    backgroundColor: palette.darkGrey,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   sellerAvatarImage: {
     width: '100%',
     height: '100%',
-    borderRadius: 30,
+    borderRadius: 23,
   },
   sellerAvatarText: {
-    color: COLORS.mustard,
-    fontSize: 24,
-    fontWeight: 'bold',
+    color: palette.white,
+    fontSize: 27,
+    fontFamily: 'OTJubileeGolden',
   },
-  sellerInfo: {
+  sellerPillInfo: {
     flex: 1,
   },
   sellerName: {
-    color: COLORS.white,
-    fontSize: 20,
-    fontWeight: 'bold',
-    fontFamily: Platform.OS === 'ios' ? 'Georgia' : 'serif',
+    color: palette.white,
+    fontSize: 27,
+    fontWeight: '700',
+    fontFamily: 'OTJubileeGolden',
   },
-  sellerRating: {
-    color: COLORS.mustard,
-    fontSize: 14,
-    marginTop: 4,
-  },
-  sellerRatingRow: {
+  sellerPillRating: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginTop: 6,
-    gap: 6,
+    marginLeft: 10,
   },
-  sellerStar: {
-    position: 'relative',
-  },
-  sellerStarFill: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    overflow: 'hidden',
+  sellerRatingCompact: {
+    flexDirection: 'row',
+    alignItems: 'center',
   },
   sellerRatingValue: {
-    color: COLORS.mustard,
-    fontSize: 16,
-    fontWeight: '600',
-  },
-  sellerRatingFallback: {
-    color: COLORS.champagne,
-    fontSize: 14,
-    marginTop: 6,
+    color: palette.white,
+    fontSize: 27,
+    fontWeight: '700',
+    fontFamily: 'OTJubileeGolden',
   },
   // Action Buttons
   actionsSection: {
     paddingHorizontal: 30,
     marginBottom: 30,
-    gap: 16,
+    gap: 14,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
   },
   primaryButton: {
-    borderRadius: 100, // REVVOL: 100 radius (Capsule)
-    overflow: 'hidden',
-    height: 50, // REVVOL: 50px height
-    shadowColor: COLORS.mustard,
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.3,
-    shadowRadius: 8,
-    elevation: 6,
-  },
-  primaryGradient: {
     flex: 1,
-    justifyContent: 'center',
+    height: 54,
+    borderRadius: 12,
+    backgroundColor: palette.mustard,
     alignItems: 'center',
+    justifyContent: 'center',
+  },
+  primaryButtonPressed: {
+    backgroundColor: palette.champagne,
   },
   primaryButtonText: {
-    color: COLORS.white, // White text on gold gradient
+    color: palette.darkGrey,
     fontSize: 18,
-    fontWeight: 'bold',
-    textTransform: 'uppercase',
-    letterSpacing: 1,
+    fontWeight: '700',
+    fontFamily: 'OTJubileeGolden',
+  },
+  primaryButtonTextPressed: {
+    color: palette.darkMustard,
+    fontWeight: '700',
   },
   secondaryButton: {
-    backgroundColor: 'rgba(255, 255, 255, 0.05)',
-    height: 50, // REVVOL: 50px height
-    borderRadius: 100, // REVVOL: 100 radius
+    flex: 1,
+    height: 54,
+    borderRadius: 12,
     alignItems: 'center',
     justifyContent: 'center',
-    borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.1)',
+    borderWidth: 1.5,
+    borderColor: palette.mustard,
+    backgroundColor: 'transparent',
+  },
+  secondaryButtonPressed: {
+    borderColor: palette.champagne,
   },
   secondaryButtonText: {
-    color: COLORS.white,
-    fontSize: 16,
-    fontWeight: '600',
+    color: palette.mustard,
+    fontSize: 18,
+    fontWeight: '700',
+    fontFamily: 'OTJubileeGolden',
+  },
+  secondaryButtonTextPressed: {
+    color: palette.champagne,
+    fontWeight: '700',
   },
   // Footer
   footer: {
     alignItems: 'center',
-    marginBottom: 20,
-    paddingHorizontal: 30,
+    marginBottom: 50,
+    marginTop: 70
   },
   footerCta: {
     width: '100%',
-    borderRadius: 30,
     overflow: 'hidden',
   },
   footerGradient: {
-    padding: 30,
-    alignItems: 'center',
+    paddingVertical: 28,
+    paddingHorizontal: 20,
   },
   footerText: {
-    color: '#000000',
-    fontSize: 27, // REVVOL: H2
-    fontFamily: Platform.OS === 'ios' ? 'Georgia' : 'serif',
+    color: palette.white,
+    fontSize: 50, // REVVOL: H2
+    fontFamily: 'OTJubileeGolden-Italic',
     fontWeight: 'bold',
     fontStyle: 'italic',
+    marginLeft: 20,
   },
   // Loaders/Errors
   centerContainer: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: COLORS.background,
+    backgroundColor: palette.darkGrey,
   },
   errorText: {
     color: '#FF6B6B',
     fontSize: 16,
+    fontFamily: 'OTJubileeGolden',
   },
 })

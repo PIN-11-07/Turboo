@@ -5,9 +5,9 @@ import {
   ScrollView,
   Text,
   TouchableOpacity,
+  Pressable,
   View,
   StatusBar,
-  Platform,
 } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { useNavigation } from '@react-navigation/native'
@@ -17,29 +17,30 @@ import { listingDetailScreenStyles as styles } from './ListingDetailStyles'
 import FavoriteButton from '../../components/FavoriteButton'
 import { useAuth } from '../../context/AuthContext'
 import { useListingDetail } from './useListingDetail'
+import { palette } from '../../theme/palette'
 
 const formatPrice = (value) => {
   const numericValue = Number(value)
   if (Number.isFinite(numericValue)) {
-    return `€ ${numericValue.toLocaleString('es-ES')}`
+    return `€ ${numericValue.toLocaleString('en-US')}`
   }
-  return value ?? 'Consultar'
+  return value ?? 'Ask for price'
 }
 
 const ATTRIBUTE_LABELS = [
-  { key: 'make', label: 'Marca' },
-  { key: 'model', label: 'Modelo' },
-  { key: 'year', label: 'Año' },
-  { key: 'mileage', label: 'Kilometraje', suffix: ' km' },
-  { key: 'fuel_type', label: 'Combustible' },
-  { key: 'transmission', label: 'Transmisión' },
-  { key: 'doors', label: 'Puertas' },
+  { key: 'make', label: 'Make' },
+  { key: 'model', label: 'Model' },
+  { key: 'year', label: 'Year' },
+  { key: 'mileage', label: 'Mileage', suffix: ' km' },
+  { key: 'fuel_type', label: 'Fuel' },
+  { key: 'transmission', label: 'Transmission' },
+  { key: 'doors', label: 'Doors' },
   { key: 'color', label: 'Color' },
 ]
 
-const ACCENT_COLOR = '#C58A1A'
-const ACCENT_COLOR_DARK = '#8A5C0D'
-const STAR_COLOR = ACCENT_COLOR
+const ACCENT_COLOR = palette.mustard
+const ACCENT_COLOR_DARK = palette.darkMustard
+const STAR_COLOR = palette.mustard
 
 export default function ListingDetailScreen() {
   const { listing, listingId, loading, error, images, sellerName, sellerRating, sellerProfileImageUrl } =
@@ -76,10 +77,10 @@ export default function ListingDetailScreen() {
     return (
       <View style={styles.centerContainer}>
         <Text style={styles.errorText}>
-          {error || 'El vehículo no está disponible.'}
+          {error || 'This vehicle is not available.'}
         </Text>
         <TouchableOpacity onPress={() => navigation.goBack()} style={{ marginTop: 20 }}>
-          <Text style={{ color: ACCENT_COLOR }}>Volver</Text>
+          <Text style={{ color: ACCENT_COLOR }}>Go back</Text>
         </TouchableOpacity>
       </View>
     )
@@ -88,10 +89,11 @@ export default function ListingDetailScreen() {
   const normalizedSellerRating = Number.isFinite(Number(sellerRating))
     ? Number(sellerRating)
     : null
+  const sellerBadgeValue = listing?.sales_count ?? '1'
 
   return (
     <SafeAreaView style={styles.safeArea} edges={['top', 'left', 'right']}>
-      <StatusBar barStyle="light-content" backgroundColor="#000000" />
+      <StatusBar barStyle="light-content" backgroundColor={palette.darkGrey} />
 
       {/* Custom Header */}
       <View style={styles.header}>
@@ -101,13 +103,14 @@ export default function ListingDetailScreen() {
         >
           <Ionicons name="arrow-back" size={24} color="#FFFFFF" />
         </TouchableOpacity>
-        <Text style={styles.headerTitle}>FICHA TÉCNICA</Text>
+        <Text style={styles.headerTitle}> TECHNICAL SHEET</Text>
         <View style={styles.iconButton}>
           <FavoriteButton
             listingId={listingId}
             variant="detail"
             style={{ backgroundColor: 'transparent', borderWidth: 0 }}
-            iconStyle={{ color: '#FFFFFF', fontSize: 24 }}
+            iconStyle={{ fontSize: 24 }}
+            iconActiveStyle={{ color: palette.champagne }}
           />
         </View>
       </View>
@@ -155,27 +158,69 @@ export default function ListingDetailScreen() {
         {/* About Section */}
         <View style={styles.aboutSection}>
           <LinearGradient
-            colors={[ACCENT_COLOR_DARK, '#090809']}
+            colors={[ACCENT_COLOR_DARK, palette.darkGrey]}
             start={{ x: 0, y: 0 }}
             end={{ x: 0, y: 1 }}
             style={styles.aboutGradient}
           >
-            <Text style={styles.sectionTitleWhite}>Sobre este vehículo</Text>
+            <Text style={styles.sectionTitleWhite}>About</Text>
             <Text style={styles.descriptionText}>
-              {listing.description || 'Sin descripción disponible.'}
+              {listing.description || 'No description available.'}
             </Text>
           </LinearGradient>
         </View>
 
+        {/* Action Buttons */}
+        {!isOwner && (
+          <View style={styles.actionsSection}>
+            <Pressable
+              style={({ pressed }) => [
+                styles.secondaryButton,
+                pressed && styles.secondaryButtonPressed,
+              ]}
+              onPress={handleContactPress}
+            >
+              {({ pressed }) => (
+                <Text
+                  style={[
+                    styles.secondaryButtonText,
+                    pressed && styles.secondaryButtonTextPressed,
+                  ]}
+                >
+                  Contact seller
+                </Text>
+              )}
+            </Pressable>
+
+            <Pressable
+              style={({ pressed }) => [
+                styles.primaryButton,
+                pressed && styles.primaryButtonPressed,
+              ]}
+              onPress={handleBuyPress}
+            >
+              {({ pressed }) => (
+                <Text
+                  style={[
+                    styles.primaryButtonText,
+                    pressed && styles.primaryButtonTextPressed,
+                  ]}
+                >
+                  Buy car
+                </Text>
+              )}
+            </Pressable>
+          </View>
+        )}
+
         {/* Specs Section */}
         <View style={styles.specsSection}>
-          <Text style={styles.sectionTitleGold}>Especificaciones</Text>
           <View style={styles.specsGrid}>
             {ATTRIBUTE_LABELS.map(({ key, label, suffix }) => (
               <View key={key} style={styles.specItem}>
                 <Text style={styles.specLabel}>{label}</Text>
                 <Text style={styles.specValue} numberOfLines={1}>
-                  {listing[key] ? `${listing[key]}${suffix || ''}` : '-'}
+                  {listing[key] ? `${String(listing[key]).charAt(0).toUpperCase()}${String(listing[key]).slice(1)}${suffix || ''}` : '-'}
                 </Text>
               </View>
             ))}
@@ -184,80 +229,51 @@ export default function ListingDetailScreen() {
 
         {/* Seller Section */}
         <View style={styles.sellerSection}>
-          <View style={styles.sellerHeader}>
-            <View style={styles.sellerAvatar}>
+          <Text style={styles.sellerLabel}>Sold by</Text>
+          <View style={styles.sellerCardPill}>
+            <LinearGradient
+              colors={[palette.mustard, palette.darkGrey]}
+              start={{ x: 0, y: 0 }}
+              end={{ x: 1, y: 0 }}
+              style={styles.sellerBadge}
+            >
+              <Text style={styles.sellerBadgeText}>{sellerBadgeValue}</Text>
+            </LinearGradient>
+            <View style={styles.sellerAvatarPill}>
               {sellerProfileImageUrl ? (
                 <Image source={{ uri: sellerProfileImageUrl }} style={styles.sellerAvatarImage} />
               ) : (
                 <Text style={styles.sellerAvatarText}>
-                  {sellerName ? sellerName.charAt(0).toUpperCase() : 'V'}
+                  {sellerName ? sellerName.charAt(0).toUpperCase() : 'S'}
                 </Text>
               )}
             </View>
-            <View style={styles.sellerInfo}>
-              <Text style={styles.sellerName}>{sellerName || 'Vendedor'}</Text>
+            <View style={styles.sellerPillInfo}>
+              <Text style={styles.sellerName}>{sellerName || 'Seller'}</Text>
+            </View>
+            <View style={styles.sellerPillRating}>
               {normalizedSellerRating !== null ? (
-                <View style={styles.sellerRatingRow}>
-                  {[1, 2, 3, 4, 5].map((star) => {
-                    const fill = Math.min(
-                      Math.max(normalizedSellerRating - (star - 1), 0),
-                      1
-                    )
-                    return (
-                      <View key={star} style={styles.sellerStar}>
-                        <Ionicons name="star-outline" size={18} color="#4F4F4F" />
-                        <View style={[styles.sellerStarFill, { width: 18 * fill }]}>
-                          <Ionicons name="star" size={18} color={STAR_COLOR} />
-                        </View>
-                      </View>
-                    )
-                  })}
-                  <Text style={styles.sellerRatingValue}>
-                    {normalizedSellerRating.toFixed(1)}
-                  </Text>
+                <View style={styles.sellerRatingCompact}>
+                  <Text style={styles.sellerRatingValue}>{normalizedSellerRating.toFixed(1)}</Text>
+                  <Ionicons name="star" size={18} color={palette.mustard} style={{ marginLeft: 4 }} />
                 </View>
               ) : (
-                <Text style={styles.sellerRatingFallback}>Sin valoraciones</Text>
+                <Text style={styles.sellerRatingValue}>—</Text>
               )}
             </View>
           </View>
         </View>
 
-        {/* Action Buttons */}
-        {!isOwner && (
-          <View style={styles.actionsSection}>
-            <TouchableOpacity
-              style={styles.primaryButton}
-              onPress={handleBuyPress}
-              activeOpacity={0.9}
-            >
-              <LinearGradient
-                colors={[ACCENT_COLOR, ACCENT_COLOR_DARK]}
-                start={{ x: 0, y: 0 }}
-                end={{ x: 1, y: 0 }}
-                style={styles.primaryGradient}
-              >
-                <Text style={styles.primaryButtonText}>Comprar Vehículo</Text>
-              </LinearGradient>
-            </TouchableOpacity>
-
-            <TouchableOpacity
-              style={styles.secondaryButton}
-              onPress={handleContactPress}
-            >
-              <Text style={styles.secondaryButtonText}>Contactar Vendedor</Text>
-            </TouchableOpacity>
-          </View>
-        )}
-
         {/* Footer */}
         <View style={styles.footer}>
           <View style={styles.footerCta}>
             <LinearGradient
-              colors={[ACCENT_COLOR, ACCENT_COLOR_DARK]}
+              colors={[palette.darkMustard, palette.darkGrey]}
+              start={{ x: 0, y: 0 }}
+              end={{ x: 0, y: 1 }}
               style={styles.footerGradient}
             >
-              <Text style={styles.footerText}>¿Interesado?</Text>
+              <Text style={styles.footerText}>Interested?</Text>
             </LinearGradient>
           </View>
         </View>
