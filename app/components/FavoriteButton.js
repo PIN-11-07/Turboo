@@ -163,6 +163,7 @@ export function FavoriteButton({
   onStatusChange,
   style,
   iconStyle,
+  iconActiveStyle,
   hitSlop = DEFAULT_HIT_SLOP,
   disabled: disabledProp = false,
 }) {
@@ -330,7 +331,7 @@ export function FavoriteButton({
     disabled && variantConfig.buttonDisabled,
     style,
   ]
-  const iconStyles = [variantConfig.icon, isFavorite && variantConfig.iconActive, iconStyle]
+  const iconStyles = [variantConfig.icon, isFavorite && variantConfig.iconActive, iconStyle, isFavorite && iconActiveStyle]
   const accessibilityLabel = isFavorite
     ? 'Quitar de favoritos'
     : 'Agregar a favoritos'
