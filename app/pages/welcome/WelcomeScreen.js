@@ -4,7 +4,6 @@ import {
     StyleSheet,
     Text,
     View,
-    ImageBackground,
     Animated,
     PanResponder,
     Dimensions,
@@ -13,6 +12,8 @@ import {
 import { useNavigation } from '@react-navigation/native'
 import { LinearGradient } from 'expo-linear-gradient'
 import { Ionicons } from '@expo/vector-icons'
+import { VideoView, useVideoPlayer } from 'expo-video'
+import { welcomeStyles } from './welcomeStyles'
 import { palette } from '../../theme/palette'
 
 const { height } = Dimensions.get('window')
@@ -20,6 +21,12 @@ const { height } = Dimensions.get('window')
 export default function WelcomeScreen() {
     const navigation = useNavigation()
     const slideAnim = useRef(new Animated.Value(0)).current
+
+    const player = useVideoPlayer(require('../../../assets/welcome_hero.mp4'), player => {
+        player.loop = true
+        player.muted = true
+        player.play()
+    })
 
     const navigateToApp = () => {
         Animated.timing(slideAnim, {
@@ -57,132 +64,52 @@ export default function WelcomeScreen() {
     return (
         <Animated.View
             style={[
-                styles.container,
+                welcomeStyles.container,
                 {
                     transform: [{ translateY: slideAnim }],
                 },
             ]}
             {...panResponder.panHandlers}
         >
-            <ImageBackground
-                source={require('../../../assets/welcome_hero.jpg')}
-                style={styles.background}
-                resizeMode="cover"
-            >
+            <View style={welcomeStyles.videoContainer}>
+                <VideoView
+                    player={player}
+                    style={welcomeStyles.video}
+                    contentFit="cover"
+                    nativeControls={false}
+                />
                 <LinearGradient
                     colors={['rgba(0,0,0,0.3)', 'rgba(0,0,0,0.8)']}
-                    style={styles.gradient}
+                    style={welcomeStyles.gradient}
                 >
-                    <View style={styles.content}>
-                        <Text style={styles.brand}>REVVOL</Text>
+                    <View style={welcomeStyles.content}>
+                        <Text style={welcomeStyles.brand}>REVVOL</Text>
 
-                        <View style={styles.titleContainer}>
-                            <Text style={styles.titleItalic}>Exclusive</Text>
-                            <Text style={styles.titleRegular}> deals for</Text>
+                        <View style={welcomeStyles.titleContainer}>
+                            <Text style={welcomeStyles.titleItalic}>Exclusive</Text>
+                            <Text style={welcomeStyles.titleRegular}> deals for</Text>
                         </View>
-                        <View style={styles.titleContainer}>
-                            <Text style={styles.titleItalic}>classic</Text>
-                            <Text style={styles.titleRegular}> drivers</Text>
+                        <View style={welcomeStyles.titleContainer}>
+                            <Text style={welcomeStyles.titleItalic}>classic</Text>
+                            <Text style={welcomeStyles.titleRegular}> drivers</Text>
                         </View>
 
-                        <View style={styles.spacer} />
+                        <View style={welcomeStyles.spacer} />
 
-                        <View style={styles.buttonContainer}>
+                        <View style={welcomeStyles.buttonContainer}>
+                            <View style={{ transform: [{ scaleY: 0.3 }], marginBottom: -30 }}>
+                                <Ionicons name="chevron-up" size={80} color={palette.white} />
+                            </View>
                             <TouchableOpacity
-                                style={styles.secondaryButton}
+                                style={welcomeStyles.secondaryButton}
                                 onPress={navigateToApp}
                             >
-                                <Text style={styles.secondaryButtonText}>Slide to Explore</Text>
-                                <Ionicons name="chevron-up" size={20} color="#FFF" style={{ marginLeft: 8 }} />
+                                <Text style={welcomeStyles.secondaryButtonText}>Slide to Explore</Text>
                             </TouchableOpacity>
                         </View>
                     </View>
                 </LinearGradient>
-            </ImageBackground>
+            </View>
         </Animated.View>
     )
 }
-
-const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        backgroundColor: '#000',
-    },
-    background: {
-        flex: 1,
-        width: '100%',
-        height: '100%',
-    },
-    gradient: {
-        flex: 1,
-        paddingHorizontal: 20,
-        paddingTop: 60,
-        paddingBottom: 40,
-        justifyContent: 'space-between',
-    },
-    content: {
-        flex: 1,
-        alignItems: 'center',
-    },
-    brand: {
-        color: '#FFF',
-        fontSize: 14,
-        letterSpacing: 2,
-        fontWeight: '600',
-        marginBottom: 60,
-        fontStyle: 'italic',
-    },
-    titleContainer: {
-        flexDirection: 'row',
-        alignItems: 'baseline',
-    },
-    titleItalic: {
-        fontFamily: 'serif',
-        fontSize: 42,
-        color: '#FFF',
-        fontStyle: 'italic',
-    },
-    titleRegular: {
-        fontSize: 42,
-        color: '#CCC',
-        fontWeight: '300',
-    },
-    spacer: {
-        flex: 1,
-    },
-    buttonContainer: {
-        width: '100%',
-        alignItems: 'center',
-        marginBottom: 20,
-    },
-    primaryButton: {
-        backgroundColor: palette.accent,
-        paddingVertical: 16,
-        width: '100%',
-        borderRadius: 30,
-        alignItems: 'center',
-        marginBottom: 16,
-    },
-    primaryButtonText: {
-        color: '#000',
-        fontSize: 16,
-        fontWeight: '700',
-    },
-    secondaryButton: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        paddingVertical: 12,
-        marginBottom: 12,
-    },
-    secondaryButtonText: {
-        color: '#FFF',
-        fontSize: 16,
-        fontWeight: '600',
-    },
-    scrollText: {
-        color: 'rgba(255,255,255,0.6)',
-        fontSize: 12,
-        marginTop: 8,
-    },
-})
-
