@@ -1,8 +1,10 @@
 import React, { useMemo } from 'react'
-import { Alert, ScrollView, Text, TouchableOpacity, View } from 'react-native'
+import { Alert, ScrollView, Text, TouchableOpacity, View, StatusBar, Pressable } from 'react-native'
 import { useNavigation, useRoute } from '@react-navigation/native'
 import { SafeAreaView } from 'react-native-safe-area-context'
+import { Ionicons } from '@expo/vector-icons'
 import { purchaseScreenStyles as styles } from './PurchaseStyles'
+import { palette } from '../../theme/palette'
 
 const formatCurrency = (value) => {
   const numericValue = Number(value)
@@ -26,11 +28,11 @@ export default function PurchaseConfirmationScreen() {
     if (typeof listing?.title === 'string' && listing.title.trim()) {
       return listing.title
     }
-    return 'Vehículo'
+    return 'Vehicle'
   }, [listing?.title])
 
   const handleChatPress = () =>
-    Alert.alert('Chat', 'La chat con el vendedor llegará pronto. 👋')
+    Alert.alert('Chat', 'Chat with the seller coming soon. 👋')
 
   const handleBackHome = () => {
     const params = {
@@ -46,7 +48,7 @@ export default function PurchaseConfirmationScreen() {
 
   const handleRateSeller = () => {
     if (!listing?.user_id) {
-      Alert.alert('Sin vendedor', 'No pudimos encontrar al vendedor.')
+      Alert.alert('No seller', 'We could not find the seller.')
       return
     }
 
@@ -59,89 +61,134 @@ export default function PurchaseConfirmationScreen() {
 
   if (!listing || !totals) {
     return (
-      <SafeAreaView style={styles.safeArea} edges={['left', 'right', 'bottom']}>
+      <SafeAreaView style={styles.safeArea} edges={['top', 'left', 'right', 'bottom']}>
+        <StatusBar barStyle="light-content" backgroundColor="#1A1A1A" />
+        <View style={styles.header}>
+          <View style={styles.iconButton} />
+          <Text style={styles.headerTitle}>PURCHASE COMPLETE</Text>
+          <View style={styles.iconButton} />
+        </View>
         <View style={styles.loader}>
           <Text style={styles.errorText}>
-            No encontramos los datos de la compra. Vuelve al listado para intentarlo de nuevo.
+            We couldn't find the purchase data. Go back to the listing to try again.
           </Text>
-          <TouchableOpacity style={styles.secondaryButton} onPress={handleBackHome}>
-            <Text style={styles.secondaryButtonText}>Volver</Text>
-          </TouchableOpacity>
+          <Pressable
+            style={({ pressed }) => [
+              styles.primaryButton,
+              pressed && styles.primaryButtonPressed
+            ]}
+            onPress={handleBackHome}
+          >
+            {({ pressed }) => (
+              <Text style={[styles.primaryButtonText, pressed && styles.primaryButtonTextPressed]}>Go back</Text>
+            )}
+          </Pressable>
         </View>
       </SafeAreaView>
     )
   }
 
   return (
-    <SafeAreaView style={styles.safeArea} edges={['left', 'right', 'bottom']}>
-      <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
-        <View style={styles.confirmationHeader}>
-          <Text style={styles.confirmationIcon}>✅</Text>
-          <Text style={styles.confirmationTitle}>Compra completada</Text>
-          <Text style={styles.confirmationSubtitle}>
-            El importe se envió al vendedor y hemos aplicado la comisión de plataforma.
-          </Text>
+    <SafeAreaView style={styles.confirmationSafeArea} edges={['top', 'left', 'right', 'bottom']}>
+      <StatusBar barStyle="light-content" backgroundColor="#000000" />
+      
+      {/* Back Button */}
+      <TouchableOpacity 
+        style={styles.confirmationBackButton}
+        onPress={handleBackHome}
+      >
+        <Ionicons name="chevron-back" size={32} color={palette.white} />
+      </TouchableOpacity>
+
+      {/* Header Title */}
+      <View style={styles.confirmationHeaderTitle}>
+        <Text style={styles.confirmationBrandTitle}>REVVOL</Text>
+      </View>
+
+      <ScrollView contentContainerStyle={styles.confirmationScrollContent} showsVerticalScrollIndicator={false}>
+        {/* Success Icon */}
+        <View style={styles.confirmationSuccessIcon}>
+          <View style={styles.confirmationCircleOuter}>
+            <View style={styles.confirmationCircleInner}>
+              <Ionicons name="arrow-forward" size={42} color={palette.darkGrey} />
+            </View>
+          </View>
         </View>
 
-        <View style={styles.card}>
-          <Text style={styles.sectionTitle}>Detalles del vehículo</Text>
-          <View style={styles.row}>
-            <Text style={styles.label}>Título</Text>
-            <Text style={styles.value}>{title}</Text>
+        {/* Title */}
+        <Text style={styles.confirmationMainTitle}>Transaction confirmed!</Text>
+        <Text style={styles.confirmationMainSubtitle}>
+          Your order has been{'\n'}successfully processed
+        </Text>
+
+        {/* Vehicle Info Card */}
+        <View style={styles.confirmationVehicleCard}>
+          <View style={styles.confirmationVehicleRow}>
+            <View style={styles.confirmationVehicleColumnLeft}>
+              <Text style={styles.confirmationVehicleLabel}>Vehicle bought</Text>
+              <Text style={styles.confirmationVehicleValue}>{title}</Text>
+            </View>
+            <View style={styles.confirmationVehicleColumnRight}>
+              <Text style={styles.confirmationVehicleLabel}>Year</Text>
+              <Text style={styles.confirmationVehicleValue}>{listing?.year || '-'}</Text>
+            </View>
           </View>
-          <View style={styles.row}>
-            <Text style={styles.label}>Precio</Text>
-            <Text style={styles.value}>{formatCurrency(totals.price)}</Text>
-          </View>
-          <View style={styles.row}>
-            <Text style={styles.label}>Vendedor</Text>
-            <Text style={styles.value}>{sellerName || 'Vendedor'}</Text>
+          <View style={[styles.confirmationVehicleRow, { marginTop: 20 }]}>
+            <View style={styles.confirmationVehicleColumnLeft}>
+              <Text style={styles.confirmationVehicleLabel}>Price</Text>
+              <Text style={styles.confirmationVehicleValue}>{formatCurrency(totals.price)}</Text>
+            </View>
+            <View style={styles.confirmationVehicleColumnRight}>
+              <Text style={styles.confirmationVehicleLabel}>Seller</Text>
+              <Text style={styles.confirmationVehicleValue}>{sellerName || 'Seller'}</Text>
+            </View>
           </View>
         </View>
 
-        <View style={styles.card}>
-          <Text style={styles.sectionTitle}>Resumen del pago</Text>
-          <View style={styles.row}>
-            <Text style={styles.label}>Precio</Text>
-            <Text style={styles.value}>{formatCurrency(totals.price)}</Text>
+        {/* Payment Details */}
+        <View style={styles.confirmationPaymentDetails}>
+          <View style={styles.confirmationPaymentRow}>
+            <Text style={styles.confirmationPaymentLabel}>Price</Text>
+            <Text style={styles.confirmationPaymentValue}>{formatCurrency(totals.price)}</Text>
           </View>
-          <View style={styles.row}>
-            <Text style={styles.label}>Comisión (5%)</Text>
-            <Text style={styles.value}>-{formatCurrency(totals.fee)}</Text>
+          <View style={styles.confirmationPaymentRow}>
+            <Text style={styles.confirmationPaymentLabel}>Commission (5%)</Text>
+            <Text style={styles.confirmationPaymentValue}>-{formatCurrency(totals.fee)}</Text>
           </View>
-          <View style={styles.divider} />
-          <View style={styles.row}>
-            <Text style={styles.label}>Recibe el vendedor</Text>
-            <Text style={styles.value}>{formatCurrency(totals.sellerReceives)}</Text>
+          <View style={styles.confirmationPaymentDivider} />
+          <View style={styles.confirmationPaymentRow}>
+            <Text style={styles.confirmationPaymentLabel}>Seller receives</Text>
+            <Text style={styles.confirmationPaymentValue}>{formatCurrency(totals.sellerReceives)}</Text>
           </View>
           {buyerBalance != null && (
-            <View style={[styles.row, styles.rowSpacing]}>
-              <Text style={styles.label}>Tu saldo restante</Text>
-              <Text style={styles.value}>{formatCurrency(buyerBalance)}</Text>
-            </View>
-          )}
-          {sellerBalance != null && (
-            <View style={styles.row}>
-              <Text style={styles.label}>Saldo del vendedor</Text>
-              <Text style={styles.value}>{formatCurrency(sellerBalance)}</Text>
+            <View style={[styles.confirmationPaymentRow, { marginTop: 8 }]}>
+              <Text style={styles.confirmationPaymentLabel}>Your remaining balance</Text>
+              <Text style={styles.confirmationPaymentValue}>{formatCurrency(buyerBalance)}</Text>
             </View>
           )}
         </View>
+        
+        {/* Additional Info */}
+        <Text style={styles.confirmationInfoText}>
+          We will send the confirmation{'\n'}to your email.
+        </Text>
 
-        <TouchableOpacity
-          style={styles.primaryButton}
+        {/* Rate Seller Button */}
+        <Pressable
+          style={({ pressed }) => [
+            styles.confirmationRateButton,
+            pressed && styles.confirmationRateButtonPressed
+          ]}
           onPress={handleRateSeller}
-          activeOpacity={0.8}
         >
-          <Text style={styles.primaryButtonText}>Valorar al vendedor</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={styles.secondaryButton}
-          onPress={handleBackHome}
-          activeOpacity={0.8}
-        >
-          <Text style={styles.secondaryButtonText}>Volver al inicio</Text>
-        </TouchableOpacity>
+          {({ pressed }) => (
+            <Text style={[styles.confirmationRateButtonText, pressed && styles.confirmationRateButtonTextPressed]}>
+              Rate the seller
+            </Text>
+          )}
+        </Pressable>
+
+        
       </ScrollView>
     </SafeAreaView>
   )

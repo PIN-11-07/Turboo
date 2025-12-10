@@ -1,9 +1,10 @@
 import React, { useCallback } from 'react'
-import { ScrollView, Text, TouchableOpacity, View } from 'react-native'
+import { ScrollView, Text, TouchableOpacity, View, StatusBar, Pressable } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { Ionicons } from '@expo/vector-icons'
 import { ratingStyles as styles } from './ratingStyles'
 import { useRating } from './useRating'
+import { palette } from '../../theme/palette'
 
 const STAR_SET = [1, 2, 3, 4, 5]
 
@@ -39,7 +40,18 @@ export default function RatingScreen() {
 
   if (isSellerMissing) {
     return (
-      <SafeAreaView style={styles.safeArea}>
+      <SafeAreaView style={styles.safeArea} edges={['top', 'left', 'right', 'bottom']}>
+        <StatusBar barStyle="light-content" backgroundColor="#1A1A1A" />
+        <View style={styles.header}>
+          <TouchableOpacity
+            onPress={handleSkip}
+            style={styles.iconButton}
+          >
+            <Ionicons name="arrow-back" size={24} color="#FFFFFF" />
+          </TouchableOpacity>
+          <Text style={styles.headerTitle}>RATE SELLER</Text>
+          <View style={styles.iconButton} />
+        </View>
         <ScrollView contentContainerStyle={styles.contentContainer}>
           <View style={styles.topContent}>
             <Text style={styles.title}>Rate your experience</Text>
@@ -48,9 +60,17 @@ export default function RatingScreen() {
             </Text>
           </View>
           <View style={styles.buttonGroup}>
-            <TouchableOpacity style={styles.secondaryButton} onPress={handleSkip}>
-              <Text style={styles.secondaryText}>Back to feed</Text>
-            </TouchableOpacity>
+            <Pressable
+              style={({ pressed }) => [
+                styles.primaryButton,
+                pressed && styles.primaryButtonPressed
+              ]}
+              onPress={handleSkip}
+            >
+              {({ pressed }) => (
+                <Text style={[styles.primaryButtonText, pressed && styles.primaryButtonTextPressed]}>Back to feed</Text>
+              )}
+            </Pressable>
           </View>
         </ScrollView>
       </SafeAreaView>
@@ -58,10 +78,21 @@ export default function RatingScreen() {
   }
 
   return (
-    <SafeAreaView style={styles.safeArea}>
+    <SafeAreaView style={styles.safeArea} edges={['top', 'left', 'right', 'bottom']}>
+      <StatusBar barStyle="light-content" backgroundColor="#1A1A1A" />
+      <View style={styles.header}>
+        <TouchableOpacity
+          onPress={handleSkip}
+          style={styles.iconButton}
+        >
+          <Ionicons name="arrow-back" size={24} color="#FFFFFF" />
+        </TouchableOpacity>
+        <Text style={styles.headerTitle}>RATE SELLER</Text>
+        <View style={styles.iconButton} />
+      </View>
       <ScrollView contentContainerStyle={styles.contentContainer}>
         <View style={styles.topContent}>
-          <View style={styles.header}>
+          <View style={styles.titleSection}>
             <Text style={styles.title}>Rate your experience</Text>
             <Text style={styles.subtitle}>
               {`How was your experience with ${sellerName || 'this seller'}?`}
@@ -85,7 +116,7 @@ export default function RatingScreen() {
                   <Ionicons
                     name={star <= selectedRating ? 'star' : 'star-outline'}
                     size={40}
-                    color={star <= selectedRating ? '#C58A1A' : '#4C4C4C'}
+                    color={star <= selectedRating ? palette.mustard : palette.champagne}
                   />
                 </TouchableOpacity>
               ))}
@@ -99,26 +130,22 @@ export default function RatingScreen() {
           </View>
 
           {error ? <Text style={styles.errorText}>{error}</Text> : null}
-        </View>
 
-        <View style={styles.buttonGroup}>
-          <TouchableOpacity
-            style={[styles.primaryButton, submitting && styles.buttonDisabled]}
+          <Pressable
+            style={({ pressed }) => [
+              styles.primaryButton,
+              (pressed || submitting) && styles.primaryButtonPressed,
+              submitting && styles.buttonDisabled
+            ]}
             onPress={handleSubmit}
             disabled={submitting}
           >
-            <Text style={styles.primaryText}>
-              {submitting ? 'Sending…' : 'Send rating and return to feed'}
-            </Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity
-            style={[styles.secondaryButton, submitting && styles.buttonDisabled]}
-            onPress={handleSkip}
-            disabled={submitting}
-          >
-            <Text style={styles.secondaryText}>Skip and go to feed</Text>
-          </TouchableOpacity>
+            {({ pressed }) => (
+              <Text style={[(pressed || submitting) && styles.primaryButtonTextPressed, styles.primaryButtonText]}>
+                {submitting ? 'Sending…' : 'Submit rating'}
+              </Text>
+            )}
+          </Pressable>
         </View>
       </ScrollView>
     </SafeAreaView>

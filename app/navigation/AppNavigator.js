@@ -119,12 +119,12 @@ const FeedStackNavigator = () => (
     <FeedStack.Screen
       name="Purchase"
       component={PurchaseScreen}
-      options={{ title: 'Confirmar compra' }}
+      options={{ headerShown: false }}
     />
     <FeedStack.Screen
       name="PurchaseConfirmation"
       component={PurchaseConfirmationScreen}
-      options={{ title: 'Compra completada', headerBackVisible: false }}
+      options={{ headerShown: false }}
     />
     <FeedStack.Screen
       name="Recommendations"
@@ -159,12 +159,12 @@ const SearchStackNavigator = () => (
     <SearchStack.Screen
       name="Purchase"
       component={PurchaseScreen}
-      options={{ title: 'Confirmar compra' }}
+      options={{ headerShown: false }}
     />
     <SearchStack.Screen
       name="PurchaseConfirmation"
       component={PurchaseConfirmationScreen}
-      options={{ title: 'Compra completada', headerBackVisible: false }}
+      options={{ headerShown: false }}
     />
     <SearchStack.Screen
       name="Chat"
@@ -214,12 +214,12 @@ const ProfileStackNavigator = () => (
     <ProfileStack.Screen
       name="Purchase"
       component={PurchaseScreen}
-      options={{ title: 'Confirmar compra' }}
+      options={{ headerShown: false }}
     />
     <ProfileStack.Screen
       name="PurchaseConfirmation"
       component={PurchaseConfirmationScreen}
-      options={{ title: 'Compra completada', headerBackVisible: false }}
+      options={{ headerShown: false }}
     />
     <ProfileStack.Screen
       name="Chat"

@@ -1,70 +1,84 @@
 import { StyleSheet } from 'react-native'
-
-const palette = {
-  background: '#050505',
-  surface: '#111111',
-  accent: '#C58A1A',
-  accentDark: '#8A5C0D',
-  textPrimary: '#FFFFFF',
-  textSecondary: '#C4C4C4',
-  textMuted: '#4C4C4C',
-  border: 'rgba(197,138,26,0.35)',
-  overlay: 'rgba(197,138,26,0.12)',
-  danger: '#FF6B6B',
-}
+import { palette } from '../../theme/palette'
 
 export const ratingStyles = StyleSheet.create({
   safeArea: {
     flex: 1,
-    backgroundColor: palette.background,
+    backgroundColor: palette.darkGrey,
+  },
+  // Header
+  header: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingHorizontal: 30,
+    paddingVertical: 16,
+    backgroundColor: palette.darkGrey,
+    borderBottomWidth: 0,
+  },
+  headerTitle: {
+    color: palette.white,
+    fontSize: 18,
+    fontFamily: 'OTJubileeGolden-Italic',
+    letterSpacing: 1,
+    textTransform: 'uppercase',
+  },
+  iconButton: {
+    padding: 8,
   },
   contentContainer: {
     flexGrow: 1,
     paddingHorizontal: 22,
     paddingVertical: 20,
+    paddingBottom: 40,
     justifyContent: 'space-between',
   },
   topContent: {
     gap: 18,
   },
-  header: {
+  titleSection: {
     gap: 8,
   },
   title: {
-    fontSize: 26,
+    fontSize: 24,
     fontWeight: '700',
-    color: palette.accent,
+    color: palette.white,
+    fontFamily: 'OTJubileeGolden',
   },
   subtitle: {
     fontSize: 15,
-    color: palette.textSecondary,
+    color: palette.champagne,
     lineHeight: 20,
+    fontFamily: 'OTJubileeGolden',
   },
   vehicleBox: {
-    borderRadius: 18,
-    backgroundColor: palette.overlay,
+    borderRadius: 12,
+    backgroundColor: palette.darkGrey,
     borderWidth: 1,
-    borderColor: palette.border,
+    borderColor: palette.darkMustard,
     padding: 16,
   },
   vehicleLabel: {
-    color: palette.textSecondary,
+    color: palette.white,
     fontSize: 13,
     marginBottom: 4,
+    fontFamily: 'OTJubileeGolden-ExtraLightItalic',
   },
   vehicleValue: {
-    color: palette.textPrimary,
-    fontSize: 17,
+    color: palette.white,
+    fontSize: 20,
     fontWeight: '600',
     lineHeight: 22,
+    fontFamily: 'OTJubileeGolden',
   },
   ratingSection: {
     gap: 12,
   },
   prompt: {
-    color: palette.textPrimary,
+    color: palette.white,
     fontSize: 16,
     fontWeight: '700',
+    fontFamily: 'OTJubileeGolden',
   },
   starsRow: {
     flexDirection: 'row',
@@ -73,45 +87,64 @@ export const ratingStyles = StyleSheet.create({
     paddingHorizontal: 6,
   },
   infoBox: {
-    borderRadius: 18,
-    borderWidth: 1,
-    borderColor: palette.border,
-    backgroundColor: palette.overlay,
-    padding: 14,
+    borderRadius: 0,
+    borderWidth: 0,
+    borderColor: 'transparent',
+    backgroundColor: 'transparent',
+    padding: 0,
   },
   infoText: {
-    color: palette.textSecondary,
+    color: palette.champagne,
     lineHeight: 20,
+    fontFamily: 'BaiJamjuree-Regular',
+    textAlign: 'center',
   },
   errorText: {
     color: palette.danger,
     marginTop: -4,
+    fontFamily: 'BaiJamjuree-Regular',
   },
   buttonGroup: {
     gap: 12,
   },
   primaryButton: {
-    backgroundColor: palette.accent,
-    borderRadius: 18,
-    paddingVertical: 16,
-    alignItems: 'center',
-  },
-  primaryText: {
-    color: '#1A1A1A',
-    fontSize: 16,
-    fontWeight: '700',
-  },
-  secondaryButton: {
-    borderRadius: 16,
-    borderWidth: 1,
-    borderColor: palette.border,
+    backgroundColor: palette.mustard,
+    borderRadius: 8,
     paddingVertical: 14,
     alignItems: 'center',
   },
-  secondaryText: {
-    color: palette.textPrimary,
+  primaryButtonPressed: {
+    backgroundColor: palette.champagne,
+  },
+  primaryButtonText: {
+    color: palette.darkGrey,
     fontSize: 16,
+    fontWeight: '400',
+    fontFamily: 'BaiJamjuree-Regular',
+  },
+  primaryButtonTextPressed: {
+    color: palette.darkMustard,
+  },
+  secondaryButton: {
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: palette.darkMustard,
+    backgroundColor: palette.darkGrey,
+    paddingVertical: 12,
+    alignItems: 'center',
+  },
+  secondaryButtonPressed: {
+    backgroundColor: 'rgba(187, 126, 29, 0.1)',
+    borderColor: palette.mustard,
+  },
+  secondaryButtonText: {
+    color: palette.white,
+    fontSize: 15,
     fontWeight: '600',
+    fontFamily: 'OTJubileeGolden',
+  },
+  secondaryButtonTextPressed: {
+    color: palette.mustard,
   },
   buttonDisabled: {
     opacity: 0.6,
