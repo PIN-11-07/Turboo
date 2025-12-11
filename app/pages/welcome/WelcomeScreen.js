@@ -1,18 +1,17 @@
 
 import React, { useRef } from 'react'
 import {
-    StyleSheet,
     Text,
     View,
     Animated,
     PanResponder,
     Dimensions,
     TouchableOpacity,
+    Image,
 } from 'react-native'
 import { useNavigation } from '@react-navigation/native'
 import { LinearGradient } from 'expo-linear-gradient'
 import { Ionicons } from '@expo/vector-icons'
-import { VideoView, useVideoPlayer } from 'expo-video'
 import { welcomeStyles } from './welcomeStyles'
 import { palette } from '../../theme/palette'
 
@@ -21,12 +20,6 @@ const { height } = Dimensions.get('window')
 export default function WelcomeScreen() {
     const navigation = useNavigation()
     const slideAnim = useRef(new Animated.Value(0)).current
-
-    const player = useVideoPlayer(require('../../../assets/welcome_hero.mp4'), player => {
-        player.loop = true
-        player.muted = true
-        player.play()
-    })
 
     const navigateToApp = () => {
         Animated.timing(slideAnim, {
@@ -72,11 +65,10 @@ export default function WelcomeScreen() {
             {...panResponder.panHandlers}
         >
             <View style={welcomeStyles.videoContainer}>
-                <VideoView
-                    player={player}
+                <Image
+                    source={require('../../../assets/welcome_hero.jpg')}
                     style={welcomeStyles.video}
-                    contentFit="cover"
-                    nativeControls={false}
+                    resizeMode="cover"
                 />
                 <LinearGradient
                     colors={['rgba(0,0,0,0.3)', 'rgba(0,0,0,0.8)']}
