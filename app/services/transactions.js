@@ -14,7 +14,7 @@ export const getUserTransactionHistory = async (userId) => {
   const { data: transactionsData, error } = await supabase
     .from('transactions')
     .select('*')
-    .eq('user_id', userId)
+    .eq('seller_id', userId)
     .order('created_at', { ascending: false })
 
   if (error) {

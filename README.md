@@ -43,9 +43,7 @@ mobile marketplace used to publish and browse car listings. Users can authentica
 4. **Assess Supabase Configuration Impact**  
   - List every dashboard change you expect: database schema, RLS policies, triggers, functions, storage buckets, authentication settings, or Edge Functions.  
   - Prepare SQL snippets or detailed UI steps for each change and save them under `SQL → Shared snippets` so they are reproducible by the team; add comments in the snippet description if future runs require manual tweaks or additional context.
-  - When updating an existing table choose one of these approaches and save the snippet accordingly:
-    1. Re-create the table from scratch and store the new SQL using the same command name as the original plus a version suffix (e.g., `listings table 2`).
-    2. Change an existing table with an SQL snippet, then update the original creation snippet so that, if executed today, it would build the table exactly as it currently exists, even if that was not the command originally executed.
+  - When updating an existing table, always generate a **new SQL snippet that recreates the table from scratch**, append a version suffix to the original command name (e.g., `listings table v2`), and keep all previous snippets untouched so the full history remains available. 
     
   > Expect to re-run every SQL snippet in order afterward, effectively rebuilding the full database.
 
@@ -71,10 +69,10 @@ mobile marketplace used to publish and browse car listings. Users can authentica
 8. **Describe the Feature in the README**  
    - Add a block under “Application Features” describing the new feature.
 
-9. **Update the TO DO List**  
-   - Mark items as complete.
+9. **Update the Project Structure in the README**
+   - Add new directory and files to the "Main folder tree"
 
-10. **Open the Pull Request**  
+9. **Open the Pull Request**  
     - Open a PR summarizing the changes.
 
 ## 4. Project Structure
@@ -255,54 +253,54 @@ Revool
   - **Listing Detail:** Complete overhaul with hero image, specs grid, and seller info card.
   - **Welcome Screen:** New background and "Slide to Explore" interaction.
 
-##Search & filters enhancements
+### k) Search & filters enhancements
 - The search/filter system (`useSearchFilters` + `SearchFilters`) was extended to support additional options: **body type**, **condition**, **doors**, **fuel type** and **transmission**. These options are exposed in the `SearchFilters` component as selectable chips and sliders.
 
-### k) Transaction history
+### l) Transaction history
 - **Description:** Users can view their complete purchase and sales history through a dedicated "Historial" tab in the profile screen, showing chronological transactions with clear "Comprado"/"Vendido" labels.
 - **Data persistence:** All transactions are automatically recorded in the `public.transactions` table when purchases are completed via the enhanced `process_vehicle_purchase` function.
 - **UX details:** Each transaction shows vehicle details, counterpart information, transaction type badge (purchase/sale), price, and date, all styled according to the Revvol design system (dark background, gold accents).
 - **Navigation:** Transactions can be tapped to navigate to the original listing detail if it still exists.
 
-### l) Chat & Messaging
+### m) Chat & Messaging
 - **Description:** Real-time chat interface for buyers and sellers to communicate. Includes a conversation list (`MessagesScreen`) and a detailed chat view (`ChatScreen`) with context about the vehicle.
 - **Components:** `MessagesScreen`, `ChatScreen`.
 - **Notes:** Currently uses mock data for conversations and messages.
 
-### m) Seller Rating
+### n) Seller Rating
 - **Description:** Allows buyers to rate their experience with a seller after a transaction.
 - **Components:** `RatingScreen`.
 - **Features:** Star rating system (1-5), feedback submission.
 
-### n) Recommendations
+### o) Recommendations
 - **Description:** A "Selected for you" section displaying curated vehicle recommendations based on user interests.
 - **Components:** `RecommendationsScreen`.
 - **Features:** Horizontal scrolling list, featured item highlight.
 
 ## 6. Components
-### AnimatedAISearchButton (`app/components/AnimatedAISearchButton.js`)
+### a) AnimatedAISearchButton (`app/components/AnimatedAISearchButton.js`)
 - **Responsibility:** Renders a pulsing and rotating button used for triggering AI search features.
 - **Animation:** Uses `Animated.loop` and `Easing` for continuous pulse and rotation effects.
 
-### CarItem (`app/components/CarItem.js`)
+### b) CarItem (`app/components/CarItem.js`)
 - **Responsibility:** Reusable card component for displaying vehicle listings in feeds and lists.
 - **Features:** Displays main image (or placeholder), price formatting, vehicle details (make, model, year, mileage, etc.), and integrates the `FavoriteButton`.
 
-### FavoriteButton (`app/components/FavoriteButton.js`)
+### c) FavoriteButton (`app/components/FavoriteButton.js`)
 - **Responsibility:** renders the heart icon, loads the initial favorite status, sends Supabase mutations (`insert`/`delete`) and handles optimistic updates while keeping errors isolated per button.
 - **Shared cache:** keeps a `Map` keyed by listing + user; listeners subscribe/unsubscribe so every mounted button reacts instantly to status changes.
 - **Variants & props:** `variant="detail\" | "overlay\" | "list\"` tweaks layout to match each screen; `initialIsFavorite`, `fetchOnMount`, `onStatusChange`, `hitSlop` and style overrides cover more advanced cases (e.g., removing an item from *Tus favoritos* when it gets unhearted).
 
-### ImageAnalisisButton (`app/components/ImageAnalisisButton.js`)
+### d) ImageAnalisisButton (`app/components/ImageAnalisisButton.js`)
 - **Responsibility:** converts the picked image to base64, calls Gemini to extract car fields, and triggers description generation callbacks.
 - **Props:** `imageUri`, `onAnalysisComplete`, `onDescriptionGenerated`, `style`.
 - **Notes:** requires `EXPO_PUBLIC_GEMINI_API_KEY`; only works once an image has been chosen in the publish flow.
 
-### SearchSuggestions (`app/components/SearchSuggestions.js`)
+### e) SearchSuggestions (`app/components/SearchSuggestions.js`)
 - **Responsibility:** Displays autocomplete suggestions for the search input.
 - **Features:** Supports different suggestion types (e.g., 'make', 'model') and handles user selection.
 
-### TransactionItem (`app/components/TransactionItem.js`)
+### f) TransactionItem (`app/components/TransactionItem.js`)
 - **Responsibility:** renders individual transaction cards in the history tab showing purchase/sale details with elegant Revvol styling.
 - **Props:** `transaction` (formatted transaction object), `onPress` (callback for navigation), `style` (custom styling).
 - **Design details:** displays vehicle image, title, counterpart info, transaction type badge ("Comprado"/"Vendido"), price, and date; badges use gold accent for purchases and green for sales with subtle transparency effects.
