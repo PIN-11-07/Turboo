@@ -10,11 +10,11 @@ const FONT_ITALIC = 'OTJubileeGolden-Italic'
 export const searchStyles = StyleSheet.create({
     safeArea: {
         flex: 1,
-        backgroundColor: 'transparent',
+        backgroundColor: palette.darkGrey,
     },
     container: {
         flex: 1,
-        backgroundColor: 'transparent',
+        backgroundColor: palette.darkGrey,
     },
 
     /* HEADER */
@@ -22,7 +22,7 @@ export const searchStyles = StyleSheet.create({
         paddingHorizontal: 16,
         paddingTop: 16,
         paddingBottom: 10,
-        backgroundColor: 'transparent',
+        backgroundColor: palette.darkGrey,
     },
 
     /* SEARCH BAR — ORIGINAL */
@@ -35,52 +35,61 @@ export const searchStyles = StyleSheet.create({
         flex: 1,
         flexDirection: 'row',
         alignItems: 'center',
-        backgroundColor: palette.surface,     // ← ORIGINAL
+        backgroundColor: palette.surface,
         borderRadius: 12,
         paddingHorizontal: 12,
         height: 48,
         borderWidth: 1,
-        borderColor: palette.border,
+        borderColor: palette.champagne,
     },
     searchIcon: {
         marginRight: 8,
+        color: palette.champagne,
     },
     searchInput: {
         flex: 1,
         fontSize: 16,
-        color: palette.textPrimary,
+        color: palette.champagne,
         fontSize: 16,
         height: '100%',
+        fontFamily: 'BaiJamjuree-Regular',
+    },
+    verticalDivider: {
+        width: 1,
+        height: 48,
+        backgroundColor: palette.champagne,
+        marginHorizontal: 12,
+    },
+    visualSearchButtonInside: {
+        paddingHorizontal: 5,
+        justifyContent: 'center',
+        alignItems: 'center',
     },
     visualSearchButton: {
         marginLeft: 12,
         width: 48,
         height: 48,
         borderRadius: 12,
-        backgroundColor: palette.surface,
+        backgroundColor: palette.darkGrey,
         justifyContent: 'center',
         alignItems: 'center',
         borderWidth: 1,
-        borderColor: palette.border,
+        borderColor: palette.champagne,
     },
 
     // AI Info Section
     aiInfoSection: {
-        backgroundColor: 'rgba(198, 133, 21, 0.08)',
         paddingVertical: 12,
-        paddingHorizontal: 16,
-        borderRadius: 14,
         marginHorizontal: 16,
         marginBottom: 16,
-        borderWidth: 1,
-        borderColor: 'rgba(198, 133, 21, 0.18)',
     },
     aiInfoText: {
-        color: palette.textSecondary,
+        color: palette.lightGrey,
         fontSize: 13,
         textAlign: 'center',
         lineHeight: 18,
         fontWeight: '500',
+        fontFamily: 'BaiJamjuree-Regular',
     },
 
     /* CATEGORIES */
@@ -88,9 +97,9 @@ export const searchStyles = StyleSheet.create({
         marginBottom: 16,
     },
     sectionTitle: {
-        fontSize: 20,
+        fontSize: 27,
         fontFamily: FONT,
-        color: palette.champagne,
+        color: palette.lightGrey,
         marginBottom: 30,
         marginTop: 10,
         paddingHorizontal: 16,
@@ -108,7 +117,7 @@ export const searchStyles = StyleSheet.create({
         backgroundColor: palette.surface,
         borderWidth: 1,
         borderColor: palette.border,
-        shadowColor: '#000',
+        shadowColor: palette.darkGrey,
         shadowOffset: { width: 0, height: 4 },
         shadowOpacity: 0.25,
         shadowRadius: 8,
@@ -122,7 +131,7 @@ export const searchStyles = StyleSheet.create({
     },
     categoryOverlay: {
         ...StyleSheet.absoluteFillObject,
-        backgroundColor: 'rgba(0,0,0,0.45)',
+        backgroundColor: 'rgba(26, 26, 26, 0.45)',
         justifyContent: 'center',
         alignItems: 'center',
     },
@@ -151,7 +160,7 @@ export const searchStyles = StyleSheet.create({
         overflow: 'hidden',
         borderWidth: 1,
         borderColor: palette.border,
-        shadowColor: '#000',
+        shadowColor: palette.darkGrey,
         shadowOffset: { width: 0, height: 8 },
         shadowOpacity: 0.35,
         shadowRadius: 14,
@@ -207,8 +216,8 @@ export const searchStyles = StyleSheet.create({
         marginBottom: 12,
     },
     cardBadge: {
-        backgroundColor: 'rgba(245,197,24,0.15)',
-        color: palette.accent,
+        backgroundColor: 'rgba(187, 126, 29, 0.15)',
+        color: palette.mustard,
         fontSize: 12,
         fontWeight: '600',
         paddingHorizontal: 10,
@@ -288,7 +297,7 @@ export const searchStyles = StyleSheet.create({
         alignItems: 'center',
     },
     removeImageX: {
-        color: '#FFF',
+        color: palette.white,
         fontSize: 12,
         fontWeight: 'bold',
     },
@@ -298,6 +307,7 @@ export const searchStyles = StyleSheet.create({
         flexDirection: 'row',
         paddingHorizontal: 16,
         marginBottom: 10,
+        alignItems: 'center',
     },
     controlButton: {
         flexDirection: 'row',
@@ -305,24 +315,15 @@ export const searchStyles = StyleSheet.create({
         paddingHorizontal: 12,
         paddingVertical: 8,
         borderRadius: 8,
-        backgroundColor: palette.surface,
         borderWidth: 1,
-        borderColor: palette.border,
         marginRight: 8,
         height: 36,
     },
-    controlButtonActive: {
-        backgroundColor: palette.accent,
-        borderColor: palette.accent,
-    },
     controlButtonText: {
         marginLeft: 6,
-        fontSize: 12,
-        color: palette.textPrimary,
+        fontSize: 16,
+        fontFamily: 'BaiJamjuree-Regular',
         fontWeight: '600',
-    },
-    controlButtonTextActive: {
-        color: palette.background,
     },
 
     /* EMPTY & LOADING */
@@ -338,7 +339,7 @@ export const searchStyles = StyleSheet.create({
     },
     loadingOverlay: {
         ...StyleSheet.absoluteFillObject,
-        backgroundColor: 'rgba(4,4,4,0.85)',
+        backgroundColor: 'rgba(4, 4, 4, 0.85)',
         justifyContent: 'center',
         alignItems: 'center',
         zIndex: 10,

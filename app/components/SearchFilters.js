@@ -392,13 +392,13 @@ const styles = {
     borderRadius: 3,
   },
   sliderSelected: {
-    backgroundColor: palette.accent,
+    backgroundColor: palette.mustard,
   },
   sliderUnselected: {
     backgroundColor: palette.border,
   },
   sliderMarker: {
-    backgroundColor: palette.accent,
+    backgroundColor: palette.mustard,
     width: 18,
     height: 18,
     borderRadius: 9,
@@ -417,7 +417,7 @@ const styles = {
     marginBottom: 8,
   },
   chipSelected: {
-    backgroundColor: palette.accent,
+    backgroundColor: palette.mustard,
   },
   chipText: {
     color: palette.textSecondary,
@@ -447,14 +447,14 @@ const styles = {
     alignItems: 'center',
   },
   applyButton: {
-    backgroundColor: palette.accent,
+    backgroundColor: palette.mustard,
     marginRight: 8,
   },
   clearButton: {
     backgroundColor: palette.border,
   },
   applyButtonText: {
-    color: palette.background,
+    color: palette.darkGrey,
     fontWeight: '600',
   },
   clearButtonText: {

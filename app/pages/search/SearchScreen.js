@@ -59,6 +59,7 @@ export default function SearchScreen() {
     const [image, setImage] = useState(null)
     const [aiMessageVisible, setAiMessageVisible] = useState(false)
     const [aiMessage, setAiMessage] = useState('')
+    const [pressedButton, setPressedButton] = useState(null)
 
     // Visual Search Logic
     const pickImageFromGallery = async () => {
@@ -224,7 +225,7 @@ export default function SearchScreen() {
         if (!loadingMore) return null
         return (
             <View style={{ padding: 20 }}>
-                <ActivityIndicator size="small" color={palette.accent} />
+                <ActivityIndicator size="small" color={palette.mustard} />
             </View>
         )
     }, [loadingMore])
@@ -237,25 +238,24 @@ export default function SearchScreen() {
 
                 {/* Header & Search Bar */}
                 <View style={styles.header}>
-                    {/* Background Gradient for Header */}
+                    {/* Gradient below search bar - Background */}
                     <LinearGradient
-                        colors={['rgba(198, 133, 21, 0.1)', 'transparent']}
+                        colors={[palette.darkGrey, palette.darkMustard]}
                         start={{ x: 0, y: 0 }}
                         end={{ x: 0, y: 1 }}
                         style={{
                             position: 'absolute',
-                            top: 0,
+                            top: 30,
                             left: 0,
                             right: 0,
-                            height: 200,
-                            zIndex: -1,
+                            height: 100,
                         }}
                     />
 
-                    <View style={styles.searchBarContainer}>
+                    <View style={[styles.searchBarContainer, { zIndex: 1 }]}>
                         <View style={styles.searchInputWrapper}>
                             <TouchableOpacity style={styles.searchIcon}>
-                                <Ionicons name="search" size={20} color={palette.textMuted} />
+                                <Ionicons name="search" size={20} color={palette.champagne} />
                             </TouchableOpacity>
                             <TextInput
                                 value={search.searchText}
@@ -271,21 +271,24 @@ export default function SearchScreen() {
                                     }, 200)
                                 }}
                                 placeholder="Search cars, members..."
-                                placeholderTextColor={palette.textMuted}
+                                placeholderTextColor={palette.champagne}
                                 style={styles.searchInput}
                                 returnKeyType="search"
                             />
                             {search.searchText.length > 0 && (
                                 <TouchableOpacity onPress={search.clearSearch}>
-                                    <Ionicons name="close-circle" size={18} color={palette.textMuted} />
+                                    <Ionicons name="close-circle" size={18} color={palette.champagne} />
                                 </TouchableOpacity>
                             )}
+                            
+                            {/* Vertical Divider */}
+                            <View style={styles.verticalDivider} />
+                            
+                            {/* Visual Search Button Inside */}
+                            <TouchableOpacity style={styles.visualSearchButtonInside} onPress={pickImageFromGallery}>
+                                <Ionicons name="image-outline" size={24} color={palette.champagne} />
+                            </TouchableOpacity>
                         </View>
-
-                        {/* Visual Search Button */}
-                        <TouchableOpacity style={styles.visualSearchButton} onPress={pickImageFromGallery}>
-                            <Ionicons name="image-outline" size={24} color={palette.accent} />
-                        </TouchableOpacity>
                     </View>
 
                     {/* Search Suggestions */}
@@ -320,27 +323,81 @@ export default function SearchScreen() {
 
                     {/* Controls (Sort, Filter, View) - Only show when searching or browsing results */}
                     <View style={styles.controlsRow}>
-                        <TouchableOpacity onPress={search.cycleSort} style={styles.controlButton}>
-                            <Ionicons name="swap-vertical" size={16} color={palette.accent} />
-                            <Text style={styles.controlButtonText}>
-                                {search.sortBy === 'date' ? 'Date' : 'Price'} {search.sortDir === 'desc' ? '↓' : '↑'}
-                            </Text>
-                        </TouchableOpacity>
-
+                        {/* Filter - Left */}
                         <TouchableOpacity
                             onPress={() => search.setShowFilters(true)}
-                            style={[styles.controlButton, search.showFilters && styles.controlButtonActive]}
+                            onPressIn={() => setPressedButton('filter')}
+                            onPressOut={() => setPressedButton(null)}
+                            style={[
+                                styles.controlButton,
+                                {
+                                    borderColor: pressedButton === 'filter' ? palette.champagne : palette.mustard,
+                                    backgroundColor: palette.darkGrey,
+                                }
+                            ]}
                         >
-                            <Ionicons name="options" size={16} color={search.showFilters ? palette.background : palette.accent} />
-                            <Text style={[styles.controlButtonText, search.showFilters && styles.controlButtonTextActive]}>Filters</Text>
+                            <Ionicons 
+                                name="options" 
+                                size={16} 
+                                color={pressedButton === 'filter' ? palette.champagne : palette.mustard} 
+                            />
+                            <Text style={[
+                                styles.controlButtonText,
+                                { color: pressedButton === 'filter' ? palette.champagne : palette.mustard }
+                            ]}>Filters</Text>
                         </TouchableOpacity>
 
-                        <TouchableOpacity
-                            onPress={() => search.setViewMode(search.viewMode === 'list' ? 'grid' : 'list')}
-                            style={styles.controlButton}
-                        >
-                            <Ionicons name={search.viewMode === 'list' ? 'grid' : 'list'} size={16} color={palette.accent} />
-                        </TouchableOpacity>
+                        {/* Spacer */}
+                        <View style={{ flex: 1 }} />
+
+                        {/* Sort & View - Right Container */}
+                        <View style={{ flexDirection: 'row', gap: 4 }}>
+                            {/* Sort - Middle */}
+                            <TouchableOpacity 
+                                onPress={search.cycleSort} 
+                                onPressIn={() => setPressedButton('sort')}
+                                onPressOut={() => setPressedButton(null)}
+                                style={[
+                                    styles.controlButton,
+                                    {
+                                        borderColor: pressedButton === 'sort' ? palette.champagne : palette.mustard,
+                                        backgroundColor: palette.darkGrey,
+                                    }
+                                ]}
+                            >
+                                <Ionicons 
+                                    name="swap-vertical" 
+                                    size={16} 
+                                    color={pressedButton === 'sort' ? palette.champagne : palette.mustard} 
+                                />
+                                <Text style={[
+                                    styles.controlButtonText,
+                                    { color: pressedButton === 'sort' ? palette.champagne : palette.mustard }
+                                ]}>
+                                    {search.sortBy === 'date' ? 'Date' : 'Price'} {search.sortDir === 'desc' ? '↓' : '↑'}
+                                </Text>
+                            </TouchableOpacity>
+
+                            {/* View - Right */}
+                            <TouchableOpacity
+                                onPress={() => search.setViewMode(search.viewMode === 'list' ? 'grid' : 'list')}
+                                onPressIn={() => setPressedButton('view')}
+                                onPressOut={() => setPressedButton(null)}
+                                style={[
+                                    styles.controlButton,
+                                    {
+                                        borderColor: pressedButton === 'view' ? palette.champagne : palette.mustard,
+                                        backgroundColor: palette.darkGrey,
+                                    }
+                                ]}
+                            >
+                                <Ionicons 
+                                    name={search.viewMode === 'list' ? 'grid' : 'list'} 
+                                    size={16} 
+                                    color={pressedButton === 'view' ? palette.champagne : palette.mustard} 
+                                />
+                            </TouchableOpacity>
+                        </View>
                     </View>
 
                     {/* Active Filters Chips */}
@@ -360,7 +417,7 @@ export default function SearchScreen() {
                     visible={search.showFilters}
                     onRequestClose={() => search.setShowFilters(false)}
                 >
-                    <View style={{ flex: 1, backgroundColor: 'rgba(0,0,0,0.8)', paddingTop: 40 }}>
+                    <View style={{ flex: 1, backgroundColor: 'rgba(26, 26, 26, 0.9)', paddingTop: 40 }}>
                         <SearchFilters
                             visible={true}
                             filters={search.filters}
@@ -405,12 +462,6 @@ export default function SearchScreen() {
                             )}
                             <View style={styles.categoriesSection}>
                                 <Text style={styles.sectionTitle}>Or explore by category</Text>
-                                <LinearGradient
-                                    colors={['#c68515ff', '#000000ff']}
-                                    start={{ x: 0, y: 0 }}
-                                    end={{ x: 0, y: 1 }}
-                                    style={styles.categoryHeroGradient}
-                                />
                                 <View style={styles.categoriesGrid}>
                                     <FlatList
                                         data={CATEGORIES}
@@ -457,14 +508,14 @@ export default function SearchScreen() {
                         <RefreshControl
                             refreshing={refreshing}
                             onRefresh={handleRefresh}
-                            tintColor={palette.accent}
+                            tintColor={palette.mustard}
                         />
                     }
                 />
 
                 {initialLoading && (
                     <View style={styles.loadingOverlay}>
-                        <ActivityIndicator size="large" color={palette.accent} />
+                        <ActivityIndicator size="large" color={palette.mustard} />
                     </View>
                 )}
             </View>
