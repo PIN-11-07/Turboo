@@ -1,24 +1,15 @@
 import { StyleSheet } from 'react-native'
-
-const palette = {
-  background: '#0D0D0D',
-  surface: '#000',
-  gold: '#C58A1A',
-  goldSoft: '#E0A740',
-  textPrimary: '#FFFFFF',
-  textMuted: '#888888',
-  border: '#3A3A3A',
-}
+import { palette } from '../../theme/palette'
 
 export const publishScreenStyles = StyleSheet.create({
   safeArea: {
     flex: 1,
-    backgroundColor: palette.background,
+    backgroundColor: palette.darkGrey,
   },
 
   container: {
     flex: 1,
-    backgroundColor: palette.background,
+    backgroundColor: palette.darkGrey,
   },
 
   scrollContent: {
@@ -37,7 +28,7 @@ export const publishScreenStyles = StyleSheet.create({
 
   photoButton: {
     borderWidth: 1,
-    borderColor: palette.gold,
+    borderColor: palette.mustard,
     paddingVertical: 14,
     borderRadius: 8,
     flexDirection: 'row',
@@ -48,21 +39,43 @@ export const publishScreenStyles = StyleSheet.create({
   },
 
   photoButtonPlus: {
-    color: palette.gold,
+    color: palette.mustard,
     fontSize: 20,
+    fontFamily: 'BaiJamjuree-Regular',
   },
 
-  photoButtonText: {
-    color: palette.gold,
-    fontSize: 16,
+  
+  photoButtonOutline: {
+    paddingVertical: 10,
+    borderRadius: 5,
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    gap: 10,
+    marginBottom: 8,
+    borderWidth: 1,
+  },
+
+  photoButtonPlusOutline: {
+    fontSize: 24,    
+    fontWeight: '400',
+    fontFamily: 'BaiJamjuree-Regular',
+  },
+
+  photoButtonTextOutline: {
+    fontSize: 16,    
+    fontWeight: '400',
+    fontFamily: 'BaiJamjuree-Regular',
+    color: palette.mustard,
   },
 
   tipText: {
-    color: '#ddddddff',
-    fontSize: 14,
+    color: palette.lightGrey,
+    fontSize: 13,
     marginBottom: 30,
     marginTop: 10,
     lineHeight: 16,
+    fontFamily: 'BaiJamjuree-Regular',
   },
 
   sectionTitle: {
@@ -73,40 +86,42 @@ export const publishScreenStyles = StyleSheet.create({
   },
 
   label: {
-    color: palette.textPrimary,
-    fontFamily: 'System',
-    fontSize: 13,
+    color: palette.white,
+    fontFamily: 'BaiJamjuree-Regular',
+    fontSize: 16,
     marginBottom: 6,
     marginTop: 12,
   },
 
   selector: {
-    backgroundColor: palette.surface,
+    backgroundColor: palette.darkGrey,
     borderWidth: 1,
-    borderColor: palette.gold,
+    borderColor: palette.mustard,
     padding: 14,
-    borderRadius: 8,
+    borderRadius: 5,
   },
 
   selectorValue: {
-    color: palette.gold,
+    color: palette.mustard,
     fontSize: 16,
+    fontFamily: 'BaiJamjuree-Regular',
   },
 
   selectorPlaceholder: {
-    color: palette.gold,
+    color: palette.mustard,
     opacity: 0.65,
     fontSize: 16,
   },
 
   input: {
-    backgroundColor: palette.surface,
+    backgroundColor: palette.darkGrey,
     borderWidth: 1,
-    borderColor: palette.gold,
+    borderColor: palette.mustard,
     padding: 14,
-    borderRadius: 8,
+    borderRadius: 5,
     fontSize: 16,
-    color: palette.gold,
+    color: palette.mustard,
+    fontFamily: 'BaiJamjuree-Regular',
   },
 
   multiline: {
@@ -133,32 +148,33 @@ export const publishScreenStyles = StyleSheet.create({
 
   postButton: {
     marginTop: 54,
-    backgroundColor: palette.gold,
+    backgroundColor: palette.mustard,
     paddingVertical: 16,
-    borderRadius: 8,
+    borderRadius: 5,
     alignItems: 'center',
   },
 
   postButtonText: {
-    color: '#000',
+    color: palette.darkGrey,
     fontSize: 16,
-    fontWeight: '600',
+    fontFamily: 'BaiJamjuree-Regular',
   },
 
   draftButton: {
     marginTop: 20,
     backgroundColor: 'transparent',
     borderWidth: 1,
-    borderColor: palette.gold,
+    borderColor: palette.mustard,
     paddingVertical: 14,
-    borderRadius: 8,
+    borderRadius: 5,
     alignItems: 'center',
   },
 
   draftButtonText: {
-    color: palette.gold,
+    color: palette.mustard,
     fontSize: 16,
     fontWeight: '600',
+    fontFamily: 'BaiJamjuree-Regular',
   },
 
   submitDisabled: {
@@ -168,8 +184,8 @@ export const publishScreenStyles = StyleSheet.create({
   optionList: {
     marginTop: 8,
     borderWidth: 1,
-    borderColor: palette.gold,
-    backgroundColor: palette.surface,
+    borderColor: palette.mustard,
+    backgroundColor: palette.darkGrey,
     borderRadius: 8,
     maxHeight: 200,
     overflow: 'hidden',
@@ -221,7 +237,7 @@ export const publishScreenStyles = StyleSheet.create({
   overflow: 'hidden',
   marginBottom: 16,
   borderWidth: 1,
-  borderColor: palette.gold,
+  borderColor: palette.mustard,
   backgroundColor: '#000',
 },
 
@@ -248,16 +264,19 @@ removeImageX: {
   fontWeight: 'bold',
 },
 placeholder: {
-  color: palette.gold, 
+  color: palette.mustard, 
   opacity: 0.65, 
   fontSize: 16,
+  fontFamily: 'BaiJamjuree-Regular',
 },
 sellCarTitle: {
-  fontFamily: 'serif',
+  fontFamily: 'OTJubileeGolden-Italic',
   fontSize: 16,
-  color: '#fff',
+  fontWeight: '500',
+  color: palette.white,
   textAlign: 'center',
-  marginVertical: 20,
   letterSpacing: 1,
+  marginVertical: 5,
+  paddingBottom: 10,
 },
 })

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
   ActivityIndicator,
   KeyboardAvoidingView,
@@ -16,6 +16,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { publishScreenStyles as styles } from './PublishStyles';
 import { usePublish } from './usePublish';
 import ImageAnalysisButton from '../../components/ImageAnalisisButton';
+import { palette } from '../../theme/palette';
 
 const MAKE_OPTIONS = [
   'Alfa Romeo',
@@ -49,6 +50,9 @@ const FUEL_OPTIONS = ['Gasolina', 'Diesel', 'Hibrido', 'Electrico', 'GLP', 'GNC'
 const TRANSMISSION_OPTIONS = ['Manual', 'Automatica', 'Semiautomatica'];
 
 export default function PublishScreen() {
+  const [pressedButton, setPressedButton] = useState(null);
+  const [pressedSubmit, setPressedSubmit] = useState(false);
+  const [pressedDraft, setPressedDraft] = useState(false);
   const {
     form,
     activePicker,
@@ -157,21 +161,37 @@ export default function PublishScreen() {
           ) : (
             <>
               <TouchableOpacity
-                style={styles.photoButton}
+                style={[
+                  styles.photoButtonOutline,
+                  {
+                    borderColor: pressedButton === 'take' ? palette.champagne : palette.mustard,
+                    backgroundColor: pressedButton === 'take' ? 'rgba(225, 207, 170, 0.1)' : 'transparent',
+                  },
+                ]}
                 activeOpacity={0.7}
                 onPress={takePhoto}
+                onPressIn={() => setPressedButton('take')}
+                onPressOut={() => setPressedButton(null)}
               >
-                <Text style={styles.photoButtonPlus}>+</Text>
-                <Text style={styles.photoButtonText}>Take picture</Text>
+                <Text style={[styles.photoButtonPlusOutline, { color: pressedButton === 'take' ? palette.champagne : palette.mustard }]}>+</Text>
+                <Text style={[styles.photoButtonTextOutline, { color: pressedButton === 'take' ? palette.champagne : palette.mustard }]}>Take picture</Text>
               </TouchableOpacity>
 
               <TouchableOpacity
-                style={styles.photoButton}
+                style={[
+                  styles.photoButtonOutline,
+                  {
+                    borderColor: pressedButton === 'gallery' ? palette.champagne : palette.mustard,
+                    backgroundColor: pressedButton === 'gallery' ? 'rgba(225, 207, 170, 0.1)' : 'transparent',
+                  },
+                ]}
                 activeOpacity={0.7}
                 onPress={pickImageFromGallery}
+                onPressIn={() => setPressedButton('gallery')}
+                onPressOut={() => setPressedButton(null)}
               >
-                <Text style={styles.photoButtonPlus}>+</Text>
-                <Text style={styles.photoButtonText}>Add from gallery</Text>
+                <Text style={[styles.photoButtonPlusOutline, { color: pressedButton === 'gallery' ? palette.champagne : palette.mustard }]}>+</Text>
+                <Text style={[styles.photoButtonTextOutline, { color: pressedButton === 'gallery' ? palette.champagne : palette.mustard }]}>Add from gallery</Text>
               </TouchableOpacity>
             </>
           )}
@@ -188,7 +208,7 @@ export default function PublishScreen() {
             all sides.
           </Text>
 
-         <Text style={{ fontFamily: 'serif', fontSize: 24, color: '#fff' }}>
+         <Text style={{ fontFamily: 'OTJubileeGolden', fontSize: 27, color: palette.lightGrey }}>
             Car information
           </Text>
 
@@ -321,26 +341,47 @@ export default function PublishScreen() {
           
 
           <TouchableOpacity
-            style={[styles.postButton, submitting && styles.submitDisabled]}
+            style={[
+              styles.postButton,
+              submitting && styles.submitDisabled,
+              {
+                backgroundColor: pressedSubmit ? palette.champagne : palette.mustard,
+              },
+            ]}
             onPress={handleSubmit}
+            onPressIn={() => setPressedSubmit(true)}
+            onPressOut={() => setPressedSubmit(false)}
             disabled={submitting}
           >
             {submitting ? (
               <ActivityIndicator color="#000" />
             ) : (
-              <Text style={styles.postButtonText}>Post your vehicle</Text>
+              <Text style={[styles.postButtonText, { color: pressedSubmit ? palette.darkMustard : palette.darkGrey }]}>
+                Post your vehicle
+              </Text>
             )}
           </TouchableOpacity>
 
           <TouchableOpacity
-            style={[styles.draftButton, submitting && styles.submitDisabled]}
+            style={[
+              styles.draftButton,
+              submitting && styles.submitDisabled,
+              {
+                borderColor: pressedDraft ? palette.champagne : palette.mustard,
+                backgroundColor: 'transparent',
+              },
+            ]}
             onPress={handleSaveDraft}
+            onPressIn={() => setPressedDraft(true)}
+            onPressOut={() => setPressedDraft(false)}
             disabled={submitting}
           >
             {submitting && submittingAction === 'draft' ? (
-              <ActivityIndicator color="#C58A1A" />
+              <ActivityIndicator color={palette.mustard} />
             ) : (
-              <Text style={styles.draftButtonText}>Save draft</Text>
+              <Text style={[styles.draftButtonText, { color: pressedDraft ? palette.champagne : palette.mustard }]}>
+                Save draft
+              </Text>
             )}
           </TouchableOpacity>
 

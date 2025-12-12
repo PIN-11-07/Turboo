@@ -24,6 +24,8 @@ const ImageAnalysisButton = ({
     return 'image/jpeg';
   };
 
+  const [isPressedDown, setIsPressedDown] = useState(false);
+
   const handlePress = async () => {
     if (!imageUri) {
       Alert.alert('Missing Image', 'Please add a car photo first.');
@@ -76,39 +78,58 @@ const ImageAnalysisButton = ({
     <View style={[styles.container, style]}>
       <TouchableOpacity
         onPress={handlePress}
+        onPressIn={() => setIsPressedDown(true)}
+        onPressOut={() => setIsPressedDown(false)}
         disabled={isAnalyzing || isSuccess}
         activeOpacity={0.8}
         style={styles.touchable}
       >
-        <LinearGradient
-          colors={
-            isSuccess
-              ? ['#4CAF50', '#45a049'] // Green for success
-              : isAnalyzing
-                ? [palette.disabled, palette.disabled]
-                : [palette.accent, palette.mustard]
-          }
-          start={{ x: 0, y: 0 }}
-          end={{ x: 1, y: 1 }}
-          style={styles.gradient}
-        >
-          {isAnalyzing ? (
-            <>
-              <ActivityIndicator color={palette.textPrimary} size="small" style={{ marginRight: 8 }} />
-              <Text style={styles.text}>Analyzing...</Text>
-            </>
-          ) : isSuccess ? (
-            <>
-              <Ionicons name="checkmark-circle" size={20} color="#fff" style={{ marginRight: 6 }} />
-              <Text style={styles.text}>Identified!</Text>
-            </>
-          ) : (
-            <>
-              <Ionicons name="sparkles" size={18} color={palette.background} style={{ marginRight: 6 }} />
-              <Text style={styles.text}>AI Scan</Text>
-            </>
-          )}
-        </LinearGradient>
+        {isSuccess ? (
+          <LinearGradient
+            colors={['#4CAF50', '#45a049']}
+            start={{ x: 0, y: 0 }}
+            end={{ x: 1, y: 1 }}
+            style={styles.gradient}
+          >
+            <Ionicons name="checkmark-circle" size={20} color="#fff" style={{ marginRight: 6 }} />
+            <Text style={styles.text}>Identified!</Text>
+          </LinearGradient>
+        ) : (
+          <View
+            style={[
+              styles.outlineButton,
+              {
+                borderColor: isPressedDown ? palette.champagne : palette.mustard,
+                backgroundColor: isPressedDown ? 'rgba(225, 207, 170, 0.1)' : 'transparent',
+              },
+            ]}
+          >
+            {isAnalyzing ? (
+              <>
+                <ActivityIndicator
+                  color={isPressedDown ? palette.champagne : palette.mustard}
+                  size="small"
+                  style={{ marginRight: 8 }}
+                />
+                <Text style={[styles.outlineText, { color: isPressedDown ? palette.champagne : palette.mustard }]}>
+                  Analyzing...
+                </Text>
+              </>
+            ) : (
+              <>
+                <Ionicons
+                  name="sparkles"
+                  size={16}
+                  color={isPressedDown ? palette.champagne : palette.mustard}
+                  style={{ marginRight: 6 }}
+                />
+                <Text style={[styles.outlineText, { color: isPressedDown ? palette.champagne : palette.mustard }]}>
+                  AI Scan
+                </Text>
+              </>
+            )}
+          </View>
+        )}
       </TouchableOpacity>
     </View>
   );
@@ -118,12 +139,12 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     height: 48,
-    borderRadius: 12,
+    borderRadius: 5,
     overflow: 'hidden',
-    shadowColor: '#000',
+    shadowColor: palette.darkGrey,
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.3,
-    shadowRadius: 4.65,
+    shadowRadius: 5,
     elevation: 8,
   },
   touchable: {
@@ -136,11 +157,26 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingHorizontal: 16,
   },
+  outlineButton: {
+    flex: 1,
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingHorizontal: 16,
+    borderWidth: 1,
+    borderRadius: 5,
+  },
   text: {
-    color: palette.background,
+    color: palette.darkGrey,
     fontWeight: '700',
     fontSize: 15,
     letterSpacing: 0.5,
+    fontFamily: 'Baijamjuri-Regular',
+  },
+  outlineText: {
+    fontWeight: '400',
+    fontSize: 16,
+    fontFamily: 'Baijamjuri-Regular',
   },
 });
 

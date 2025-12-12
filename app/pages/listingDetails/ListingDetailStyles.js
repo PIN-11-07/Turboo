@@ -265,7 +265,7 @@ export const listingDetailScreenStyles = StyleSheet.create({
   primaryButton: {
     flex: 1,
     height: 54,
-    borderRadius: 12,
+    borderRadius: 5,
     backgroundColor: palette.mustard,
     alignItems: 'center',
     justifyContent: 'center',
@@ -275,9 +275,8 @@ export const listingDetailScreenStyles = StyleSheet.create({
   },
   primaryButtonText: {
     color: palette.darkGrey,
-    fontSize: 18,
-    fontWeight: '700',
-    fontFamily: 'OTJubileeGolden',
+    fontSize: 16,
+    fontFamily: 'BaiJamjuree-Regular',
   },
   primaryButtonTextPressed: {
     color: palette.darkMustard,
@@ -286,10 +285,10 @@ export const listingDetailScreenStyles = StyleSheet.create({
   secondaryButton: {
     flex: 1,
     height: 54,
-    borderRadius: 12,
+    borderRadius: 5,
     alignItems: 'center',
     justifyContent: 'center',
-    borderWidth: 1.5,
+    borderWidth: 1,
     borderColor: palette.mustard,
     backgroundColor: 'transparent',
   },
@@ -298,9 +297,8 @@ export const listingDetailScreenStyles = StyleSheet.create({
   },
   secondaryButtonText: {
     color: palette.mustard,
-    fontSize: 18,
-    fontWeight: '700',
-    fontFamily: 'OTJubileeGolden',
+    fontSize: 16,
+    fontFamily: 'BaiJamjuree-Regular',
   },
   secondaryButtonTextPressed: {
     color: palette.champagne,
