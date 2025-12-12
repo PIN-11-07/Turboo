@@ -1,24 +1,31 @@
-import { StyleSheet, Dimensions, Platform } from 'react-native'
+import { StyleSheet, Dimensions } from 'react-native'
 import { palette } from '../../theme/palette'
 
 const { width } = Dimensions.get('window')
 
+const FONT = 'OTJubileeGolden'
+const FONT_LIGHT = 'OTJubileeGolden-Extralight'
+const FONT_ITALIC = 'OTJubileeGolden-Italic'
+
 export const searchStyles = StyleSheet.create({
     safeArea: {
         flex: 1,
-        backgroundColor: "transparent",
+        backgroundColor: 'transparent',
     },
     container: {
         flex: 1,
-        backgroundColor: "transparent",
+        backgroundColor: 'transparent',
     },
+
+    /* HEADER */
     header: {
         paddingHorizontal: 16,
         paddingTop: 16,
         paddingBottom: 10,
-        backgroundColor: "transparent",
+        backgroundColor: 'transparent',
     },
-    // Search Bar
+
+    /* SEARCH BAR — ORIGINAL */
     searchBarContainer: {
         flexDirection: 'row',
         alignItems: 'center',
@@ -28,7 +35,7 @@ export const searchStyles = StyleSheet.create({
         flex: 1,
         flexDirection: 'row',
         alignItems: 'center',
-        backgroundColor: palette.surface,
+        backgroundColor: palette.surface,     // ← ORIGINAL
         borderRadius: 12,
         paddingHorizontal: 12,
         height: 48,
@@ -40,6 +47,7 @@ export const searchStyles = StyleSheet.create({
     },
     searchInput: {
         flex: 1,
+        fontSize: 16,
         color: palette.textPrimary,
         fontSize: 16,
         height: '100%',
@@ -58,14 +66,14 @@ export const searchStyles = StyleSheet.create({
 
     // AI Info Section
     aiInfoSection: {
-        backgroundColor: 'rgba(198, 133, 21, 0.1)',
+        backgroundColor: 'rgba(198, 133, 21, 0.08)',
         paddingVertical: 12,
         paddingHorizontal: 16,
-        borderRadius: 12,
+        borderRadius: 14,
         marginHorizontal: 16,
         marginBottom: 16,
         borderWidth: 1,
-        borderColor: 'rgba(198, 133, 21, 0.2)',
+        borderColor: 'rgba(198, 133, 21, 0.18)',
     },
     aiInfoText: {
         color: palette.textSecondary,
@@ -75,21 +83,20 @@ export const searchStyles = StyleSheet.create({
         fontWeight: '500',
     },
 
-    // Categories
+    /* CATEGORIES */
     categoriesSection: {
-        backgroundColor: 'transparent',
         marginBottom: 16,
     },
     sectionTitle: {
         fontSize: 20,
-        fontWeight: '700',
-        color: palette.textPrimary,
-        marginBottom: 16,
-        marginTop: 8,
+        fontFamily: FONT,
+        color: palette.champagne,
+        marginBottom: 30,
+        marginTop: 10,
         paddingHorizontal: 16,
     },
     categoriesGrid: {
-        paddingHorizontal: 11, // Adjusted to balance with card margins
+        paddingHorizontal: 11,
         paddingBottom: 8,
     },
     categoryCard: {
@@ -99,14 +106,13 @@ export const searchStyles = StyleSheet.create({
         borderRadius: 16,
         overflow: 'hidden',
         backgroundColor: palette.surface,
-        position: 'relative',
         borderWidth: 1,
         borderColor: palette.border,
         shadowColor: '#000',
         shadowOffset: { width: 0, height: 4 },
-        shadowOpacity: 0.2,
+        shadowOpacity: 0.25,
         shadowRadius: 8,
-        elevation: 3,
+        elevation: 4,
     },
     categoryImage: {
         width: '100%',
@@ -116,21 +122,18 @@ export const searchStyles = StyleSheet.create({
     },
     categoryOverlay: {
         ...StyleSheet.absoluteFillObject,
-        backgroundColor: 'rgba(0,0,0,0.4)',
+        backgroundColor: 'rgba(0,0,0,0.45)',
         justifyContent: 'center',
         alignItems: 'center',
     },
     categoryTitle: {
-        color: '#FFFFFF',
-        fontSize: 17,
-        fontWeight: '700',
+        color: palette.champagne,
+        fontSize: 18,
+        fontFamily: FONT,
         textAlign: 'center',
-        textShadowColor: 'rgba(0, 0, 0, 0.85)',
-        textShadowOffset: { width: 0, height: 2 },
-        textShadowRadius: 4,
     },
 
-    // Results List Styles
+    /* LIST / GRID */
     listContent: {
         paddingHorizontal: 16,
         paddingBottom: 80,
@@ -142,7 +145,7 @@ export const searchStyles = StyleSheet.create({
 
     // Card Styles (Matched to FeedStyles)
     card: {
-        backgroundColor: palette.surface,
+        backgroundColor: palette.lightGrey,
         borderRadius: 18,
         marginBottom: 18,
         overflow: 'hidden',
@@ -152,10 +155,9 @@ export const searchStyles = StyleSheet.create({
         shadowOffset: { width: 0, height: 8 },
         shadowOpacity: 0.35,
         shadowRadius: 14,
-        elevation: 5,
+        elevation: 6,
     },
     cardImageWrapper: {
-        position: 'relative',
         height: 200,
         width: '100%',
     },
@@ -165,7 +167,7 @@ export const searchStyles = StyleSheet.create({
         resizeMode: 'cover',
     },
     cardImagePlaceholder: {
-        backgroundColor: palette.overlay,
+        backgroundColor: palette.elevated,
         justifyContent: 'center',
         alignItems: 'center',
     },
@@ -184,20 +186,19 @@ export const searchStyles = StyleSheet.create({
     },
     cardTitle: {
         fontSize: 18,
-        fontWeight: '700',
-        color: palette.textPrimary,
+        fontFamily: FONT,
+        color: palette.darkGrey,
         flex: 1,
         marginRight: 8,
     },
     cardPrice: {
         fontSize: 18,
-        fontWeight: '700',
-        color: palette.accent,
+        fontFamily: FONT,
+        color: palette.darkGrey,
     },
     cardSubtitle: {
         fontSize: 15,
         color: palette.textSecondary,
-        marginTop: 4,
         marginBottom: 12,
     },
     cardBadgeRow: {
@@ -206,7 +207,7 @@ export const searchStyles = StyleSheet.create({
         marginBottom: 12,
     },
     cardBadge: {
-        backgroundColor: 'rgba(245, 197, 24, 0.15)',
+        backgroundColor: 'rgba(245,197,24,0.15)',
         color: palette.accent,
         fontSize: 12,
         fontWeight: '600',
@@ -217,9 +218,6 @@ export const searchStyles = StyleSheet.create({
         marginBottom: 6,
     },
     cardFooter: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        alignItems: 'center',
         marginTop: 2,
     },
     cardLocation: {
@@ -227,26 +225,21 @@ export const searchStyles = StyleSheet.create({
         color: palette.textMuted,
         fontWeight: '500',
     },
-    cardMeta: {
-        fontSize: 12,
-        color: palette.textMuted,
-    },
 
-    // Grid Item Styles
+    /* GRID ITEM */
     gridItem: {
         flex: 1,
         margin: 5,
-        backgroundColor: palette.surface,
+        backgroundColor: palette.lightGrey,
         borderRadius: 12,
         overflow: 'hidden',
         borderWidth: 1,
         borderColor: palette.border,
-        maxWidth: (width - 32) / 2, // Adjusted for padding
+        maxWidth: (width - 32) / 2,
     },
     gridImageContainer: {
         aspectRatio: 4 / 3,
         width: '100%',
-        position: 'relative',
     },
     gridImage: {
         width: '100%',
@@ -256,44 +249,22 @@ export const searchStyles = StyleSheet.create({
     },
     gridContent: {
         padding: 10,
-        flexDirection: "column",
-        justifyContent: "space-between",
         height: 80,
+        justifyContent: 'space-between',
     },
     gridTitle: {
         fontSize: 14,
-        fontWeight: '700',
-        color: palette.textPrimary,
-        marginBottom: 4,
+        fontFamily: FONT,
+        color: palette.darkGrey,
     },
     gridPrice: {
         fontSize: 15,
-        fontWeight: '700',
-        color: palette.accent,
-        marginTop: "auto",
-        alignSelf: "flex-end",
+        fontFamily: FONT,
+        color: palette.darkGrey,
+        alignSelf: 'flex-end',
     },
 
-    // Empty & Loading
-    emptyState: {
-        padding: 40,
-        alignItems: 'center',
-        justifyContent: 'center',
-    },
-    emptyText: {
-        fontSize: 16,
-        color: palette.textMuted,
-        textAlign: 'center',
-    },
-    loadingOverlay: {
-        ...StyleSheet.absoluteFillObject,
-        backgroundColor: 'rgba(4, 4, 4, 0.85)',
-        justifyContent: 'center',
-        alignItems: 'center',
-        zIndex: 10,
-    },
-
-    // AI Search
+    /* AI IMAGE SEARCH */
     aiSearchContainer: {
         marginBottom: 10,
     },
@@ -312,7 +283,7 @@ export const searchStyles = StyleSheet.create({
         width: 24,
         height: 24,
         borderRadius: 12,
-        backgroundColor: palette.error,
+        backgroundColor: palette.danger,
         justifyContent: 'center',
         alignItems: 'center',
     },
@@ -322,7 +293,7 @@ export const searchStyles = StyleSheet.create({
         fontWeight: 'bold',
     },
 
-    // Controls
+    /* CONTROLS */
     controlsRow: {
         flexDirection: 'row',
         paddingHorizontal: 16,
@@ -353,4 +324,37 @@ export const searchStyles = StyleSheet.create({
     controlButtonTextActive: {
         color: palette.background,
     },
+
+    /* EMPTY & LOADING */
+    emptyState: {
+        padding: 40,
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
+    emptyText: {
+        fontSize: 16,
+        color: palette.textMuted,
+        textAlign: 'center',
+    },
+    loadingOverlay: {
+        ...StyleSheet.absoluteFillObject,
+        backgroundColor: 'rgba(4,4,4,0.85)',
+        justifyContent: 'center',
+        alignItems: 'center',
+        zIndex: 10,
+    },
+    categoryHeroGradient: {
+        height: 300,
+        marginHorizontal: 0,
+        marginBottom: 12,
+        borderRadius: 0,
+        opacity: 1,
+        position: 'absolute',
+        top: 55,
+        left: 0,
+        right: 0,
+        zIndex: -1,
+    },
+
+
 })

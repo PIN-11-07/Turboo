@@ -405,7 +405,7 @@ export const feedScreenStyles = StyleSheet.create({
 
   heroContainer: {
     position: 'absolute',
-    top: 120,
+    top: 150,
     left: 0,
     right: 0,
     height: 300,

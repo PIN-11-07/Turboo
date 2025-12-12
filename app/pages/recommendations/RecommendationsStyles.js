@@ -15,7 +15,7 @@ export const styles = StyleSheet.create({
 
   gradientBackground: {
     position: "absolute",
-    top: 200,
+    top: 225,
     width: "100%",
     height: 350,
     zIndex: -1,

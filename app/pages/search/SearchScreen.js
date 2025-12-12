@@ -28,6 +28,10 @@ import SearchFilters from '../../components/SearchFilters'
 import ImageAnalysisButton from '../../components/ImageAnalisisButton'
 import ActiveFiltersChips from '../../components/ActiveFiltersChips'
 
+const FONT = 'OTJubileeGolden'
+const FONT_LIGHT = 'OTJubileeGolden-Extralight'
+const FONT_ITALIC = 'OTJubileeGolden-Italic'
+
 const getMainImage = (images) => (Array.isArray(images) && images.length > 0 ? images[0] : null)
 
 const CATEGORIES = [
@@ -401,6 +405,12 @@ export default function SearchScreen() {
                             )}
                             <View style={styles.categoriesSection}>
                                 <Text style={styles.sectionTitle}>Or explore by category</Text>
+                                <LinearGradient
+                                    colors={['#c68515ff', '#000000ff']}
+                                    start={{ x: 0, y: 0 }}
+                                    end={{ x: 0, y: 1 }}
+                                    style={styles.categoryHeroGradient}
+                                />
                                 <View style={styles.categoriesGrid}>
                                     <FlatList
                                         data={CATEGORIES}
