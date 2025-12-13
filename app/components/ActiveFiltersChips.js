@@ -165,8 +165,7 @@ const ActiveFiltersChips = ({ filters, onRemoveFilter, onClearAll, priceRange, y
 
 const styles = {
     container: {
-        paddingVertical: 8,
-        backgroundColor: palette.background,
+        paddingVertical: 12,
     },
     scrollContent: {
         paddingHorizontal: 20,
@@ -177,20 +176,23 @@ const styles = {
         alignItems: 'center',
         backgroundColor: palette.surface,
         borderWidth: 1,
-        borderColor: palette.border,
+        borderColor: palette.champagne,
         borderRadius: 20,
         paddingVertical: 6,
         paddingHorizontal: 12,
         marginRight: 8,
     },
     chipLabel: {
-        color: palette.textPrimary,
+        color: palette.lightGrey,
         fontSize: 13,
         fontWeight: '500',
         marginRight: 4,
+        fontFamily: 'BaiJamjuree-Regular',
     },
     chipIcon: {
         marginLeft: 2,
+        color: palette.champagne,
+        fontFamily: 'BaiJamjuree-Regular',
     },
     clearAllButton: {
         paddingVertical: 6,
@@ -198,7 +200,7 @@ const styles = {
         marginLeft: 4,
     },
     clearAllText: {
-        color: palette.accent,
+        color: palette.champagne,
         fontSize: 13,
         fontWeight: '600',
     },

@@ -11,7 +11,6 @@ export const useSearchFilters = (listings = []) => {
   const [showSuggestions, setShowSuggestions] = useState(false)
   const [sortBy, setSortBy] = useState('date') // 'date' or 'price'
   const [sortDir, setSortDir] = useState('desc') // 'asc' or 'desc'
-  const [viewMode, setViewMode] = useState('grid') // 'list' or 'grid'
   const [showFilters, setShowFilters] = useState(false)
 
   // Calculate price and year ranges from listings data
@@ -71,7 +70,14 @@ export const useSearchFilters = (listings = []) => {
 
   // Predefined options adapted to Turboo's data structure
   const makeOptions = useMemo(() => {
-    const makes = new Set()
+    const predefinedMakes = [
+      'Alfa Romeo', 'Audi', 'BMW', 'Citroen', 'Cupra', 'Dacia', 'Fiat', 'Ford',
+      'Hyundai', 'Jeep', 'Kia', 'Mazda', 'Mercedes-Benz', 'Mini', 'Nissan', 'Opel',
+      'Peugeot', 'Renault', 'Seat', 'Skoda', 'Tesla', 'Toyota', 'Volkswagen', 'Volvo'
+    ]
+    
+    // Combine with makes from listings
+    const makes = new Set(predefinedMakes)
     listings.forEach(listing => {
       if (listing.make) makes.add(listing.make.toString().trim())
     })
@@ -79,15 +85,15 @@ export const useSearchFilters = (listings = []) => {
   }, [listings])
 
   const colorOptions = [
-    'Negro', 'Blanco', 'Gris', 'Plata', 'Rojo', 'Azul', 'Verde', 'Amarillo', 'Naranja'
+    'Black', 'White', 'Gray', 'Silver', 'Red', 'Blue', 'Green', 'Yellow', 'Orange'
   ]
 
   const fuelTypeOptions = [
-    'Gasolina', 'Diésel', 'Eléctrico', 'Híbrido', 'GLP', 'GNC', 'Gas'
+    'Gasoline', 'Diesel', 'Electric', 'Hybrid', 'LPG', 'CNG', 'Gas'
   ]
 
   const transmissionOptions = [
-    'Manual', 'Automática', 'Semiautomática'
+    'Manual', 'Automatic', 'Semi-automatic'
   ]
 
   const bodyTypeOptions = [
@@ -366,10 +372,6 @@ export const useSearchFilters = (listings = []) => {
     sortBy,
     sortDir,
     cycleSort,
-
-    // View state
-    viewMode,
-    setViewMode,
 
     // Filters state
     showFilters,

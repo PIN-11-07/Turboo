@@ -22,6 +22,7 @@
     "expo-asset": "~12.0.10",
     "expo-auth-session": "~7.0.10",
     "expo-av": "~16.0.8",
+    "expo-blur": "^15.0.8",
     "expo-image-picker": "~17.0.9",
     "expo-linear-gradient": "~15.0.8",
     "expo-linking": "~8.0.10",

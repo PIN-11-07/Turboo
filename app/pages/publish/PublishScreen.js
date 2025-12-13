@@ -45,9 +45,9 @@ const MAKE_OPTIONS = [
   'Volvo',
 ];
 
-const FUEL_OPTIONS = ['Gasolina', 'Diesel', 'Hibrido', 'Electrico', 'GLP', 'GNC'];
+const FUEL_OPTIONS = ['Gasoline', 'Diesel', 'Hybrid', 'Electric', 'LPG', 'CNG'];
 
-const TRANSMISSION_OPTIONS = ['Manual', 'Automatica', 'Semiautomatica'];
+const TRANSMISSION_OPTIONS = ['Manual', 'Automatic', 'Semi-automatic'];
 
 export default function PublishScreen() {
   const [pressedButton, setPressedButton] = useState(null);

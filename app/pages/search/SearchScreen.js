@@ -143,6 +143,7 @@ export default function SearchScreen() {
     const renderListing = useCallback(
         ({ item }) => {
             const mainImage = getMainImage(item.images)
+            const title = (item.title || `${item.make ?? ''} ${item.model ?? ''}`.trim()).trim() || 'Vehicle'
             return (
                 <TouchableOpacity
                     style={styles.card}
@@ -162,58 +163,13 @@ export default function SearchScreen() {
                                 <Text style={styles.cardImagePlaceholderText}>No photo</Text>
                             </View>
                         )}
-                        <FavoriteButton listingId={item.id} variant="overlay" />
                     </View>
-                    <View style={styles.cardContent}>
-                        <View style={styles.cardHeader}>
-                            <Text style={styles.cardTitle}>{item.make}</Text>
+                    <View style={styles.cardInfo}>
+                        <Text style={styles.cardTitle} numberOfLines={2}>{title}</Text>
+                        <View style={styles.cardPriceRow}>
+                            <FavoriteButton listingId={item.id} variant="list" style={styles.favoriteHeartButton} />
                             <Text style={styles.cardPrice}>{formatPrice(item.price)}</Text>
                         </View>
-                        <Text style={styles.cardSubtitle}>
-                            {item.make} {item.model} • {item.year}
-                        </Text>
-                        <View style={styles.cardBadgeRow}>
-                            <Text style={styles.cardBadge}>{item.mileage ? `${item.mileage} km` : 'km N/A'}</Text>
-                            {item.fuel_type ? <Text style={styles.cardBadge}>{item.fuel_type}</Text> : null}
-                            {item.transmission ? <Text style={styles.cardBadge}>{item.transmission}</Text> : null}
-                        </View>
-                        <View style={styles.cardFooter}>
-                            <Text style={styles.cardLocation}>{item.location}</Text>
-                        </View>
-                    </View>
-                </TouchableOpacity>
-            )
-        },
-        [navigation]
-    )
-
-    const renderGridItem = useCallback(
-        ({ item }) => {
-            const mainImage = getMainImage(item.images)
-            return (
-                <TouchableOpacity
-                    style={styles.gridItem}
-                    activeOpacity={0.85}
-                    onPress={() =>
-                        navigation.navigate('ListingDetail', {
-                            listingId: item.id,
-                            listing: item,
-                        })
-                    }
-                >
-                    <View style={styles.gridImageContainer}>
-                        {mainImage ? (
-                            <Image source={{ uri: mainImage }} style={styles.gridImage} />
-                        ) : (
-                            <View style={[styles.gridImage, styles.cardImagePlaceholder]}>
-                                <Text style={styles.cardImagePlaceholderText}>No photo</Text>
-                            </View>
-                        )}
-                        <FavoriteButton listingId={item.id} variant="overlay" />
-                    </View>
-                    <View style={styles.gridContent}>
-                        <Text style={styles.gridTitle} numberOfLines={1}>{item.make} {item.model}</Text>
-                        <Text style={styles.gridPrice}>{formatPrice(item.price)}</Text>
                     </View>
                 </TouchableOpacity>
             )
@@ -378,25 +334,6 @@ export default function SearchScreen() {
                                 </Text>
                             </TouchableOpacity>
 
-                            {/* View - Right */}
-                            <TouchableOpacity
-                                onPress={() => search.setViewMode(search.viewMode === 'list' ? 'grid' : 'list')}
-                                onPressIn={() => setPressedButton('view')}
-                                onPressOut={() => setPressedButton(null)}
-                                style={[
-                                    styles.controlButton,
-                                    {
-                                        borderColor: pressedButton === 'view' ? palette.champagne : palette.mustard,
-                                        backgroundColor: palette.darkGrey,
-                                    }
-                                ]}
-                            >
-                                <Ionicons 
-                                    name={search.viewMode === 'list' ? 'grid' : 'list'} 
-                                    size={16} 
-                                    color={pressedButton === 'view' ? palette.champagne : palette.mustard} 
-                                />
-                            </TouchableOpacity>
                         </View>
                     </View>
 
@@ -445,12 +382,10 @@ export default function SearchScreen() {
                 <FlatList
                     data={filteredListings}
                     keyExtractor={(item) => item.id.toString()}
-                    renderItem={search.viewMode === 'grid' ? renderGridItem : renderListing}
-                    numColumns={search.viewMode === 'grid' ? 2 : 1}
-                    key={search.viewMode === 'grid' ? 'grid' : 'list'}
-                    contentContainerStyle={
-                        search.viewMode === 'grid' ? styles.gridContainer : styles.listContent
-                    }
+                    renderItem={renderListing}
+                    numColumns={2}
+                    columnWrapperStyle={styles.columnWrapper}
+                    contentContainerStyle={styles.listContent}
                     ListHeaderComponent={
                         <>
                             {!search.showFilters && (
@@ -475,8 +410,11 @@ export default function SearchScreen() {
                                                 activeOpacity={0.8}
                                             >
                                                 <Image source={{ uri: item.image }} style={styles.categoryImage} />
-                                                <View style={styles.categoryOverlay}>
-                                                    <Text style={styles.categoryTitle}>{item.title}</Text>
+                                                <View style={styles.categoryHeader}>
+                                                    <Text style={[
+                                                        styles.categoryTitle,
+                                                        item.title === 'SUV & Off-road' && { fontSize: 24 }
+                                                    ]}>{item.title}</Text>
                                                 </View>
                                             </TouchableOpacity>
                                         )}

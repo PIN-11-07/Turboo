@@ -111,7 +111,7 @@ export const searchStyles = StyleSheet.create({
     categoryCard: {
         flex: 1,
         margin: 5,
-        height: 120,
+        height: 130,
         borderRadius: 16,
         overflow: 'hidden',
         backgroundColor: palette.surface,
@@ -129,17 +129,20 @@ export const searchStyles = StyleSheet.create({
         position: 'absolute',
         resizeMode: 'cover',
     },
-    categoryOverlay: {
-        ...StyleSheet.absoluteFillObject,
-        backgroundColor: 'rgba(26, 26, 26, 0.45)',
-        justifyContent: 'center',
-        alignItems: 'center',
+    categoryHeader: {
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        right: 0,
+        backgroundColor: palette.lightGrey,
+        paddingVertical: 6,
+        paddingHorizontal: 12,
+        zIndex: 1,
     },
     categoryTitle: {
-        color: palette.champagne,
-        fontSize: 18,
-        fontFamily: FONT,
-        textAlign: 'center',
+        color: palette.darkGrey,
+        fontSize: 27,
+        fontFamily: 'OTJubileeGolden-Extralight',
     },
 
     /* LIST / GRID */
@@ -154,26 +157,23 @@ export const searchStyles = StyleSheet.create({
 
     // Card Styles (Matched to FeedStyles)
     card: {
-        backgroundColor: palette.lightGrey,
-        borderRadius: 18,
-        marginBottom: 18,
+        borderRadius: 16,
         overflow: 'hidden',
+        marginBottom: 16,
+        elevation: 5,
         borderWidth: 1,
-        borderColor: palette.border,
-        shadowColor: palette.darkGrey,
-        shadowOffset: { width: 0, height: 8 },
-        shadowOpacity: 0.35,
-        shadowRadius: 14,
-        elevation: 6,
+        width: '48%',
+    },
+    columnWrapper: {
+        justifyContent: 'space-between',
+        marginBottom: 16,
     },
     cardImageWrapper: {
-        height: 200,
-        width: '100%',
+        position: 'relative',
     },
     cardImage: {
         width: '100%',
-        height: '100%',
-        resizeMode: 'cover',
+        height: 130,
     },
     cardImagePlaceholder: {
         backgroundColor: palette.elevated,
@@ -184,93 +184,35 @@ export const searchStyles = StyleSheet.create({
         color: palette.textSecondary,
         fontWeight: '600',
     },
-    cardContent: {
-        padding: 18,
-    },
-    cardHeader: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        alignItems: 'flex-start',
-        marginBottom: 8,
+    cardInfo: {
+        paddingTop: 8,
+        paddingHorizontal: 12,
+        paddingBottom: 4,
+        backgroundColor: palette.lightGrey,
     },
     cardTitle: {
-        fontSize: 18,
-        fontFamily: FONT,
-        color: palette.darkGrey,
-        flex: 1,
-        marginRight: 8,
-    },
-    cardPrice: {
-        fontSize: 18,
-        fontFamily: FONT,
-        color: palette.darkGrey,
-    },
-    cardSubtitle: {
-        fontSize: 15,
-        color: palette.textSecondary,
-        marginBottom: 12,
-    },
-    cardBadgeRow: {
-        flexDirection: 'row',
-        flexWrap: 'wrap',
-        marginBottom: 12,
-    },
-    cardBadge: {
-        backgroundColor: 'rgba(187, 126, 29, 0.15)',
-        color: palette.mustard,
-        fontSize: 12,
+        fontSize: 20,
         fontWeight: '600',
-        paddingHorizontal: 10,
-        paddingVertical: 6,
-        borderRadius: 999,
-        marginRight: 8,
-        marginBottom: 6,
+        color: palette.darkGrey,
+        lineHeight: 21,
+        minHeight: 42,
+        fontFamily: FONT,
     },
-    cardFooter: {
-        marginTop: 2,
-    },
-    cardLocation: {
-        fontSize: 13,
-        color: palette.textMuted,
-        fontWeight: '500',
-    },
-
-    /* GRID ITEM */
-    gridItem: {
-        flex: 1,
-        margin: 5,
-        backgroundColor: palette.lightGrey,
-        borderRadius: 12,
-        overflow: 'hidden',
-        borderWidth: 1,
-        borderColor: palette.border,
-        maxWidth: (width - 32) / 2,
-    },
-    gridImageContainer: {
-        aspectRatio: 4 / 3,
-        width: '100%',
-    },
-    gridImage: {
-        width: '100%',
-        height: '100%',
-        resizeMode: 'cover',
-        backgroundColor: palette.overlay,
-    },
-    gridContent: {
-        padding: 10,
-        height: 80,
+    cardPriceRow: {
+        flexDirection: 'row',
+        alignItems: 'center',
         justifyContent: 'space-between',
     },
-    gridTitle: {
-        fontSize: 14,
-        fontFamily: FONT,
-        color: palette.darkGrey,
+    favoriteHeartButton: {
+        backgroundColor: 'transparent',
+        borderWidth: 0,
+        marginLeft: -8,
     },
-    gridPrice: {
-        fontSize: 15,
-        fontFamily: FONT,
+    cardPrice: {
+        fontSize: 16,
+        fontWeight: 'bold',
         color: palette.darkGrey,
-        alignSelf: 'flex-end',
+        fontFamily: FONT,
     },
 
     /* AI IMAGE SEARCH */

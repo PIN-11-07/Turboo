@@ -898,11 +898,13 @@ export const profileScreenStyles = StyleSheet.create({
   },
   recentlyViewedImage: {
     width: '100%',
-    height: 140,
+    height: 130,
     backgroundColor: palette.overlay,
   },
   recentlyViewedInfo: {
-    padding: 12,
+    paddingTop: 8,
+    paddingHorizontal: 12,
+    paddingBottom: 4,
   },
   recentlyViewedName: {
     fontSize: 14,
@@ -956,7 +958,7 @@ export const profileScreenStyles = StyleSheet.create({
   },
   favoriteImageWrapper: {
     width: '100%',
-    height: 160,
+    height: 130,
     backgroundColor: palette.overlay,
     position: 'relative',
   },
@@ -978,7 +980,9 @@ export const profileScreenStyles = StyleSheet.create({
     fontFamily: FONT_FAMILY,
   },
   favoriteInfo: {
-    padding: 12,
+    paddingTop: 8,
+    paddingHorizontal: 12,
+    paddingBottom: 4,
     backgroundColor: palette.lightGrey,
   },
   favoriteTitle: {
@@ -1055,7 +1059,7 @@ export const profileScreenStyles = StyleSheet.create({
   },
   publishedImageWrapper: {
     width: '100%',
-    height: 160,
+    height: 130,
     position: 'relative',
   },
   publishedImage: {
@@ -1089,7 +1093,9 @@ export const profileScreenStyles = StyleSheet.create({
     fontFamily: FONT_FAMILY,
   },
   publishedInfo: {
-    padding: 12,
+    paddingTop: 8,
+    paddingHorizontal: 12,
+    paddingBottom: 4,
     backgroundColor: palette.lightGrey,
   },
   publishedPriceRow: {
@@ -1098,7 +1104,9 @@ export const profileScreenStyles = StyleSheet.create({
     justifyContent: 'flex-end',
   },
   publishedInfoInactive: {
-    padding: 12,
+    paddingTop: 8,
+    paddingHorizontal: 12,
+    paddingBottom: 4,
     backgroundColor: palette.lightGrey,
   },
   publishedTitle: {

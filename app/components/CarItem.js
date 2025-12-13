@@ -96,7 +96,7 @@ const styles = StyleSheet.create({
   },
   cardImage: {
     width: '100%',
-    height: 200,
+    height: 130,
   },
   cardImagePlaceholder: {
     backgroundColor: palette.overlay,

@@ -3,6 +3,7 @@ import { View, TouchableOpacity, StyleSheet } from 'react-native'
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs'
 import { createNativeStackNavigator } from '@react-navigation/native-stack'
 import { Ionicons } from '@expo/vector-icons'
+import { BlurView } from 'expo-blur'
 import FeedScreen from '../pages/feed/FeedScreen'
 import ListingDetailScreen from '../pages/listingDetails/ListingDetailScreen'
 import PurchaseScreen from '../pages/purchase/PurchaseScreen'
@@ -43,7 +44,7 @@ const stackScreenOptions = {
 
 const CustomTabBar = ({ state, descriptors, navigation }) => (
   <View style={styles.tabContainer}>
-    <View style={styles.tabContent}>
+    <BlurView intensity={40} tint="dark" style={styles.tabContent}>
       {state.routes.map((route, index) => {
         const { options } = descriptors[route.key]
         const isFocused = state.index === index
@@ -79,7 +80,7 @@ const CustomTabBar = ({ state, descriptors, navigation }) => (
               style={styles.tabButton}
             >
               <View style={styles.plusButtonContainer}>
-                <Ionicons name="add" size={32} color={palette.champagne} />
+                <Ionicons name="add" size={32} color={palette.white} />
               </View>
             </TouchableOpacity>
           )
@@ -95,12 +96,12 @@ const CustomTabBar = ({ state, descriptors, navigation }) => (
             onPress={onPress}
             style={styles.tabButton}
           >
-            <Ionicons name={iconName} size={24} color={palette.champagne} />
+            <Ionicons name={iconName} size={24} color={palette.white} />
             {isFocused && <View style={styles.activeIndicator} />}
           </TouchableOpacity>
         )
       })}
-    </View>
+    </BlurView>
   </View>
 )
 
@@ -283,9 +284,9 @@ const styles = StyleSheet.create({
   },
   tabContent: {
     flexDirection: 'row',
-    backgroundColor: palette.darkGrey,
+    backgroundColor: 'rgba(26, 26, 26, 0.7)',
     borderRadius: 30,
-    paddingVertical: 0,
+    paddingVertical: 2,
     paddingHorizontal: 10,
     width: '90%',
     justifyContent: 'space-around',
@@ -300,18 +301,19 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.3,
     shadowRadius: 4.65,
     elevation: 8,
+    overflow: 'hidden',
   },
   tabButton: {
     alignItems: 'center',
     justifyContent: 'center',
-    padding: 10,
+    padding: 2,
   },
   plusButtonContainer: {
     width: 50,
     height: 50,
     borderRadius: 25,
     borderWidth: 1,
-    borderColor: palette.champagne,
+    borderColor: palette.white,
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -320,7 +322,7 @@ const styles = StyleSheet.create({
     bottom: 0,
     width: 20,
     height: 2,
-    backgroundColor: palette.mustard,
+    backgroundColor: palette.white,
     borderRadius: 1,
   },
 })

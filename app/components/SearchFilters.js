@@ -2,6 +2,7 @@ import React from 'react'
 import {
   Dimensions,
   Keyboard,
+  Pressable,
   ScrollView,
   Text,
   TextInput,
@@ -49,6 +50,8 @@ const SearchFilters = ({
   onClose,
 }) => {
   const insets = useSafeAreaInsets()
+  const [pressedApply, setPressedApply] = React.useState(false)
+  const [pressedClear, setPressedClear] = React.useState(false)
 
   if (!visible) {
     return null
@@ -103,7 +106,7 @@ const SearchFilters = ({
   return (
     <View style={styles.container}>
       <View style={styles.headerRow}>
-        <Text style={styles.title}>Filtros</Text>
+        <Text style={styles.title}>Filters</Text>
         <TouchableOpacity onPress={onClose} style={styles.closeButton}>
           <Text style={styles.closeButtonText}>✕</Text>
         </TouchableOpacity>
@@ -117,7 +120,7 @@ const SearchFilters = ({
         {/* Price Range */}
         <View style={styles.section}>
           <Text style={styles.sectionLabel}>
-            Precio: {formatPrice(filters.priceMin)} - {formatPrice(filters.priceMax)}
+            Price: {formatPrice(filters.priceMin)} - {formatPrice(filters.priceMax)}
           </Text>
           <View style={styles.sliderContainer}>
             <MultiSlider
@@ -139,7 +142,7 @@ const SearchFilters = ({
         {/* Year Range */}
         <View style={styles.section}>
           <Text style={styles.sectionLabel}>
-            Año: {filters.yearMin} - {filters.yearMax}
+            Year: {filters.yearMin} - {filters.yearMax}
           </Text>
           <View style={styles.sliderContainer}>
             <MultiSlider
@@ -160,7 +163,7 @@ const SearchFilters = ({
 
         {/* Make (Brand) */}
         <View style={styles.section}>
-          <Text style={styles.sectionLabel}>Marca</Text>
+          <Text style={styles.sectionLabel}>Brand</Text>
           <View style={styles.chipContainer}>
             {makeOptions.map(make => {
               const isSelected = Array.isArray(filters.make) && filters.make.includes(make)
@@ -181,7 +184,7 @@ const SearchFilters = ({
 
         {/* Color */}
         <View style={styles.section}>
-          <Text style={styles.sectionLabel}>Color (selección múltiple)</Text>
+          <Text style={styles.sectionLabel}>Color (multi-select)</Text>
           <View style={styles.chipContainer}>
             {colorOptions.map(color => {
               const isSelected = Array.isArray(filters.color) && filters.color.includes(color)
@@ -202,7 +205,7 @@ const SearchFilters = ({
 
         {/* Fuel Type */}
         <View style={styles.section}>
-          <Text style={styles.sectionLabel}>Combustible (selección múltiple)</Text>
+          <Text style={styles.sectionLabel}>Fuel Type (multi-select)</Text>
           <View style={styles.chipContainer}>
             {fuelTypeOptions.map(fuel => {
               const isSelected = Array.isArray(filters.fuelType) && filters.fuelType.includes(fuel)
@@ -223,7 +226,7 @@ const SearchFilters = ({
 
         {/* Transmission */}
         <View style={styles.section}>
-          <Text style={styles.sectionLabel}>Transmisión (selección múltiple)</Text>
+          <Text style={styles.sectionLabel}>Transmission (multi-select)</Text>
           <View style={styles.chipContainer}>
             {transmissionOptions.map(transmission => {
               const isSelected = Array.isArray(filters.transmission) && filters.transmission.includes(transmission)
@@ -307,7 +310,7 @@ const SearchFilters = ({
 
         {/* Mileage */}
         <View style={styles.section}>
-          <Text style={styles.sectionLabel}>Kilometraje máximo</Text>
+          <Text style={styles.sectionLabel}>Max Mileage</Text>
           <TextInput
             value={filters.mileageMax?.toString()}
             onChangeText={value => setFilters(f => ({ ...f, mileageMax: value }))}
@@ -321,18 +324,35 @@ const SearchFilters = ({
 
       {/* Action Buttons */}
       <View style={styles.actionContainer}>
-        <TouchableOpacity
+        <Pressable
           onPress={onApply}
-          style={[styles.button, styles.applyButton]}
+          onPressIn={() => setPressedApply(true)}
+          onPressOut={() => setPressedApply(false)}
+          style={[
+            styles.primaryButton,
+            pressedApply && styles.primaryButtonPressed
+          ]}
         >
-          <Text style={styles.applyButtonText}>Aplicar filtros</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
+          <Text style={[styles.primaryButtonText, pressedApply && styles.primaryButtonTextPressed]}>
+            Apply Filters
+          </Text>
+        </Pressable>
+        <Pressable
           onPress={onClear}
-          style={[styles.button, styles.clearButton]}
+          onPressIn={() => setPressedClear(true)}
+          onPressOut={() => setPressedClear(false)}
+          style={[
+            styles.button,
+            {
+              borderColor: pressedClear ? palette.champagne : palette.mustard,
+              backgroundColor: palette.darkGrey,
+            }
+          ]}
         >
-          <Text style={styles.clearButtonText}>Borrar filtros</Text>
-        </TouchableOpacity>
+          <Text style={[styles.buttonText, { color: pressedClear ? palette.champagne : palette.mustard }]}>
+            Clear Filters
+          </Text>
+        </Pressable>
       </View>
     </View>
   )
@@ -350,8 +370,9 @@ const styles = {
   },
   closeButtonText: {
     fontSize: 20,
-    color: palette.textPrimary,
+    color: palette.lightGrey,
     fontWeight: 'bold',
+    fontFamily: 'BaiJamjuree-Regular',
   },
   container: {
     backgroundColor: palette.surface,
@@ -362,9 +383,9 @@ const styles = {
     flex: 1,
   },
   title: {
-    color: palette.textPrimary,
-    fontWeight: '600',
+    color: palette.white,
     fontSize: 16,
+    fontFamily: 'OTJubileeGolden',
   },
   scrollView: {
     flex: 1,
@@ -376,9 +397,10 @@ const styles = {
     marginBottom: 20,
   },
   sectionLabel: {
-    color: palette.textMuted,
+    color: palette.lightGrey,
     fontSize: 12,
     marginBottom: 8,
+    fontFamily: 'BaiJamjuree-Regular',
   },
   sliderContainer: {
     paddingHorizontal: 30,
@@ -420,11 +442,13 @@ const styles = {
     backgroundColor: palette.mustard,
   },
   chipText: {
-    color: palette.textSecondary,
+    color: palette.lightGrey,
     fontSize: 12,
+    fontFamily: 'BaiJamjuree-Regular',
   },
   chipTextSelected: {
     color: palette.background,
+    fontFamily: 'BaiJamjuree-Regular',
   },
   textInput: {
     backgroundColor: palette.background,
@@ -435,31 +459,44 @@ const styles = {
     fontSize: 16,
     borderWidth: 1,
     borderColor: palette.border,
+    fontFamily: 'BaiJamjuree-Regular',
   },
   actionContainer: {
     flexDirection: 'row',
     marginTop: 12,
+    gap: 8,
   },
-  button: {
-    flex: 1,
-    padding: 12,
+  primaryButton: {
+    flex: 2,
+    backgroundColor: palette.mustard,
+    paddingVertical: 14,
     borderRadius: 8,
     alignItems: 'center',
   },
-  applyButton: {
-    backgroundColor: palette.mustard,
-    marginRight: 8,
+  primaryButtonPressed: {
+    backgroundColor: palette.champagne,
   },
-  clearButton: {
-    backgroundColor: palette.border,
-  },
-  applyButtonText: {
+  primaryButtonText: {
     color: palette.darkGrey,
-    fontWeight: '600',
+    fontSize: 16,
+    fontWeight: '400',
+    fontFamily: 'BaiJamjuree-Regular',
   },
-  clearButtonText: {
-    color: palette.textPrimary,
+  primaryButtonTextPressed: {
+    color: palette.darkMustard,
+  },
+  button: {
+    flex: 1,
+    paddingVertical: 12,
+    paddingHorizontal: 16,
+    borderRadius: 8,
+    alignItems: 'center',
+    borderWidth: 1,
+  },
+  buttonText: {
     fontWeight: '600',
+    fontSize: 15,
+    fontFamily: 'BaiJamjuree-Regular',
   },
 }
 

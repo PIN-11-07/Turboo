@@ -163,7 +163,7 @@ export const feedScreenStyles = StyleSheet.create({
   },
   cardImage: {
     width: '100%',
-    height: 160,
+    height: 130,
   },
   cardImagePlaceholder: {
     backgroundColor: palette.elevated,
