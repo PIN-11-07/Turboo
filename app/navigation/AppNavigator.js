@@ -4,6 +4,7 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs'
 import { createNativeStackNavigator } from '@react-navigation/native-stack'
 import { Ionicons } from '@expo/vector-icons'
 import { BlurView } from 'expo-blur'
+import { getFocusedRouteNameFromRoute } from '@react-navigation/native'
 import FeedScreen from '../pages/feed/FeedScreen'
 import ListingDetailScreen from '../pages/listingDetails/ListingDetailScreen'
 import PurchaseScreen from '../pages/purchase/PurchaseScreen'
@@ -45,33 +46,69 @@ const stackScreenOptions = {
   },
 }
 
-const CustomTabBar = ({ state, descriptors, navigation }) => (
-  <View style={styles.tabContainer}>
-    <BlurView intensity={40} tint="dark" style={styles.tabContent}>
-      {state.routes.map((route, index) => {
-        const { options } = descriptors[route.key]
-        const isFocused = state.index === index
+const chatHiddenRoutes = ['Chat']
 
-        const onPress = () => {
-          const event = navigation.emit({
-            type: 'tabPress',
-            target: route.key,
-            canPreventDefault: true,
-          })
+const getTabBarStyle = route => {
+  const routeName = getFocusedRouteNameFromRoute(route)
 
-          if (!isFocused && !event.defaultPrevented) {
-            navigation.navigate(route.name)
+  if (routeName && chatHiddenRoutes.includes(routeName)) {
+    return { display: 'none' }
+  }
+
+  return undefined
+}
+
+const CustomTabBar = ({ state, descriptors, navigation }) => {
+  const focusedOptions = descriptors[state.routes[state.index].key]?.options || {}
+  const tabBarStyle = StyleSheet.flatten(focusedOptions.tabBarStyle)
+  const shouldHideTabBar = focusedOptions.tabBarVisible === false || tabBarStyle?.display === 'none'
+
+  if (shouldHideTabBar) return null
+
+  return (
+    <View style={styles.tabContainer}>
+      <BlurView intensity={40} tint="dark" style={styles.tabContent}>
+        {state.routes.map((route, index) => {
+          const { options } = descriptors[route.key]
+          const isFocused = state.index === index
+
+          const onPress = () => {
+            const event = navigation.emit({
+              type: 'tabPress',
+              target: route.key,
+              canPreventDefault: true,
+            })
+
+            if (!isFocused && !event.defaultPrevented) {
+              navigation.navigate(route.name)
+            }
           }
-        }
 
-        let iconName = 'home-outline'
-        if (route.name === 'Home') iconName = isFocused ? 'home' : 'home-outline'
-        else if (route.name === 'Search') iconName = isFocused ? 'search' : 'search-outline'
-        else if (route.name === 'Publish') iconName = isFocused ? 'add-circle' : 'add-circle-outline'
-        else if (route.name === 'Messages') iconName = isFocused ? 'mail' : 'mail-outline'
-        else if (route.name === 'Profile') iconName = isFocused ? 'person' : 'person-outline'
+          let iconName = 'home-outline'
+          if (route.name === 'Home') iconName = isFocused ? 'home' : 'home-outline'
+          else if (route.name === 'Search') iconName = isFocused ? 'search' : 'search-outline'
+          else if (route.name === 'Publish') iconName = isFocused ? 'add-circle' : 'add-circle-outline'
+          else if (route.name === 'Messages') iconName = isFocused ? 'mail' : 'mail-outline'
+          else if (route.name === 'Profile') iconName = isFocused ? 'person' : 'person-outline'
 
-        if (route.name === 'Publish') {
+          if (route.name === 'Publish') {
+            return (
+              <TouchableOpacity
+                key={index}
+                accessibilityRole="button"
+                accessibilityState={isFocused ? { selected: true } : {}}
+                accessibilityLabel={options.tabBarAccessibilityLabel}
+                testID={options.tabBarTestID}
+                onPress={onPress}
+                style={styles.tabButton}
+              >
+                <View style={styles.plusButtonContainer}>
+                  <Ionicons name="add" size={32} color={palette.white} />
+                </View>
+              </TouchableOpacity>
+            )
+          }
+
           return (
             <TouchableOpacity
               key={index}
@@ -82,31 +119,15 @@ const CustomTabBar = ({ state, descriptors, navigation }) => (
               onPress={onPress}
               style={styles.tabButton}
             >
-              <View style={styles.plusButtonContainer}>
-                <Ionicons name="add" size={32} color={palette.white} />
-              </View>
+              <Ionicons name={iconName} size={24} color={palette.white} />
+              {isFocused && <View style={styles.activeIndicator} />}
             </TouchableOpacity>
           )
-        }
-
-        return (
-          <TouchableOpacity
-            key={index}
-            accessibilityRole="button"
-            accessibilityState={isFocused ? { selected: true } : {}}
-            accessibilityLabel={options.tabBarAccessibilityLabel}
-            testID={options.tabBarTestID}
-            onPress={onPress}
-            style={styles.tabButton}
-          >
-            <Ionicons name={iconName} size={24} color={palette.white} />
-            {isFocused && <View style={styles.activeIndicator} />}
-          </TouchableOpacity>
-        )
-      })}
-    </BlurView>
-  </View>
-)
+        })}
+      </BlurView>
+    </View>
+  )
+}
 
 const FeedStackNavigator = () => (
   <FeedStack.Navigator screenOptions={stackScreenOptions}>
@@ -265,27 +286,42 @@ export default function AppNavigator() {
       <Tab.Screen
         name="Home"
         component={FeedStackNavigator}
-        options={{ tabBarLabel: 'Inicio' }}
+        options={({ route }) => ({
+          tabBarLabel: 'Inicio',
+          tabBarStyle: getTabBarStyle(route),
+        })}
       />
       <Tab.Screen
         name="Search"
         component={SearchStackNavigator}
-        options={{ tabBarLabel: 'Buscar' }}
+        options={({ route }) => ({
+          tabBarLabel: 'Buscar',
+          tabBarStyle: getTabBarStyle(route),
+        })}
       />
       <Tab.Screen
         name="Publish"
         component={PublishStackNavigator}
-        options={{ tabBarLabel: 'Publicar' }}
+        options={({ route }) => ({
+          tabBarLabel: 'Publicar',
+          tabBarStyle: getTabBarStyle(route),
+        })}
       />
       <Tab.Screen
         name="Messages"
         component={MessagesStackNavigator}
-        options={{ tabBarLabel: 'Mensajes' }}
+        options={({ route }) => ({
+          tabBarLabel: 'Mensajes',
+          tabBarStyle: getTabBarStyle(route),
+        })}
       />
       <Tab.Screen
         name="Profile"
         component={ProfileStackNavigator}
-        options={{ tabBarLabel: 'Perfil' }}
+        options={({ route }) => ({
+          tabBarLabel: 'Perfil',
+          tabBarStyle: getTabBarStyle(route),
+        })}
       />
     </Tab.Navigator>
   )
