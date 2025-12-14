@@ -7,29 +7,29 @@ const FONT_FAMILY = 'OTJubileeGolden'
 export const feedScreenStyles = StyleSheet.create({
   safeArea: {
     flex: 1,
-    backgroundColor: "transparent",
+    backgroundColor: '#000',
   },
   container: {
     flex: 1,
-    backgroundColor: "transparent",
+    backgroundColor: '#000',
   },
 
   listContent: {
     paddingHorizontal: 16,
     paddingBottom: 16,
-    backgroundColor: "transparent",
+    backgroundColor: '#000',
   },
   emptyList: {
     paddingHorizontal: 16,
     paddingBottom: 16,
     flexGrow: 1,
-    backgroundColor: "transparent",
+    backgroundColor: '#000',
   },
   topSection: {
     paddingTop: 16,
     paddingHorizontal: 16,
     marginBottom: 12,
-    backgroundColor: "transparent",
+    backgroundColor: '#000',
   },
   recommendationsSection: {
     paddingHorizontal: 16,
@@ -146,63 +146,12 @@ export const feedScreenStyles = StyleSheet.create({
     flex: 1,
     marginLeft: 8,
   },
-  card: {
-    borderRadius: 16,
-    overflow: 'hidden',
-    marginBottom: 16,
-    elevation: 5,
-    borderWidth: 1,
+  cardWrapper: {
     width: '48%',
   },
   columnWrapper: {
     justifyContent: 'space-between',
     marginBottom: 16,
-  },
-  cardImageWrapper: {
-    position: 'relative',
-  },
-  cardImage: {
-    width: '100%',
-    height: 160,
-  },
-  cardImagePlaceholder: {
-    backgroundColor: palette.elevated,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  cardImagePlaceholderText: {
-    color: palette.textSecondary,
-    fontWeight: '600',
-  },
-  cardInfo: {
-    paddingTop: 8,
-    paddingHorizontal: 12,
-    paddingBottom: 4,
-    backgroundColor: palette.lightGrey,
-  },
-  cardTitle: {
-    fontSize: 20,
-    fontWeight: '600',
-    color: palette.darkGrey,
-    lineHeight: 21,
-    minHeight: 42,
-    fontFamily: FONT_FAMILY,
-  },
-  cardPriceRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-  },
-  favoriteHeartButton: {
-    backgroundColor: 'transparent',
-    borderWidth: 0,
-    marginLeft: -8,
-  },
-  cardPrice: {
-    fontSize: 16,
-    fontWeight: 'bold',
-    color: palette.darkGrey,
-    fontFamily: FONT_FAMILY,
   },
   emptyText: {
     fontSize: 16,
@@ -403,16 +352,15 @@ export const feedScreenStyles = StyleSheet.create({
     fontWeight: '700',
   },
 
-  heroContainer: {
-    position: 'absolute',
-    top: 120,
-    left: 0,
-    right: 0,
-    height: 300,
-    zIndex: -1,
+  heroHeaderRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    gap: 16,
   },
-
-
+  heroTitles: {
+    flex: 1,
+  },
   heroTitleMain: {
     color: palette.champagne,
     fontSize: 50,

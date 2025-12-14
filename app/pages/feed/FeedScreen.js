@@ -1,26 +1,13 @@
 import React, { useCallback, useState, useEffect } from 'react'
-import {
-  ActivityIndicator,
-  FlatList,
-  Image,
-  RefreshControl,
-  Text,
-  TouchableOpacity,
-  View,
-  Modal,
-} from 'react-native'
+import { ActivityIndicator, FlatList, RefreshControl, Text, TouchableOpacity, View, Modal } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { useFocusEffect, useNavigation, useRoute } from '@react-navigation/native'
 import { useAuth } from '../../context/AuthContext'
 import { Ionicons } from '@expo/vector-icons'
 import { feedScreenStyles as styles } from './FeedStyles'
 import { palette } from '../../theme/palette'
-import FavoriteButton from '../../components/FavoriteButton'
 import { useFeed } from './useFeed'
-import { formatPrice } from '../../utils/format'
-import { LinearGradient } from 'expo-linear-gradient'
-
-const getMainImage = (images) => (Array.isArray(images) && images.length > 0 ? images[0] : null)
+import ListingCard from '../../components/ListingCard'
 
 export default function FeedScreen() {
   const navigation = useNavigation()
@@ -57,39 +44,18 @@ export default function FeedScreen() {
   )
 
   const renderListing = useCallback(
-    ({ item }) => {
-      const mainImage = getMainImage(item.images)
-      const title = (item.title || `${item.make ?? ''} ${item.model ?? ''}`.trim()).trim() || 'Vehicle'
-      return (
-        <TouchableOpacity
-          style={styles.card}
-          activeOpacity={0.85}
-          onPress={() =>
-            navigation.navigate('ListingDetail', {
-              listingId: item.id,
-              listing: item,
-            })
-          }
-        >
-          <View style={styles.cardImageWrapper}>
-            {mainImage ? (
-              <Image source={{ uri: mainImage }} style={styles.cardImage} />
-            ) : (
-              <View style={[styles.cardImage, styles.cardImagePlaceholder]}>
-                <Text style={styles.cardImagePlaceholderText}>Sin foto</Text>
-              </View>
-            )}
-          </View>
-          <View style={styles.cardInfo}>
-            <Text style={styles.cardTitle} numberOfLines={2}>{title}</Text>
-            <View style={styles.cardPriceRow}>
-              <FavoriteButton listingId={item.id} variant="list" style={styles.favoriteHeartButton} />
-              <Text style={styles.cardPrice}>{formatPrice(item.price)}</Text>
-            </View>
-          </View>
-        </TouchableOpacity>
-      )
-    },
+    ({ item }) => (
+      <ListingCard
+        item={item}
+        style={styles.cardWrapper}
+        onPress={() =>
+          navigation.navigate('ListingDetail', {
+            listingId: item.id,
+            listing: item,
+          })
+        }
+      />
+    ),
     [navigation]
   )
 
@@ -131,25 +97,21 @@ export default function FeedScreen() {
 
       <View style={styles.container}>
         <View style={styles.topSection}>
-          <Text style={styles.heroTitleMain}>Discover</Text>
-          <Text style={styles.heroTitleSub}>all cars</Text>
-          <View style={{ height: 20 }} />
-          <LinearGradient
-            colors={['#c68515ff', '#000000ff']}
-            start={{ x: 0, y: 0 }}
-            end={{ x: 0, y: 1 }}
-            style={styles.heroContainer}
-          />
+          <View style={styles.heroHeaderRow}>
+            <View style={styles.heroTitles}>
+              <Text style={styles.heroTitleMain}>Discover</Text>
+              <Text style={styles.heroTitleSub}>all cars</Text>
+            </View>
 
-          {/* Recommendations Button */}
-          <TouchableOpacity
-            style={styles.recommendButton}
-            activeOpacity={0.85}
-            onPress={() => navigation.navigate('Recommendations')}
-          >
-            <Ionicons name="sparkles-outline" size={16} color={palette.champagne} />
-            <Text style={styles.recommendButtonText}>For you</Text>
-          </TouchableOpacity>
+            <TouchableOpacity
+              style={styles.recommendButton}
+              activeOpacity={0.85}
+              onPress={() => navigation.navigate('Recommendations')}
+            >
+              <Ionicons name="sparkles-outline" size={16} color={palette.champagne} />
+              <Text style={styles.recommendButtonText}>For you</Text>
+            </TouchableOpacity>
+          </View>
 
           {error && <Text style={styles.errorText}>{error}</Text>}
         </View>

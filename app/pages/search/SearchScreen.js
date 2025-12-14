@@ -1,17 +1,5 @@
 import React, { useCallback, useState } from 'react'
-import {
-    View,
-    Text,
-    TextInput,
-    TouchableOpacity,
-    FlatList,
-    Image,
-    ActivityIndicator,
-    Keyboard,
-    RefreshControl,
-    ScrollView,
-    Modal,
-} from 'react-native'
+import { View, Text, TextInput, TouchableOpacity, FlatList, Image, ActivityIndicator, Keyboard, RefreshControl, Modal } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { useNavigation } from '@react-navigation/native'
 import { Ionicons } from '@expo/vector-icons'
@@ -21,14 +9,11 @@ import { LinearGradient } from 'expo-linear-gradient'
 import { searchStyles as styles } from './SearchStyles'
 import { palette } from '../../theme/palette'
 import { useSearch } from './useSearch'
-import { formatPrice } from '../../utils/format'
-import FavoriteButton from '../../components/FavoriteButton'
 import SearchSuggestions from '../../components/SearchSuggestions'
 import SearchFilters from '../../components/SearchFilters'
 import ImageAnalysisButton from '../../components/ImageAnalisisButton'
 import ActiveFiltersChips from '../../components/ActiveFiltersChips'
-
-const getMainImage = (images) => (Array.isArray(images) && images.length > 0 ? images[0] : null)
+import ListingCard from '../../components/ListingCard'
 
 const CATEGORIES = [
     { id: 'classics', title: 'Classics', image: 'https://images.unsplash.com/photo-1552519507-da3b142c6e3d?q=80&w=2070&auto=format&fit=crop', filter: { yearMax: 1990 } },
@@ -136,83 +121,34 @@ export default function SearchScreen() {
     }
 
     const renderListing = useCallback(
-        ({ item }) => {
-            const mainImage = getMainImage(item.images)
-            return (
-                <TouchableOpacity
-                    style={styles.card}
-                    activeOpacity={0.85}
-                    onPress={() =>
-                        navigation.navigate('ListingDetail', {
-                            listingId: item.id,
-                            listing: item,
-                        })
-                    }
-                >
-                    <View style={styles.cardImageWrapper}>
-                        {mainImage ? (
-                            <Image source={{ uri: mainImage }} style={styles.cardImage} />
-                        ) : (
-                            <View style={[styles.cardImage, styles.cardImagePlaceholder]}>
-                                <Text style={styles.cardImagePlaceholderText}>No photo</Text>
-                            </View>
-                        )}
-                        <FavoriteButton listingId={item.id} variant="overlay" />
-                    </View>
-                    <View style={styles.cardContent}>
-                        <View style={styles.cardHeader}>
-                            <Text style={styles.cardTitle}>{item.make}</Text>
-                            <Text style={styles.cardPrice}>{formatPrice(item.price)}</Text>
-                        </View>
-                        <Text style={styles.cardSubtitle}>
-                            {item.make} {item.model} • {item.year}
-                        </Text>
-                        <View style={styles.cardBadgeRow}>
-                            <Text style={styles.cardBadge}>{item.mileage ? `${item.mileage} km` : 'km N/A'}</Text>
-                            {item.fuel_type ? <Text style={styles.cardBadge}>{item.fuel_type}</Text> : null}
-                            {item.transmission ? <Text style={styles.cardBadge}>{item.transmission}</Text> : null}
-                        </View>
-                        <View style={styles.cardFooter}>
-                            <Text style={styles.cardLocation}>{item.location}</Text>
-                        </View>
-                    </View>
-                </TouchableOpacity>
-            )
-        },
+        ({ item }) => (
+            <ListingCard
+                item={item}
+                style={styles.listCardWrapper}
+                onPress={() =>
+                    navigation.navigate('ListingDetail', {
+                        listingId: item.id,
+                        listing: item,
+                    })
+                }
+            />
+        ),
         [navigation]
     )
 
     const renderGridItem = useCallback(
-        ({ item }) => {
-            const mainImage = getMainImage(item.images)
-            return (
-                <TouchableOpacity
-                    style={styles.gridItem}
-                    activeOpacity={0.85}
-                    onPress={() =>
-                        navigation.navigate('ListingDetail', {
-                            listingId: item.id,
-                            listing: item,
-                        })
-                    }
-                >
-                    <View style={styles.gridImageContainer}>
-                        {mainImage ? (
-                            <Image source={{ uri: mainImage }} style={styles.gridImage} />
-                        ) : (
-                            <View style={[styles.gridImage, styles.cardImagePlaceholder]}>
-                                <Text style={styles.cardImagePlaceholderText}>No photo</Text>
-                            </View>
-                        )}
-                        <FavoriteButton listingId={item.id} variant="overlay" />
-                    </View>
-                    <View style={styles.gridContent}>
-                        <Text style={styles.gridTitle} numberOfLines={1}>{item.make} {item.model}</Text>
-                        <Text style={styles.gridPrice}>{formatPrice(item.price)}</Text>
-                    </View>
-                </TouchableOpacity>
-            )
-        },
+        ({ item }) => (
+            <ListingCard
+                item={item}
+                style={styles.gridCardWrapper}
+                onPress={() =>
+                    navigation.navigate('ListingDetail', {
+                        listingId: item.id,
+                        listing: item,
+                    })
+                }
+            />
+        ),
         [navigation]
     )
 
@@ -386,6 +322,7 @@ export default function SearchScreen() {
                     keyExtractor={(item) => item.id.toString()}
                     renderItem={search.viewMode === 'grid' ? renderGridItem : renderListing}
                     numColumns={search.viewMode === 'grid' ? 2 : 1}
+                    columnWrapperStyle={search.viewMode === 'grid' ? styles.columnWrapper : undefined}
                     key={search.viewMode === 'grid' ? 'grid' : 'list'}
                     contentContainerStyle={
                         search.viewMode === 'grid' ? styles.gridContainer : styles.listContent

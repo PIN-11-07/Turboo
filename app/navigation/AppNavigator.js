@@ -1,5 +1,6 @@
 import React from 'react'
 import { View, TouchableOpacity, StyleSheet } from 'react-native'
+import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs'
 import { createNativeStackNavigator } from '@react-navigation/native-stack'
 import { Ionicons } from '@expo/vector-icons'
@@ -16,6 +17,9 @@ import PublishScreen from '../pages/publish/PublishScreen'
 import ProfileScreen from '../pages/profile/ProfileScreen'
 import { palette } from '../theme/palette'
 
+const TAB_BAR_HEIGHT = 88
+const TAB_BAR_BOTTOM_OFFSET = 16
+
 const Tab = createBottomTabNavigator()
 const FeedStack = createNativeStackNavigator()
 const SearchStack = createNativeStackNavigator()
@@ -23,7 +27,7 @@ const PublishStack = createNativeStackNavigator()
 const MessagesStack = createNativeStackNavigator()
 const ProfileStack = createNativeStackNavigator()
 
-const stackScreenOptions = {
+const baseStackScreenOptions = {
   headerStyle: {
     backgroundColor: palette.surface,
   },
@@ -36,38 +40,69 @@ const stackScreenOptions = {
   },
   headerShadowVisible: false,
   headerBackTitleVisible: false,
-  contentStyle: {
-    backgroundColor: palette.background,
-  },
 }
 
-const CustomTabBar = ({ state, descriptors, navigation }) => (
-  <View style={styles.tabContainer}>
-    <View style={styles.tabContent}>
-      {state.routes.map((route, index) => {
-        const { options } = descriptors[route.key]
-        const isFocused = state.index === index
+const createStackScreenOptions = bottomPadding => ({
+  ...baseStackScreenOptions,
+  contentStyle: {
+    backgroundColor: palette.background,
+    paddingBottom: bottomPadding,
+  },
+})
 
-        const onPress = () => {
-          const event = navigation.emit({
-            type: 'tabPress',
-            target: route.key,
-            canPreventDefault: true,
-          })
+const useFloatingTabPadding = () => {
+  const insets = useSafeAreaInsets()
+  return TAB_BAR_HEIGHT + TAB_BAR_BOTTOM_OFFSET + insets.bottom
+}
 
-          if (!isFocused && !event.defaultPrevented) {
-            navigation.navigate(route.name)
+const CustomTabBar = ({ state, descriptors, navigation }) => {
+  const insets = useSafeAreaInsets()
+  const bottomOffset = TAB_BAR_BOTTOM_OFFSET + insets.bottom
+
+  return (
+    <View style={[styles.tabContainer, { bottom: bottomOffset }]}>
+      <View style={[styles.tabContent, { paddingBottom: insets.bottom > 0 ? 6 : 0 }]}>
+        {state.routes.map((route, index) => {
+          const { options } = descriptors[route.key]
+          const isFocused = state.index === index
+
+          const onPress = () => {
+            const event = navigation.emit({
+              type: 'tabPress',
+              target: route.key,
+              canPreventDefault: true,
+            })
+
+            if (!isFocused && !event.defaultPrevented) {
+              navigation.navigate(route.name)
+            }
           }
-        }
 
-        let iconName = 'home-outline'
-        if (route.name === 'Home') iconName = isFocused ? 'home' : 'home-outline'
-        else if (route.name === 'Search') iconName = isFocused ? 'search' : 'search-outline'
-        else if (route.name === 'Publish') iconName = isFocused ? 'add-circle' : 'add-circle-outline'
-        else if (route.name === 'Messages') iconName = isFocused ? 'mail' : 'mail-outline'
-        else if (route.name === 'Profile') iconName = isFocused ? 'person' : 'person-outline'
+          let iconName = 'home-outline'
+          if (route.name === 'Home') iconName = isFocused ? 'home' : 'home-outline'
+          else if (route.name === 'Search') iconName = isFocused ? 'search' : 'search-outline'
+          else if (route.name === 'Publish') iconName = isFocused ? 'add-circle' : 'add-circle-outline'
+          else if (route.name === 'Messages') iconName = isFocused ? 'mail' : 'mail-outline'
+          else if (route.name === 'Profile') iconName = isFocused ? 'person' : 'person-outline'
 
-        if (route.name === 'Publish') {
+          if (route.name === 'Publish') {
+            return (
+              <TouchableOpacity
+                key={index}
+                accessibilityRole="button"
+                accessibilityState={isFocused ? { selected: true } : {}}
+                accessibilityLabel={options.tabBarAccessibilityLabel}
+                testID={options.tabBarTestID}
+                onPress={onPress}
+                style={styles.tabButton}
+              >
+                <View style={styles.plusButtonContainer}>
+                  <Ionicons name="add" size={32} color={palette.champagne} />
+                </View>
+              </TouchableOpacity>
+            )
+          }
+
           return (
             <TouchableOpacity
               key={index}
@@ -78,156 +113,160 @@ const CustomTabBar = ({ state, descriptors, navigation }) => (
               onPress={onPress}
               style={styles.tabButton}
             >
-              <View style={styles.plusButtonContainer}>
-                <Ionicons name="add" size={32} color={palette.champagne} />
-              </View>
+              <Ionicons name={iconName} size={24} color={palette.champagne} />
+              {isFocused && <View style={styles.activeIndicator} />}
             </TouchableOpacity>
           )
-        }
-
-        return (
-          <TouchableOpacity
-            key={index}
-            accessibilityRole="button"
-            accessibilityState={isFocused ? { selected: true } : {}}
-            accessibilityLabel={options.tabBarAccessibilityLabel}
-            testID={options.tabBarTestID}
-            onPress={onPress}
-            style={styles.tabButton}
-          >
-            <Ionicons name={iconName} size={24} color={palette.champagne} />
-            {isFocused && <View style={styles.activeIndicator} />}
-          </TouchableOpacity>
-        )
-      })}
+        })}
+      </View>
     </View>
-  </View>
-)
+  )
+}
 
-const FeedStackNavigator = () => (
-  <FeedStack.Navigator screenOptions={stackScreenOptions}>
-    <FeedStack.Screen
-      name="HomeMain"
-      component={FeedScreen}
-      options={{ headerShown: false }}
-    />
-    <FeedStack.Screen
-      name="ListingDetail"
-      component={ListingDetailScreen}
-      options={{ headerShown: false }}
-    />
-    <FeedStack.Screen
-      name="Purchase"
-      component={PurchaseScreen}
-      options={{ headerShown: false }}
-    />
-    <FeedStack.Screen
-      name="PurchaseConfirmation"
-      component={PurchaseConfirmationScreen}
-      options={{ headerShown: false }}
-    />
-    <FeedStack.Screen
-      name="Recommendations"
-      component={RecommendationsScreen}
-      options={{ title: '' }}
-    />
-    <FeedStack.Screen
-      name="RatingScreen"
-      component={RatingScreen}
-      options={{ headerShown: false }}
-    />
-    <FeedStack.Screen
-      name="Chat"
-      component={ChatScreen}
-      options={{ headerShown: false }}
-    />
-  </FeedStack.Navigator>
-)
+const FeedStackNavigator = () => {
+  const bottomPadding = useFloatingTabPadding()
 
-const SearchStackNavigator = () => (
-  <SearchStack.Navigator screenOptions={stackScreenOptions}>
-    <SearchStack.Screen
-      name="SearchMain"
-      component={SearchScreen}
-      options={{ headerShown: false }}
-    />
-    <SearchStack.Screen
-      name="ListingDetail"
-      component={ListingDetailScreen}
-      options={{ headerShown: false }}
-    />
-    <SearchStack.Screen
-      name="Purchase"
-      component={PurchaseScreen}
-      options={{ headerShown: false }}
-    />
-    <SearchStack.Screen
-      name="PurchaseConfirmation"
-      component={PurchaseConfirmationScreen}
-      options={{ headerShown: false }}
-    />
-    <SearchStack.Screen
-      name="Chat"
-      component={ChatScreen}
-      options={{ headerShown: false }}
-    />
-  </SearchStack.Navigator>
-)
+  return (
+    <FeedStack.Navigator screenOptions={createStackScreenOptions(bottomPadding)}>
+      <FeedStack.Screen
+        name="HomeMain"
+        component={FeedScreen}
+        options={{ headerShown: false }}
+      />
+      <FeedStack.Screen
+        name="ListingDetail"
+        component={ListingDetailScreen}
+        options={{ headerShown: false }}
+      />
+      <FeedStack.Screen
+        name="Purchase"
+        component={PurchaseScreen}
+        options={{ headerShown: false }}
+      />
+      <FeedStack.Screen
+        name="PurchaseConfirmation"
+        component={PurchaseConfirmationScreen}
+        options={{ headerShown: false }}
+      />
+      <FeedStack.Screen
+        name="Recommendations"
+        component={RecommendationsScreen}
+        options={{ title: '' }}
+      />
+      <FeedStack.Screen
+        name="RatingScreen"
+        component={RatingScreen}
+        options={{ headerShown: false }}
+      />
+      <FeedStack.Screen
+        name="Chat"
+        component={ChatScreen}
+        options={{ headerShown: false }}
+      />
+    </FeedStack.Navigator>
+  )
+}
 
-const PublishStackNavigator = () => (
-  <PublishStack.Navigator screenOptions={stackScreenOptions}>
-    <PublishStack.Screen
-      name="PublishMain"
-      component={PublishScreen}
-      options={{ headerShown: false }}
-    />
-  </PublishStack.Navigator>
-)
+const SearchStackNavigator = () => {
+  const bottomPadding = useFloatingTabPadding()
 
-const MessagesStackNavigator = () => (
-  <MessagesStack.Navigator screenOptions={stackScreenOptions}>
-    <MessagesStack.Screen
-      name="MessagesMain"
-      component={MessagesScreen}
-      options={{ headerShown: false }}
-    />
-    <MessagesStack.Screen
-      name="Chat"
-      component={ChatScreen}
-      options={{ headerShown: false }}
-    />
-  </MessagesStack.Navigator>
-)
+  return (
+    <SearchStack.Navigator screenOptions={createStackScreenOptions(bottomPadding)}>
+      <SearchStack.Screen
+        name="SearchMain"
+        component={SearchScreen}
+        options={{ headerShown: false }}
+      />
+      <SearchStack.Screen
+        name="ListingDetail"
+        component={ListingDetailScreen}
+        options={{ headerShown: false }}
+      />
+      <SearchStack.Screen
+        name="Purchase"
+        component={PurchaseScreen}
+        options={{ headerShown: false }}
+      />
+      <SearchStack.Screen
+        name="PurchaseConfirmation"
+        component={PurchaseConfirmationScreen}
+        options={{ headerShown: false }}
+      />
+      <SearchStack.Screen
+        name="Chat"
+        component={ChatScreen}
+        options={{ headerShown: false }}
+      />
+    </SearchStack.Navigator>
+  )
+}
 
-const ProfileStackNavigator = () => (
-  <ProfileStack.Navigator screenOptions={stackScreenOptions}>
-    <ProfileStack.Screen
-      name="ProfileHome"
-      component={ProfileScreen}
-      options={{ headerShown: false }}
-    />
-    <ProfileStack.Screen
-      name="ListingDetail"
-      component={ListingDetailScreen}
-      options={{ headerShown: false }}
-    />
-    <ProfileStack.Screen
-      name="Purchase"
-      component={PurchaseScreen}
-      options={{ headerShown: false }}
-    />
-    <ProfileStack.Screen
-      name="PurchaseConfirmation"
-      component={PurchaseConfirmationScreen}
-      options={{ headerShown: false }}
-    />
-    <ProfileStack.Screen
-      name="Chat"
-      component={ChatScreen}
-      options={{ headerShown: false }}
-    />
-  </ProfileStack.Navigator>
-)
+const PublishStackNavigator = () => {
+  const bottomPadding = useFloatingTabPadding()
+
+  return (
+    <PublishStack.Navigator screenOptions={createStackScreenOptions(bottomPadding)}>
+      <PublishStack.Screen
+        name="PublishMain"
+        component={PublishScreen}
+        options={{ headerShown: false }}
+      />
+    </PublishStack.Navigator>
+  )
+}
+
+const MessagesStackNavigator = () => {
+  const bottomPadding = useFloatingTabPadding()
+
+  return (
+    <MessagesStack.Navigator screenOptions={createStackScreenOptions(bottomPadding)}>
+      <MessagesStack.Screen
+        name="MessagesMain"
+        component={MessagesScreen}
+        options={{ headerShown: false }}
+      />
+      <MessagesStack.Screen
+        name="Chat"
+        component={ChatScreen}
+        options={{ headerShown: false }}
+      />
+    </MessagesStack.Navigator>
+  )
+}
+
+const ProfileStackNavigator = () => {
+  const bottomPadding = useFloatingTabPadding()
+
+  return (
+    <ProfileStack.Navigator screenOptions={createStackScreenOptions(bottomPadding)}>
+      <ProfileStack.Screen
+        name="ProfileHome"
+        component={ProfileScreen}
+        options={{ headerShown: false }}
+      />
+      <ProfileStack.Screen
+        name="ListingDetail"
+        component={ListingDetailScreen}
+        options={{ headerShown: false }}
+      />
+      <ProfileStack.Screen
+        name="Purchase"
+        component={PurchaseScreen}
+        options={{ headerShown: false }}
+      />
+      <ProfileStack.Screen
+        name="PurchaseConfirmation"
+        component={PurchaseConfirmationScreen}
+        options={{ headerShown: false }}
+      />
+      <ProfileStack.Screen
+        name="Chat"
+        component={ChatScreen}
+        options={{ headerShown: false }}
+      />
+    </ProfileStack.Navigator>
+  )
+}
 
 export default function AppNavigator() {
   return (
@@ -275,7 +314,7 @@ export default function AppNavigator() {
 const styles = StyleSheet.create({
   tabContainer: {
     position: 'absolute',
-    bottom: 24,
+    bottom: TAB_BAR_BOTTOM_OFFSET,
     left: 0,
     right: 0,
     alignItems: 'center',
@@ -283,7 +322,7 @@ const styles = StyleSheet.create({
   },
   tabContent: {
     flexDirection: 'row',
-    backgroundColor: palette.darkGrey,
+    backgroundColor: 'rgba(11, 11, 11, 0.65)',
     borderRadius: 30,
     paddingVertical: 0,
     paddingHorizontal: 10,
@@ -291,7 +330,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-around',
     alignItems: 'center',
     borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.1)',
+    borderColor: 'rgba(255, 255, 255, 0.2)',
     shadowColor: '#000',
     shadowOffset: {
       width: 0,

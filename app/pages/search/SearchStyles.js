@@ -1,7 +1,5 @@
-import { StyleSheet, Dimensions, Platform } from 'react-native'
+import { StyleSheet } from 'react-native'
 import { palette } from '../../theme/palette'
-
-const { width } = Dimensions.get('window')
 
 export const searchStyles = StyleSheet.create({
     safeArea: {
@@ -136,142 +134,20 @@ export const searchStyles = StyleSheet.create({
         paddingBottom: 80,
     },
     gridContainer: {
-        paddingHorizontal: 11,
+        paddingHorizontal: 16,
         paddingBottom: 80,
     },
 
-    // Card Styles (Matched to FeedStyles)
-    card: {
-        backgroundColor: palette.surface,
-        borderRadius: 18,
-        marginBottom: 18,
-        overflow: 'hidden',
-        borderWidth: 1,
-        borderColor: palette.border,
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 8 },
-        shadowOpacity: 0.35,
-        shadowRadius: 14,
-        elevation: 5,
-    },
-    cardImageWrapper: {
-        position: 'relative',
-        height: 200,
+    // Card layout wrappers (ListingCard handles visuals)
+    listCardWrapper: {
         width: '100%',
     },
-    cardImage: {
-        width: '100%',
-        height: '100%',
-        resizeMode: 'cover',
+    gridCardWrapper: {
+        width: '48%',
     },
-    cardImagePlaceholder: {
-        backgroundColor: palette.overlay,
-        justifyContent: 'center',
-        alignItems: 'center',
-    },
-    cardImagePlaceholderText: {
-        color: palette.textSecondary,
-        fontWeight: '600',
-    },
-    cardContent: {
-        padding: 18,
-    },
-    cardHeader: {
-        flexDirection: 'row',
+    columnWrapper: {
         justifyContent: 'space-between',
-        alignItems: 'flex-start',
-        marginBottom: 8,
-    },
-    cardTitle: {
-        fontSize: 18,
-        fontWeight: '700',
-        color: palette.textPrimary,
-        flex: 1,
-        marginRight: 8,
-    },
-    cardPrice: {
-        fontSize: 18,
-        fontWeight: '700',
-        color: palette.accent,
-    },
-    cardSubtitle: {
-        fontSize: 15,
-        color: palette.textSecondary,
-        marginTop: 4,
-        marginBottom: 12,
-    },
-    cardBadgeRow: {
-        flexDirection: 'row',
-        flexWrap: 'wrap',
-        marginBottom: 12,
-    },
-    cardBadge: {
-        backgroundColor: 'rgba(245, 197, 24, 0.15)',
-        color: palette.accent,
-        fontSize: 12,
-        fontWeight: '600',
-        paddingHorizontal: 10,
-        paddingVertical: 6,
-        borderRadius: 999,
-        marginRight: 8,
-        marginBottom: 6,
-    },
-    cardFooter: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        marginTop: 2,
-    },
-    cardLocation: {
-        fontSize: 13,
-        color: palette.textMuted,
-        fontWeight: '500',
-    },
-    cardMeta: {
-        fontSize: 12,
-        color: palette.textMuted,
-    },
-
-    // Grid Item Styles
-    gridItem: {
-        flex: 1,
-        margin: 5,
-        backgroundColor: palette.surface,
-        borderRadius: 12,
-        overflow: 'hidden',
-        borderWidth: 1,
-        borderColor: palette.border,
-        maxWidth: (width - 32) / 2, // Adjusted for padding
-    },
-    gridImageContainer: {
-        aspectRatio: 4 / 3,
-        width: '100%',
-        position: 'relative',
-    },
-    gridImage: {
-        width: '100%',
-        height: '100%',
-        resizeMode: 'cover',
-        backgroundColor: palette.overlay,
-    },
-    gridContent: {
-        padding: 10,
-        flexDirection: "column",
-        justifyContent: "space-between",
-        height: 80,
-    },
-    gridTitle: {
-        fontSize: 14,
-        fontWeight: '700',
-        color: palette.textPrimary,
-        marginBottom: 4,
-    },
-    gridPrice: {
-        fontSize: 15,
-        fontWeight: '700',
-        color: palette.accent,
-        marginTop: "auto",
-        alignSelf: "flex-end",
+        marginBottom: 16,
     },
 
     // Empty & Loading
@@ -312,7 +188,7 @@ export const searchStyles = StyleSheet.create({
         width: 24,
         height: 24,
         borderRadius: 12,
-        backgroundColor: palette.error,
+        backgroundColor: palette.danger,
         justifyContent: 'center',
         alignItems: 'center',
     },
