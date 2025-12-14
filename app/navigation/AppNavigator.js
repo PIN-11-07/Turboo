@@ -15,7 +15,10 @@ import MessagesScreen from '../pages/messages/MessagesScreen'
 import ChatScreen from '../pages/chat/ChatScreen'
 import PublishScreen from '../pages/publish/PublishScreen'
 import ProfileScreen from '../pages/profile/ProfileScreen'
+import AddCardScreen from '../pages/purchase/AddCardScreen' // Import the AddCardScreen
 import { palette } from '../theme/palette'
+
+// ... existing code ...
 
 const Tab = createBottomTabNavigator()
 const FeedStack = createNativeStackNavigator()
@@ -123,6 +126,11 @@ const FeedStackNavigator = () => (
       options={{ headerShown: false }}
     />
     <FeedStack.Screen
+      name="AddCard"
+      component={AddCardScreen}
+      options={{ headerShown: false }}
+    />
+    <FeedStack.Screen
       name="PurchaseConfirmation"
       component={PurchaseConfirmationScreen}
       options={{ headerShown: false }}
@@ -160,6 +168,11 @@ const SearchStackNavigator = () => (
     <SearchStack.Screen
       name="Purchase"
       component={PurchaseScreen}
+      options={{ headerShown: false }}
+    />
+    <SearchStack.Screen
+      name="AddCard"
+      component={AddCardScreen}
       options={{ headerShown: false }}
     />
     <SearchStack.Screen
@@ -215,6 +228,11 @@ const ProfileStackNavigator = () => (
     <ProfileStack.Screen
       name="Purchase"
       component={PurchaseScreen}
+      options={{ headerShown: false }}
+    />
+    <ProfileStack.Screen
+      name="AddCard"
+      component={AddCardScreen}
       options={{ headerShown: false }}
     />
     <ProfileStack.Screen
