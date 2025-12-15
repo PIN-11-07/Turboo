@@ -1,15 +1,16 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react'
 import {
   ActivityIndicator,
+  Animated,
   FlatList,
-  KeyboardAvoidingView,
+  Keyboard,
   Platform,
   Text,
   TextInput,
   TouchableOpacity,
   View,
 } from 'react-native'
-import { SafeAreaView } from 'react-native-safe-area-context'
+import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context'
 import { Ionicons } from '@expo/vector-icons'
 import { useNavigation, useRoute } from '@react-navigation/native'
 import { useAuth } from '../../context/AuthContext'
@@ -29,6 +30,9 @@ export default function ChatScreen() {
   const { user } = useAuth()
   const [message, setMessage] = useState('')
   const listRef = useRef(null)
+  const insets = useSafeAreaInsets()
+  const keyboardOffset = useRef(new Animated.Value(0)).current
+  const [keyboardVisible, setKeyboardVisible] = useState(false)
 
   const params = route.params || {}
   const listingFromParams = params.listing
@@ -54,6 +58,38 @@ export default function ChatScreen() {
       listRef.current?.scrollToEnd({ animated: true })
     }
   }, [messages])
+
+  useEffect(() => {
+    const showEvent = Platform.OS === 'ios' ? 'keyboardWillShow' : 'keyboardDidShow'
+    const hideEvent = Platform.OS === 'ios' ? 'keyboardWillHide' : 'keyboardDidHide'
+
+    const handleShow = event => {
+      const height = Math.max(event?.endCoordinates?.height || 0, 0)
+      setKeyboardVisible(true)
+      Animated.timing(keyboardOffset, {
+        toValue: height,
+        duration: Platform.OS === 'ios' ? event?.duration || 250 : 0,
+        useNativeDriver: false,
+      }).start()
+    }
+
+    const handleHide = event => {
+      setKeyboardVisible(false)
+      Animated.timing(keyboardOffset, {
+        toValue: 0,
+        duration: Platform.OS === 'ios' ? event?.duration || 180 : 0,
+        useNativeDriver: false,
+      }).start()
+    }
+
+    const showSub = Keyboard.addListener(showEvent, handleShow)
+    const hideSub = Keyboard.addListener(hideEvent, handleHide)
+
+    return () => {
+      showSub.remove()
+      hideSub.remove()
+    }
+  }, [keyboardOffset])
 
   const handleSend = async () => {
     if (!message.trim()) return
@@ -90,7 +126,7 @@ export default function ChatScreen() {
   }
 
   return (
-    <SafeAreaView style={styles.safeArea}>
+    <SafeAreaView style={styles.safeArea} edges={['top', 'left', 'right']}>
       <View style={styles.header}>
         <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
           <Ionicons name="chevron-back" size={22} color={palette.textPrimary} />
@@ -124,15 +160,12 @@ export default function ChatScreen() {
         </View>
       )}
 
-      <KeyboardAvoidingView
-        style={{ flex: 1 }}
-        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
-        keyboardVerticalOffset={Platform.OS === 'ios' ? 90 : 0}
-      >
+      <View style={{ flex: 1 }}>
         <FlatList
           ref={listRef}
           data={messages}
           keyExtractor={item => item.id}
+          style={{ flex: 1 }}
           contentContainerStyle={styles.listContainer}
           renderItem={({ item }) => {
             const isOwn = item.sender_id === user.id
@@ -158,7 +191,15 @@ export default function ChatScreen() {
           }
         />
 
-        <View style={styles.inputContainer}>
+        <Animated.View
+          style={[
+            styles.inputContainer,
+            {
+              paddingBottom: keyboardVisible ? 10 : Math.max(insets.bottom, 10),
+              marginBottom: keyboardOffset,
+            },
+          ]}
+        >
           <View style={styles.inputRow}>
             <TextInput
               style={styles.textInput}
@@ -181,8 +222,8 @@ export default function ChatScreen() {
               )}
             </TouchableOpacity>
           </View>
-        </View>
-      </KeyboardAvoidingView>
+        </Animated.View>
+      </View>
     </SafeAreaView>
   )
 }
