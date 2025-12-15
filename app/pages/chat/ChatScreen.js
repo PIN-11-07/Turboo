@@ -1,306 +1,229 @@
-import React, { useState, useRef, useEffect } from 'react'
+import React, { useEffect, useMemo, useRef, useState } from 'react'
 import {
-    View,
-    Text,
-    StyleSheet,
-    TextInput,
-    TouchableOpacity,
-    FlatList,
-    Image,
-    KeyboardAvoidingView,
-    Platform,
-    SafeAreaView,
-    StatusBar,
+  ActivityIndicator,
+  Animated,
+  FlatList,
+  Keyboard,
+  Platform,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
 } from 'react-native'
-import { useNavigation, useRoute } from '@react-navigation/native'
+import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context'
 import { Ionicons } from '@expo/vector-icons'
+import { useNavigation, useRoute } from '@react-navigation/native'
+import { useAuth } from '../../context/AuthContext'
+import { chatStyles as styles } from './ChatStyles'
+import { useChat } from './useChat'
 import { palette } from '../../theme/palette'
 
-// Mock initial messages
-const INITIAL_MESSAGES = [
-    {
-        id: '1',
-        text: 'Hola, ¿sigue disponible este vehículo?',
-        sender: 'me',
-        timestamp: '10:30',
-    },
-    {
-        id: '2',
-        text: 'Hola! Sí, todavía lo tengo. ¿Te gustaría verlo?',
-        sender: 'other',
-        timestamp: '10:32',
-    },
-]
-
-export default function ChatScreen() {
-    const navigation = useNavigation()
-    const route = useRoute()
-    const { listing, sellerName, sellerRating } = route.params || {}
-
-    const [messages, setMessages] = useState(INITIAL_MESSAGES)
-    const [inputText, setInputText] = useState('')
-    const flatListRef = useRef(null)
-
-    const handleSend = () => {
-        if (inputText.trim().length === 0) return
-
-        const newMessage = {
-            id: Date.now().toString(),
-            text: inputText,
-            sender: 'me',
-            timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-        }
-
-        setMessages((prev) => [...prev, newMessage])
-        setInputText('')
-
-        // Simulate response
-        setTimeout(() => {
-            const responseMessage = {
-                id: (Date.now() + 1).toString(),
-                text: 'Gracias por tu interés. ¿Tienes alguna otra pregunta?',
-                sender: 'other',
-                timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-            }
-            setMessages((prev) => [...prev, responseMessage])
-        }, 2000)
-    }
-
-    useEffect(() => {
-        // Scroll to bottom when messages change
-        if (flatListRef.current) {
-            setTimeout(() => flatListRef.current.scrollToEnd({ animated: true }), 100)
-        }
-    }, [messages])
-
-    const renderItem = ({ item }) => {
-        const isMe = item.sender === 'me'
-        return (
-            <View style={[styles.messageRow, isMe ? styles.messageRowRight : styles.messageRowLeft]}>
-                <View style={[styles.bubble, isMe ? styles.bubbleRight : styles.bubbleLeft]}>
-                    <Text style={[styles.messageText, isMe ? styles.messageTextRight : styles.messageTextLeft]}>
-                        {item.text}
-                    </Text>
-                    <Text style={[styles.timestamp, isMe ? styles.timestampRight : styles.timestampLeft]}>
-                        {item.timestamp}
-                    </Text>
-                </View>
-            </View>
-        )
-    }
-
-    // Fallback data if not provided via params
-    const carImage = listing?.images?.[0] || listing?.image || null
-    const carModel = listing?.title || listing?.model || 'Vehículo'
-    const carPrice = listing?.price ? `€ ${Number(listing.price).toLocaleString('es-ES')}` : 'Consultar'
-    const displaySellerName = sellerName || 'Vendedor'
-    const displayRating = sellerRating || '5.0'
-
-    return (
-        <SafeAreaView style={styles.container}>
-            <StatusBar barStyle="light-content" backgroundColor={palette.background} />
-
-            {/* Custom Header */}
-            <View style={styles.header}>
-                <View style={styles.headerTopRow}>
-                    <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
-                        <Ionicons name="arrow-back" size={24} color={palette.textPrimary} />
-                    </TouchableOpacity>
-
-                    <View style={styles.sellerInfo}>
-                        <Text style={styles.sellerName}>{displaySellerName}</Text>
-                        <View style={styles.ratingContainer}>
-                            <Ionicons name="star" size={14} color={palette.accent} />
-                            <Text style={styles.ratingText}>{displayRating}</Text>
-                        </View>
-                    </View>
-                    <View style={{ width: 24 }} />
-                </View>
-
-                {/* Car Context Sub-header */}
-                <View style={styles.carContext}>
-                    {carImage ? (
-                        <Image source={{ uri: carImage }} style={styles.carThumb} />
-                    ) : (
-                        <View style={[styles.carThumb, { backgroundColor: '#333' }]} />
-                    )}
-                    <View style={styles.carDetails}>
-                        <Text style={styles.carTitle} numberOfLines={1}>{carModel}</Text>
-                        <Text style={styles.carPrice}>{carPrice}</Text>
-                    </View>
-                </View>
-            </View>
-
-            <KeyboardAvoidingView
-                behavior={Platform.OS === 'ios' ? 'padding' : undefined}
-                style={styles.keyboardAvoiding}
-                keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 0}
-            >
-                <FlatList
-                    ref={flatListRef}
-                    data={messages}
-                    renderItem={renderItem}
-                    keyExtractor={(item) => item.id}
-                    contentContainerStyle={styles.listContent}
-                    style={styles.list}
-                />
-
-                <View style={styles.inputContainer}>
-                    <TextInput
-                        style={styles.input}
-                        placeholder="Escribe un mensaje..."
-                        placeholderTextColor="#666"
-                        value={inputText}
-                        onChangeText={setInputText}
-                        multiline
-                    />
-                    <TouchableOpacity onPress={handleSend} style={styles.sendButton}>
-                        <Ionicons name="arrow-up-circle" size={40} color={palette.accent} />
-                    </TouchableOpacity>
-                </View>
-            </KeyboardAvoidingView>
-        </SafeAreaView>
-    )
+const formatTime = iso => {
+  if (!iso) return ''
+  const date = new Date(iso)
+  return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
 }
 
-const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        backgroundColor: palette.background,
-    },
-    header: {
-        backgroundColor: palette.surface,
-        paddingBottom: 10,
-        borderBottomWidth: 1,
-        borderBottomColor: '#333',
-    },
-    headerTopRow: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        justifyContent: 'space-between',
-        paddingHorizontal: 16,
-        paddingTop: 10,
-        paddingBottom: 10,
-    },
-    backButton: {
-        padding: 4,
-    },
-    sellerInfo: {
-        alignItems: 'center',
-    },
-    sellerName: {
-        color: palette.textPrimary,
-        fontSize: 16,
-        fontWeight: '600',
-    },
-    ratingContainer: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        marginTop: 2,
-    },
-    ratingText: {
-        color: palette.textSecondary,
-        fontSize: 12,
-        marginLeft: 4,
-    },
-    carContext: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        paddingHorizontal: 16,
-        paddingTop: 8,
-    },
-    carThumb: {
-        width: 50,
-        height: 50,
-        borderRadius: 8,
-        marginRight: 12,
-    },
-    carDetails: {
-        flex: 1,
-    },
-    carTitle: {
-        color: palette.textPrimary,
-        fontSize: 14,
-        fontFamily: Platform.OS === 'ios' ? 'Georgia' : 'serif', // Serif as requested
-        fontWeight: 'bold',
-    },
-    carPrice: {
-        color: palette.accent,
-        fontSize: 14,
-        fontWeight: '600',
-    },
-    keyboardAvoiding: {
-        flex: 1,
-    },
-    list: {
-        flex: 1,
-    },
-    listContent: {
-        padding: 16,
-        paddingBottom: 20,
-    },
-    messageRow: {
-        marginBottom: 12,
-        flexDirection: 'row',
-    },
-    messageRowRight: {
-        justifyContent: 'flex-end',
-    },
-    messageRowLeft: {
-        justifyContent: 'flex-start',
-    },
-    bubble: {
-        maxWidth: '80%',
-        padding: 12,
-        borderRadius: 16,
-    },
-    bubbleRight: {
-        backgroundColor: '#FFFFFF', // White bubble for sender as requested
-        borderBottomRightRadius: 2,
-    },
-    bubbleLeft: {
-        backgroundColor: '#333333', // Dark bubble for receiver
-        borderBottomLeftRadius: 2,
-    },
-    messageText: {
-        fontSize: 16,
-    },
-    messageTextRight: {
-        color: '#000000', // Dark text for white bubble
-    },
-    messageTextLeft: {
-        color: '#FFFFFF',
-    },
-    timestamp: {
-        fontSize: 10,
-        marginTop: 4,
-        alignSelf: 'flex-end',
-    },
-    timestampRight: {
-        color: '#666',
-    },
-    timestampLeft: {
-        color: '#AAA',
-    },
-    inputContainer: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        padding: 10,
-        backgroundColor: palette.surface,
-        borderTopWidth: 1,
-        borderTopColor: '#333',
-    },
-    input: {
-        flex: 1,
-        backgroundColor: '#222',
-        color: '#FFF',
-        borderRadius: 20,
-        paddingHorizontal: 16,
-        paddingVertical: 10,
-        marginRight: 10,
-        maxHeight: 100,
-    },
-    sendButton: {
-        padding: 4,
-    },
-})
+export default function ChatScreen() {
+  const navigation = useNavigation()
+  const route = useRoute()
+  const { user } = useAuth()
+  const [message, setMessage] = useState('')
+  const listRef = useRef(null)
+  const insets = useSafeAreaInsets()
+  const keyboardOffset = useRef(new Animated.Value(0)).current
+  const [keyboardVisible, setKeyboardVisible] = useState(false)
+
+  const params = route.params || {}
+  const listingFromParams = params.listing
+  const targetUserId = params.otherUserId || listingFromParams?.user_id || params.sellerId
+
+  const {
+    conversationId,
+    conversation,
+    messages,
+    loading,
+    sending,
+    error,
+    sendMessage,
+  } = useChat({
+    initialConversationId: params.conversationId,
+    initialConversation: params.conversation,
+    listing: listingFromParams,
+    targetUserId,
+  })
+
+  useEffect(() => {
+    if (messages.length > 0) {
+      listRef.current?.scrollToEnd({ animated: true })
+    }
+  }, [messages])
+
+  useEffect(() => {
+    const showEvent = Platform.OS === 'ios' ? 'keyboardWillShow' : 'keyboardDidShow'
+    const hideEvent = Platform.OS === 'ios' ? 'keyboardWillHide' : 'keyboardDidHide'
+
+    const handleShow = event => {
+      const height = Math.max(event?.endCoordinates?.height || 0, 0)
+      setKeyboardVisible(true)
+      Animated.timing(keyboardOffset, {
+        toValue: height,
+        duration: Platform.OS === 'ios' ? event?.duration || 250 : 0,
+        useNativeDriver: false,
+      }).start()
+    }
+
+    const handleHide = event => {
+      setKeyboardVisible(false)
+      Animated.timing(keyboardOffset, {
+        toValue: 0,
+        duration: Platform.OS === 'ios' ? event?.duration || 180 : 0,
+        useNativeDriver: false,
+      }).start()
+    }
+
+    const showSub = Keyboard.addListener(showEvent, handleShow)
+    const hideSub = Keyboard.addListener(hideEvent, handleHide)
+
+    return () => {
+      showSub.remove()
+      hideSub.remove()
+    }
+  }, [keyboardOffset])
+
+  const handleSend = async () => {
+    if (!message.trim()) return
+    await sendMessage(message)
+    setMessage('')
+  }
+
+  const counterpartName = useMemo(() => {
+    return conversation?.otherUser?.full_name || params.sellerName || 'Utente'
+  }, [conversation?.otherUser?.full_name, params.sellerName])
+
+  const listingTitle = conversation?.listing?.title || listingFromParams?.title || 'Annuncio'
+  const listingPrice = conversation?.listing?.price || listingFromParams?.price
+
+  if (!user) {
+    return (
+      <SafeAreaView style={styles.safeArea}>
+        <View style={styles.loadingWrapper}>
+          <Text style={styles.errorText}>Effettua l&apos;accesso per chattare con i venditori.</Text>
+        </View>
+      </SafeAreaView>
+    )
+  }
+
+  if (loading) {
+    return (
+      <SafeAreaView style={styles.safeArea}>
+        <View style={styles.loadingWrapper}>
+          <ActivityIndicator size="large" color={palette.mustard} />
+          <Text style={{ color: palette.textSecondary, marginTop: 10 }}>Caricamento chat...</Text>
+        </View>
+      </SafeAreaView>
+    )
+  }
+
+  return (
+    <SafeAreaView style={styles.safeArea} edges={['top', 'left', 'right']}>
+      <View style={styles.header}>
+        <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
+          <Ionicons name="chevron-back" size={22} color={palette.textPrimary} />
+        </TouchableOpacity>
+
+        <View style={styles.headerInfo}>
+          <View style={styles.counterpartRow}>
+            <View style={styles.avatar}>
+              <Text style={styles.avatarText}>
+                {(counterpartName || '?').charAt(0).toUpperCase()}
+              </Text>
+            </View>
+            <Text style={styles.counterpartName} numberOfLines={1}>
+              {counterpartName}
+            </Text>
+          </View>
+          <View style={styles.listingRow}>
+            <Text style={styles.listingTitle} numberOfLines={1}>
+              {listingTitle}
+            </Text>
+            {listingPrice != null && (
+              <Text style={styles.listingPrice}>€ {Number(listingPrice).toLocaleString('it-IT')}</Text>
+            )}
+          </View>
+        </View>
+      </View>
+
+      {error && (
+        <View style={{ paddingHorizontal: 16, paddingTop: 10 }}>
+          <Text style={styles.errorText}>{error}</Text>
+        </View>
+      )}
+
+      <View style={{ flex: 1 }}>
+        <FlatList
+          ref={listRef}
+          data={messages}
+          keyExtractor={item => item.id}
+          style={{ flex: 1 }}
+          contentContainerStyle={styles.listContainer}
+          renderItem={({ item }) => {
+            const isOwn = item.sender_id === user.id
+            return (
+              <View
+                style={[
+                  styles.messageContainer,
+                  isOwn ? styles.outgoing : styles.incoming,
+                ]}
+              >
+                <Text style={styles.messageText}>{item.content}</Text>
+                <Text style={styles.timestamp}>{formatTime(item.created_at)}</Text>
+              </View>
+            )
+          }}
+          ListEmptyComponent={
+            <View style={styles.emptyState}>
+              <Ionicons name="chatbubble-ellipses-outline" size={44} color={palette.textMuted} />
+              <Text style={styles.emptyText}>
+                Inizia la conversazione con il venditore per ricevere maggiori dettagli.
+              </Text>
+            </View>
+          }
+        />
+
+        <Animated.View
+          style={[
+            styles.inputContainer,
+            {
+              paddingBottom: keyboardVisible ? 10 : Math.max(insets.bottom, 10),
+              marginBottom: keyboardOffset,
+            },
+          ]}
+        >
+          <View style={styles.inputRow}>
+            <TextInput
+              style={styles.textInput}
+              placeholder="Scrivi un messaggio..."
+              placeholderTextColor={palette.textMuted}
+              value={message}
+              onChangeText={setMessage}
+              onSubmitEditing={handleSend}
+              editable={!!conversationId && !sending}
+            />
+            <TouchableOpacity
+              style={[styles.sendButton, (!message.trim() || sending) && styles.disabledSend]}
+              onPress={handleSend}
+              disabled={!message.trim() || sending}
+            >
+              {sending ? (
+                <ActivityIndicator size="small" color={palette.textPrimary} />
+              ) : (
+                <Ionicons name="send" size={18} color={palette.textPrimary} />
+              )}
+            </TouchableOpacity>
+          </View>
+        </Animated.View>
+      </View>
+    </SafeAreaView>
+  )
+}

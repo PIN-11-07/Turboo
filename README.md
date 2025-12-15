@@ -110,9 +110,14 @@ Revool
 │   │   │   ├── ListingDetailScreen.js
 │   │   │   ├── ListingDetailStyles.js
 │   │   │   └── useListingDetail.js
-│   │   ├── messages
+│   │   ├── chat
 │   │   │   ├── ChatScreen.js
-│   │   │   └── MessagesScreen.js
+│   │   │   ├── ChatStyles.js
+│   │   │   └── useChat.js
+│   │   ├── messages
+│   │   │   ├── MessagesScreen.js
+│   │   │   ├── MessagesStyles.js
+│   │   │   └── useMessages.js
 │   │   ├── profile
 │   │   │   ├── ProfileScreen.js
 │   │   │   ├── profileStyles.js
@@ -263,9 +268,10 @@ Revool
 - **Navigation:** Transactions can be tapped to navigate to the original listing detail if it still exists.
 
 ### m) Chat & Messaging
-- **Description:** Real-time chat interface for buyers and sellers to communicate. Includes a conversation list (`MessagesScreen`) and a detailed chat view (`ChatScreen`) with context about the vehicle.
-- **Components:** `MessagesScreen`, `ChatScreen`.
-- **Notes:** Currently uses mock data for conversations and messages.
+- **Description:** Supabase-backed chat between buyer and seller per listing with live updates through Realtime; the conversation is created automatically the first time you contact a seller.
+- **Screens & hooks:** `MessagesScreen` + `useMessages` for the inbox, `ChatScreen` + `useChat` for the detailed view with listing context.
+- **Data:** Persists to `chat_conversations` (listing snapshot + participants) and `chat_messages` (history) while keeping `last_message_*` metadata synced for previews.
+- **UX notes:** The header shows listing title/price, messages stream in real time, and the inbox refreshes whenever new conversations or replies arrive.
 
 ### n) Seller Rating
 - **Description:** Allows buyers to rate their experience with a seller after a transaction.
@@ -314,6 +320,8 @@ Revool
 * `public.profiles`
 * `public.favorites`
 * `public.transactions`
+* `public.chat_conversations`
+* `public.chat_messages`
 
 Row Level Security (RLS) is enabled on every public table described below.
 
@@ -424,6 +432,54 @@ Additional constraints: `unique (user_id, listing_id)` enforces one favorite per
 
 ---
 
+### **Table `public.chat_conversations`**
+
+| Field                    | Type            | Constraints / Default                                        | Description                                                          |
+| ------------------------ | --------------- | ------------------------------------------------------------ | -------------------------------------------------------------------- |
+| `id`                     | `uuid`          | PK, `default gen_random_uuid()`                              | Conversation identifier.                                             |
+| `listing_id`             | `uuid`          | FK → `public.listings.id`, `not null`, cascade               | Listing the chat is tied to.                                         |
+| `user_one_id`            | `uuid`          | FK → `public.profiles.id`, `not null`, cascade               | First participant (store sorted UUIDs to keep uniqueness stable).    |
+| `user_two_id`            | `uuid`          | FK → `public.profiles.id`, `not null`, cascade               | Second participant.                                                  |
+| `listing_title`          | `text`          |                                                              | Snapshot of listing title for previews.                              |
+| `listing_price`          | `numeric(12,2)` |                                                              | Snapshot of listing price.                                           |
+| `listing_image`          | `text`          |                                                              | First image URL snapshot.                                            |
+| `last_message_text`      | `text`          |                                                              | Last message preview.                                                |
+| `last_message_at`        | `timestamptz`   | `default now()`                                              | Timestamp of last message (used for ordering the inbox).             |
+| `last_message_sender_id` | `uuid`          | FK → `public.profiles.id`                                    | Who sent the last message.                                           |
+| `created_at`             | `timestamptz`   | `default now()`                                              | Creation timestamp.                                                  |
+
+Additional constraints: `unique (listing_id, user_one_id, user_two_id)` enforces a single conversation per buyer/seller/listing trio.
+
+**RLS policies:**
+
+1. `Participants can read conversation` → `SELECT` only when `auth.uid()` is either participant.
+2. `Participants can create conversation` → `INSERT` allowed only when `auth.uid()` matches one of the participants.
+3. `Participants can update metadata` → `UPDATE` allowed for participants (used to sync last message preview).
+4. `No deletes` → `DELETE` disabled.
+
+---
+
+### **Table `public.chat_messages`**
+
+| Field             | Type          | Constraints / Default                               | Description                                              |
+| ----------------- | ------------- | --------------------------------------------------- | -------------------------------------------------------- |
+| `id`              | `uuid`        | PK, `default gen_random_uuid()`                     | Message identifier.                                      |
+| `conversation_id` | `uuid`        | FK → `public.chat_conversations.id`, `not null`, cascade | Conversation the message belongs to.                     |
+| `sender_id`       | `uuid`        | FK → `public.profiles.id`, `not null`, cascade      | User who sent the message.                               |
+| `content`         | `text`        | `not null`, `check length(content) > 0`             | Message body.                                            |
+| `created_at`      | `timestamptz` | `default now()`                                     | Timestamp of sending.                                    |
+
+Index: `btree (conversation_id, created_at)` speeds up chronological reads.
+
+**RLS policies:**
+
+1. `Participants can read messages` → `SELECT` only when `auth.uid()` is a participant of the parent conversation.
+2. `Participants can send messages` → `INSERT` allowed when `auth.uid() = sender_id` and the user belongs to the conversation.
+3. `No updates` → `UPDATE` disabled.
+4. `No deletes` → `DELETE` disabled.
+
+---
+
 ### Relationships
 
 * `auth.users.id` → `public.profiles.id` (1:1, synchronized via triggers)
@@ -434,3 +490,8 @@ Additional constraints: `unique (user_id, listing_id)` enforces one favorite per
 * `public.profiles.id` → `public.transactions.seller_id` (1:N)
 * `public.profiles.id` → `public.transactions.user_id` (1:N)
 * `public.listings.id` → `public.transactions.listing_id` (1:N)
+* `public.listings.id` → `public.chat_conversations.listing_id` (1:N)
+* `public.profiles.id` → `public.chat_conversations.user_one_id` (1:N)
+* `public.profiles.id` → `public.chat_conversations.user_two_id` (1:N)
+* `public.chat_conversations.id` → `public.chat_messages.conversation_id` (1:N)
+* `public.profiles.id` → `public.chat_messages.sender_id` (1:N)
