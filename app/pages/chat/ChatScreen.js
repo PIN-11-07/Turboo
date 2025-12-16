@@ -98,17 +98,17 @@ export default function ChatScreen() {
   }
 
   const counterpartName = useMemo(() => {
-    return conversation?.otherUser?.full_name || params.sellerName || 'Utente'
+    return conversation?.otherUser?.full_name || params.sellerName || 'User'
   }, [conversation?.otherUser?.full_name, params.sellerName])
 
-  const listingTitle = conversation?.listing?.title || listingFromParams?.title || 'Annuncio'
+  const listingTitle = conversation?.listing?.title || listingFromParams?.title || 'Listing'
   const listingPrice = conversation?.listing?.price || listingFromParams?.price
 
   if (!user) {
     return (
       <SafeAreaView style={styles.safeArea}>
         <View style={styles.loadingWrapper}>
-          <Text style={styles.errorText}>Effettua l&apos;accesso per chattare con i venditori.</Text>
+          <Text style={styles.errorText}>Log in to chat with sellers.</Text>
         </View>
       </SafeAreaView>
     )
@@ -119,7 +119,7 @@ export default function ChatScreen() {
       <SafeAreaView style={styles.safeArea}>
         <View style={styles.loadingWrapper}>
           <ActivityIndicator size="large" color={palette.mustard} />
-          <Text style={{ color: palette.textSecondary, marginTop: 10 }}>Caricamento chat...</Text>
+          <Text style={{ color: palette.textSecondary, marginTop: 10 }}>Loading chat...</Text>
         </View>
       </SafeAreaView>
     )
@@ -148,7 +148,7 @@ export default function ChatScreen() {
               {listingTitle}
             </Text>
             {listingPrice != null && (
-              <Text style={styles.listingPrice}>€ {Number(listingPrice).toLocaleString('it-IT')}</Text>
+              <Text style={styles.listingPrice}>€ {Number(listingPrice).toLocaleString('en-US')}</Text>
             )}
           </View>
         </View>
@@ -185,7 +185,7 @@ export default function ChatScreen() {
             <View style={styles.emptyState}>
               <Ionicons name="chatbubble-ellipses-outline" size={44} color={palette.textMuted} />
               <Text style={styles.emptyText}>
-                Inizia la conversazione con il venditore per ricevere maggiori dettagli.
+                Start the conversation with the seller to get more details.
               </Text>
             </View>
           }
@@ -203,7 +203,7 @@ export default function ChatScreen() {
           <View style={styles.inputRow}>
             <TextInput
               style={styles.textInput}
-              placeholder="Scrivi un messaggio..."
+              placeholder="Write a message..."
               placeholderTextColor={palette.textMuted}
               value={message}
               onChangeText={setMessage}

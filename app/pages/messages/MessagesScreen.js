@@ -29,9 +29,9 @@ export default function MessagesScreen() {
   const { conversations, loading, refreshing, error, fetchConversations } = useMessages()
 
   const renderConversation = ({ item }) => {
-    const name = item.otherUser?.full_name || 'Utente'
-    const listingTitle = item.listing?.title || 'Annuncio'
-    const lastMessage = item.last_message_text || 'Inizia la conversazione'
+    const name = item.otherUser?.full_name || 'User'
+    const listingTitle = item.listing?.title || 'Listing'
+    const lastMessage = item.last_message_text || 'Start the conversation'
 
     return (
       <TouchableOpacity
@@ -58,7 +58,7 @@ export default function MessagesScreen() {
           <Text style={styles.listingTitle} numberOfLines={1}>{listingTitle}</Text>
           <Text style={styles.lastMessage} numberOfLines={2}>{lastMessage}</Text>
         </View>
-        <Ionicons name="chevron-forward" size={18} color={palette.textMuted} />
+        <Ionicons name="chevron-forward" size={18} color={palette.lightGrey} />
       </TouchableOpacity>
     )
   }
@@ -68,7 +68,7 @@ export default function MessagesScreen() {
       <SafeAreaView style={styles.safeArea}>
         <View style={styles.loadingWrapper}>
           <ActivityIndicator size="large" color={palette.mustard} />
-          <Text style={{ color: palette.textSecondary, marginTop: 10 }}>Caricamento conversazioni...</Text>
+          <Text style={{ color: palette.champagne, marginTop: 10 }}>Loading conversations...</Text>
         </View>
       </SafeAreaView>
     )
@@ -78,7 +78,7 @@ export default function MessagesScreen() {
     <SafeAreaView style={styles.safeArea} edges={['top', 'left', 'right']}>
       <View style={styles.header}>
         <Ionicons name="chatbubble-ellipses-outline" size={22} color={palette.mustard} style={{ marginRight: 8 }} />
-        <Text style={styles.headerTitle}>Messaggi</Text>
+        <Text style={styles.headerTitle}>Messages</Text>
       </View>
 
       {error && <Text style={styles.errorText}>{error}</Text>}
@@ -90,12 +90,12 @@ export default function MessagesScreen() {
         contentContainerStyle={conversations.length === 0 ? styles.emptyState : styles.list}
         ListEmptyComponent={
           <View style={styles.emptyState}>
-            <Ionicons name="mail-unread-outline" size={46} color={palette.textMuted} />
+            <Ionicons name="mail-unread-outline" size={46} color={palette.lightGrey} />
             <Text style={styles.emptyText}>
-              Nessuna chat ancora. Contatta un venditore da un annuncio per iniziare.
+              No chats yet. Contact a seller from a listing to start.
             </Text>
             <TouchableOpacity style={styles.refreshButton} onPress={() => fetchConversations(true)}>
-              <Text style={styles.refreshText}>Aggiorna</Text>
+              <Text style={styles.refreshText}>Refresh</Text>
             </TouchableOpacity>
           </View>
         }

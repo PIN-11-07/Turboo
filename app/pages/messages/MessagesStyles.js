@@ -4,22 +4,23 @@ import { palette } from '../../theme/palette'
 export const messagesStyles = StyleSheet.create({
   safeArea: {
     flex: 1,
-    backgroundColor: palette.background,
+    backgroundColor: palette.darkGrey,
   },
   header: {
     paddingHorizontal: 18,
     paddingVertical: 14,
-    backgroundColor: palette.surface,
+    backgroundColor: palette.darkGrey,
     borderBottomWidth: 1,
-    borderBottomColor: palette.border,
+    borderBottomColor: palette.lightGrey,
     flexDirection: 'row',
     alignItems: 'center',
   },
   headerTitle: {
-    color: palette.textPrimary,
+    color: palette.white,
     fontSize: 20,
     fontWeight: '700',
     letterSpacing: 0.4,
+    fontFamily: 'OTJubileeGolden',
   },
   list: {
     flex: 1,
@@ -27,12 +28,12 @@ export const messagesStyles = StyleSheet.create({
     paddingTop: 12,
   },
   card: {
-    backgroundColor: palette.elevated,
+    backgroundColor: palette.darkGrey,
     borderRadius: 16,
     padding: 14,
     marginBottom: 12,
     borderWidth: 1,
-    borderColor: palette.border,
+    borderColor: palette.lightGrey,
     flexDirection: 'row',
     alignItems: 'center',
   },
@@ -40,15 +41,16 @@ export const messagesStyles = StyleSheet.create({
     width: 48,
     height: 48,
     borderRadius: 24,
-    backgroundColor: palette.overlay,
+    backgroundColor: palette.darkMustard,
     alignItems: 'center',
     justifyContent: 'center',
     marginRight: 12,
   },
   avatarLetter: {
-    color: palette.textPrimary,
+    color: palette.white,
     fontWeight: '700',
     fontSize: 18,
+    fontFamily: 'BaiJamjuree-Regular',
   },
   cardContent: {
     flex: 1,
@@ -59,23 +61,27 @@ export const messagesStyles = StyleSheet.create({
     alignItems: 'center',
   },
   name: {
-    color: palette.textPrimary,
+    color: palette.white,
     fontSize: 16,
     fontWeight: '700',
+    fontFamily: 'BaiJamjuree-Regular',
   },
   time: {
-    color: palette.textMuted,
+    color: palette.lightGrey,
     fontSize: 12,
+    fontFamily: 'BaiJamjuree-Regular',
   },
   listingTitle: {
-    color: palette.textSecondary,
+    color: palette.champagne,
     fontSize: 13,
     marginTop: 2,
+    fontFamily: 'BaiJamjuree-Regular',
   },
   lastMessage: {
-    color: palette.textMuted,
+    color: palette.lightGrey,
     fontSize: 13,
     marginTop: 6,
+    fontFamily: 'BaiJamjuree-Regular',
   },
   emptyState: {
     flex: 1,
@@ -84,10 +90,11 @@ export const messagesStyles = StyleSheet.create({
     paddingHorizontal: 32,
   },
   emptyText: {
-    color: palette.textSecondary,
+    color: palette.champagne,
     textAlign: 'center',
     marginTop: 8,
     lineHeight: 20,
+    fontFamily: 'BaiJamjuree-Regular',
   },
   loadingWrapper: {
     flex: 1,
@@ -95,10 +102,11 @@ export const messagesStyles = StyleSheet.create({
     justifyContent: 'center',
   },
   errorText: {
-    color: palette.danger,
+    color: palette.darkMustard,
     textAlign: 'center',
     paddingHorizontal: 16,
     marginTop: 12,
+    fontFamily: 'BaiJamjuree-Regular',
   },
   refreshButton: {
     alignSelf: 'center',
@@ -107,10 +115,11 @@ export const messagesStyles = StyleSheet.create({
     paddingVertical: 8,
     borderRadius: 12,
     borderWidth: 1,
-    borderColor: palette.border,
+    borderColor: palette.lightGrey,
   },
   refreshText: {
-    color: palette.textPrimary,
+    color: palette.white,
     fontWeight: '600',
+    fontFamily: 'BaiJamjuree-Regular',
   },
 })

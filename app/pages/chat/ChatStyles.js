@@ -45,12 +45,14 @@ export const chatStyles = StyleSheet.create({
     color: palette.textPrimary,
     fontWeight: '700',
     fontSize: 16,
+    fontFamily: 'BaiJamjuree-Regular',
   },
   counterpartName: {
     color: palette.textPrimary,
     fontSize: 16,
     fontWeight: '700',
     letterSpacing: 0.2,
+    fontFamily: 'BaiJamjuree-Regular',
   },
   listingRow: {
     marginTop: 4,
@@ -58,11 +60,13 @@ export const chatStyles = StyleSheet.create({
   listingTitle: {
     color: palette.textSecondary,
     fontSize: 13,
+    fontFamily: 'BaiJamjuree-Regular',
   },
   listingPrice: {
     color: palette.mustard,
     fontSize: 12,
     marginTop: 2,
+    fontFamily: 'BaiJamjuree-Regular',
   },
   listContainer: {
     flex: 1,
@@ -91,11 +95,13 @@ export const chatStyles = StyleSheet.create({
     color: palette.textPrimary,
     fontSize: 15,
     lineHeight: 20,
+    fontFamily: 'BaiJamjuree-Regular',
   },
   timestamp: {
     color: palette.textMuted,
     fontSize: 11,
     marginTop: 6,
+    fontFamily: 'BaiJamjuree-Regular',
   },
   inputContainer: {
     padding: 10,
@@ -117,6 +123,7 @@ export const chatStyles = StyleSheet.create({
     color: palette.textPrimary,
     paddingVertical: 10,
     fontSize: 15,
+    fontFamily: 'BaiJamjuree-Regular',
   },
   sendButton: {
     width: 40,
@@ -141,6 +148,7 @@ export const chatStyles = StyleSheet.create({
     textAlign: 'center',
     marginTop: 12,
     lineHeight: 20,
+    fontFamily: 'BaiJamjuree-Regular',
   },
   loadingWrapper: {
     flex: 1,
@@ -151,5 +159,6 @@ export const chatStyles = StyleSheet.create({
     color: palette.danger,
     textAlign: 'center',
     marginTop: 8,
+    fontFamily: 'BaiJamjuree-Regular',
   },
 })
