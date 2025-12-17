@@ -44,14 +44,14 @@ const formatPrice = (value) => {
   const numericValue = Number(value)
 
   if (Number.isFinite(numericValue)) {
-    return `€ ${numericValue.toLocaleString('es-ES')}`
+    return `€ ${numericValue.toLocaleString('en-US')}`
   }
 
   if (typeof value === 'string' && value.trim()) {
     return value
   }
 
-  return 'Precio a petición'
+  return 'Price on request'
 }
 
 export default function ProfileScreen() {
@@ -75,7 +75,7 @@ export default function ProfileScreen() {
 
   const [profile, setProfile] = useState(fetchedProfile)
   const [editing, setEditing] = useState(false)
-  const [name, setName] = useState(fetchedProfile?.name || 'Usuario')
+  const [name, setName] = useState(fetchedProfile?.name || 'User')
   const [email, setEmail] = useState(fetchedProfile?.mail || '')
   const [newAvatarUri, setNewAvatarUri] = useState(
     fetchedProfile?.profileImageUrl ?? null
@@ -93,12 +93,12 @@ export default function ProfileScreen() {
     if (fetchedProfile) {
       setProfile(fetchedProfile)
       if (!editing) {
-        setName(fetchedProfile.name || user?.email || 'Usuario')
+        setName(fetchedProfile.name || user?.email || 'User')
         setEmail(fetchedProfile.mail || user?.email || '')
         setNewAvatarUri(fetchedProfile.profileImageUrl ?? null)
       }
     } else if (!editing) {
-      setName(user?.email || 'Usuario')
+      setName(user?.email || 'User')
       setEmail(user?.email || '')
     }
   }, [fetchedProfile, user?.email, editing])
@@ -123,7 +123,7 @@ export default function ProfileScreen() {
   )
 
   const handleTransactionPress = useCallback((transaction) => {
-    // Naviguer vers le détail du listing si disponible
+    // Navigate to listing detail when available
     if (transaction.listing_id) {
       handleListingPress(transaction.listing_id)
     }
@@ -138,8 +138,8 @@ export default function ProfileScreen() {
       const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync()
       if (status !== 'granted') {
         Alert.alert(
-          'Permiso denegado',
-          'Necesitamos acceso a la galería. Por favor, verifica los permisos en la configuración del dispositivo.'
+          'Permission denied',
+          'We need access to your gallery. Please check permissions in your device settings.'
         )
         return
       }
@@ -156,14 +156,14 @@ export default function ProfileScreen() {
       }
     } catch (imageError) {
       console.error('Error ImagePicker:', imageError)
-      Alert.alert('Error', 'Imposible abrir la galería.')
+      Alert.alert('Error', 'Unable to open the gallery.')
     }
   }
 
   const takePhoto = async () => {
     const { status } = await ImagePicker.requestCameraPermissionsAsync()
     if (status !== 'granted') {
-      Alert.alert('Permiso denegado', 'Necesitamos acceso a la cámara.')
+      Alert.alert('Permission denied', 'We need access to your camera.')
       return
     }
 
@@ -180,16 +180,16 @@ export default function ProfileScreen() {
   }
 
   const promptImageSelection = () => {
-    Alert.alert('Cambiar Foto de Perfil', '¿Cómo te gustaría seleccionar una foto?', [
-      { text: 'Tomar Foto', onPress: takePhoto },
-      { text: 'Desde Galería', onPress: pickImageFromGallery },
-      { text: 'Cancelar', style: 'cancel' },
+    Alert.alert('Change Profile Photo', 'How would you like to select a photo?', [
+      { text: 'Take Photo', onPress: takePhoto },
+      { text: 'From Gallery', onPress: pickImageFromGallery },
+      { text: 'Cancel', style: 'cancel' },
     ])
   }
 
   const handleSaveProfile = useCallback(async () => {
     if (!user?.id) {
-      setLocalError('Usuario no autenticado.')
+      setLocalError('User not authenticated.')
       return
     }
 
@@ -210,7 +210,7 @@ export default function ProfileScreen() {
       })
 
       if (!updated) {
-        throw new Error('No se pudo actualizar el perfil.')
+        throw new Error('Profile update failed.')
       }
 
       const nextProfile = {
@@ -228,10 +228,10 @@ export default function ProfileScreen() {
       setNewAvatarUri(nextProfile.profileImageUrl ?? null)
       setEditing(false)
       refreshProfile()
-      Alert.alert('Éxito', 'Perfil actualizado con éxito')
+      Alert.alert('Success', 'Profile updated successfully.')
     } catch (updateError) {
-      console.error('Error al actualizar perfil/subir imagen:', updateError)
-      setLocalError(updateError?.message || 'Error durante la actualización.')
+      console.error('Error updating profile/uploading image:', updateError)
+      setLocalError(updateError?.message || 'Error during the update.')
     } finally {
       setSaving(false)
     }
@@ -248,7 +248,7 @@ export default function ProfileScreen() {
   const handleCancelEdit = useCallback(() => {
     setEditing(false)
     setLocalError(null)
-    setName(profile?.name || fetchedProfile?.name || user?.email || 'Usuario')
+    setName(profile?.name || fetchedProfile?.name || user?.email || 'User')
     setEmail(profile?.mail || fetchedProfile?.mail || user?.email || '')
     setNewAvatarUri(
       profile?.profileImageUrl ?? fetchedProfile?.profileImageUrl ?? null
@@ -259,7 +259,7 @@ export default function ProfileScreen() {
     async (listingId) => {
       const success = await reactivateListing(listingId)
       if (!success) {
-        Alert.alert('No se pudo activar', 'Inténtalo de nuevo más tarde.')
+        Alert.alert('Activation failed', 'Please try again later.')
       }
     },
     [reactivateListing]
@@ -274,14 +274,14 @@ export default function ProfileScreen() {
       const hasImage = Array.isArray(listing.images) && listing.images.length > 0
       const firstImage = hasImage ? listing.images[0] : null
       const publishDate = listing.created_at
-        ? new Date(listing.created_at).toLocaleDateString('es-ES')
-        : 'fecha s/d'
+        ? new Date(listing.created_at).toLocaleDateString('en-US')
+        : 'date unavailable'
       const isInactive = listing.is_active === false
       const isReactivating = reactivatingId === listing.id
       const isOwnListing = listing.user_id === user?.id
       const dateLabel = isInactive
-        ? `Guardado el ${publishDate}`
-        : `Publicado el ${publishDate}`
+        ? `Saved on ${publishDate}`
+        : `Published on ${publishDate}`
 
       const handleFavoriteChange = (nextValue) => {
         if (!nextValue) {
@@ -309,7 +309,7 @@ export default function ProfileScreen() {
               />
             ) : (
               <View style={styles.listingImagePlaceholder}>
-                <Text style={styles.listingImagePlaceholderText}>Sin foto</Text>
+                <Text style={styles.listingImagePlaceholderText}>No photo</Text>
               </View>
             )}
           </View>
@@ -350,7 +350,7 @@ export default function ProfileScreen() {
             {isInactive && isOwnListing ? (
               <View style={styles.inactiveRow}>
                 <View style={styles.inactiveBadge}>
-                  <Text style={styles.inactiveBadgeText}>Inactivo</Text>
+                  <Text style={styles.inactiveBadgeText}>Inactive</Text>
                 </View>
                 <TouchableOpacity
                   style={[
@@ -363,13 +363,13 @@ export default function ProfileScreen() {
                   {isReactivating ? (
                     <ActivityIndicator color="#000" />
                   ) : (
-                    <Text style={styles.activateButtonText}>Activar</Text>
+                    <Text style={styles.activateButtonText}>Activate</Text>
                   )}
                 </TouchableOpacity>
               </View>
             ) : isInactive && !isOwnListing ? (
               <View style={styles.inactiveBadge}>
-                <Text style={styles.inactiveBadgeText}>No disponible</Text>
+                <Text style={styles.inactiveBadgeText}>Unavailable</Text>
               </View>
             ) : null}
           </View>
@@ -385,7 +385,7 @@ export default function ProfileScreen() {
       <SafeAreaView style={styles.safeArea} edges={['top']}>
         <View style={styles.centerContent}>
           <ActivityIndicator size="large" color={palette.accent} />
-          <Text style={styles.loadingText}>Cargando datos...</Text>
+          <Text style={styles.loadingText}>Loading data...</Text>
         </View>
       </SafeAreaView>
     )
@@ -405,7 +405,7 @@ export default function ProfileScreen() {
     return (
       <SafeAreaView style={styles.safeArea} edges={['top']}>
         <View style={styles.centerContent}>
-          <Text style={styles.infoText}>Inicia sesión para ver el perfil.</Text>
+          <Text style={styles.infoText}>Sign in to view the profile.</Text>
         </View>
       </SafeAreaView>
     )
@@ -433,7 +433,7 @@ export default function ProfileScreen() {
                 >
                   <Ionicons name="camera-outline" size={30} color="#fff" />
                   <Text style={{ color: '#fff', fontSize: 12, marginTop: 4 }}>
-                    Cambiar
+                    Change
                   </Text>
                 </TouchableOpacity>
               )}
@@ -513,7 +513,7 @@ export default function ProfileScreen() {
               style={styles.personalDataInput}
               value={name}
               onChangeText={setName}
-              placeholder="Nombre"
+              placeholder="Full name"
               placeholderTextColor={palette.textMuted}
             />
 
@@ -522,7 +522,7 @@ export default function ProfileScreen() {
               style={[styles.personalDataInput, { backgroundColor: palette.disabled, color: palette.textMuted }]}
               value={email}
               editable={false}
-              placeholder="Email (no editable)"
+              placeholder="Email (not editable)"
               placeholderTextColor={palette.textMuted}
             />
 
@@ -553,13 +553,13 @@ export default function ProfileScreen() {
         ) : (
           <>
             <Text style={styles.personalDataLabel}>Full name</Text>
-            <Text style={styles.personalDataValue}>{profile?.name || user?.email || 'Usuario'}</Text>
+            <Text style={styles.personalDataValue}>{profile?.name || user?.email || 'User'}</Text>
 
             <Text style={styles.personalDataLabel}>Member since</Text>
             <Text style={styles.personalDataValue}>{joinDate || 'N/A'}</Text>
 
             <Text style={styles.personalDataLabel}>Contact</Text>
-            <Text style={styles.personalDataValue}>{email || 'No disponible'}</Text>
+            <Text style={styles.personalDataValue}>{email || 'Not available'}</Text>
 
             {profile?.balance !== undefined && (
               <>
@@ -595,7 +595,7 @@ export default function ProfileScreen() {
       </View>
 
       <TouchableOpacity style={styles.signOutButton} onPress={signOut}>
-        <Text style={styles.signOutButtonText}>Cerrar sesión</Text>
+        <Text style={styles.signOutButtonText}>Sign out</Text>
       </TouchableOpacity>
     </ScrollView>
   )
@@ -634,7 +634,7 @@ export default function ProfileScreen() {
                       />
                     ) : (
                       <View style={styles.publishedImagePlaceholder}>
-                        <Text style={styles.publishedImagePlaceholderText}>Sin foto</Text>
+                        <Text style={styles.publishedImagePlaceholderText}>No photo</Text>
                       </View>
                     )}
                   </View>
@@ -687,7 +687,7 @@ export default function ProfileScreen() {
                       />
                     ) : (
                       <View style={styles.publishedImagePlaceholder}>
-                        <Text style={styles.publishedImagePlaceholderText}>Sin foto</Text>
+                        <Text style={styles.publishedImagePlaceholderText}>No photo</Text>
                       </View>
                     )}
                   </View>
@@ -723,7 +723,7 @@ export default function ProfileScreen() {
       </View>
 
       <TouchableOpacity style={styles.signOutButton} onPress={signOut}>
-        <Text style={styles.signOutButtonText}>Cerrar sesión</Text>
+        <Text style={styles.signOutButtonText}>Sign out</Text>
       </TouchableOpacity>
     </ScrollView>
   )
@@ -734,7 +734,7 @@ export default function ProfileScreen() {
         <Text style={styles.favoriteSectionTitle}>Favorite cars</Text>
         {favoriteListings.length === 0 ? (
           <View style={styles.emptyStateContainer}>
-            <Text style={styles.emptyStateText}>Todavía no has marcado favoritos.</Text>
+            <Text style={styles.emptyStateText}>You have not added favorites yet.</Text>
           </View>
         ) : (
           <View style={styles.favoriteGrid}>
@@ -760,7 +760,7 @@ export default function ProfileScreen() {
                       />
                     ) : (
                       <View style={styles.favoriteImagePlaceholder}>
-                        <Text style={styles.favoriteImagePlaceholderText}>Sin foto</Text>
+                        <Text style={styles.favoriteImagePlaceholderText}>No photo</Text>
                       </View>
                     )}
                   </View>
@@ -794,7 +794,7 @@ export default function ProfileScreen() {
       </View>
 
       <TouchableOpacity style={styles.signOutButton} onPress={signOut}>
-        <Text style={styles.signOutButtonText}>Cerrar sesión</Text>
+        <Text style={styles.signOutButtonText}>Sign out</Text>
       </TouchableOpacity>
     </ScrollView>
   )

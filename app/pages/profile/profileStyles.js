@@ -286,7 +286,7 @@ export const profileScreenStyles = StyleSheet.create({
     fontFamily: FONT_FAMILY,
   },
   
-  // Nouveaux styles pour les fonctionnalités améliorées
+  // New styles for enhanced features
   loadingText: {
     marginTop: 16,
     fontSize: 16,

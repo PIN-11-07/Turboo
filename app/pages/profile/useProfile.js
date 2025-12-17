@@ -205,7 +205,7 @@ export const useProfile = () => {
       } catch (fetchError) {
         console.error(fetchError)
         if (isMounted) {
-          setError('No es posible cargar el perfil. Inténtalo de nuevo más tarde.')
+          setError('Unable to load the profile. Please try again later.')
         }
       } finally {
         if (isMounted) {
@@ -223,9 +223,9 @@ export const useProfile = () => {
 
   useFocusEffect(
     useCallback(() => {
-      // Refresh silencieusement sans bloquer l'UI si données existent
+      // Refresh silently without blocking the UI if data is already present
       if (profile) {
-        // Données déjà chargées : rafraîchir en arrière-plan
+        // Data already loaded: refresh in the background
         const backgroundRefresh = async () => {
           if (!user) return
 
@@ -257,7 +257,7 @@ export const useProfile = () => {
               getUserTransactionHistory(user.id).catch(() => []),
             ])
 
-            // Mettre à jour uniquement si montée
+            // Update only if still mounted
             const profileName =
               (typeof profileData?.full_name === 'string' &&
                 profileData.full_name.trim()) ||
@@ -285,7 +285,7 @@ export const useProfile = () => {
         }
         backgroundRefresh()
       } else {
-        // Données pas encore chargées : refresh complet
+        // Data not loaded yet: perform full refresh
         refreshProfile()
       }
     }, [refreshProfile, profile, user])
