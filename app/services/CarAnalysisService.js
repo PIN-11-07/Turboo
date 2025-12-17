@@ -115,9 +115,9 @@ export class CarAnalysisService {
 
     try {
       const prompt = `
-      Write a short, engaging, and professional sales ad (max 80 words) for this car in Spanish:
+      Write a short, engaging, and professional sales ad (max 80 words) for this car in English:
       ${JSON.stringify(carData)}
-      Use a sales-oriented yet honest tone. Respond in Spanish. No title, just the paragraph.
+      Use a sales-oriented yet honest tone. Respond in English. No title, just the paragraph.
       If you don't recognize a car on the photo or data is insufficient, respond with an empty description "".`;
 
       const requestBody = {

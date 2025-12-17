@@ -206,6 +206,11 @@ const SearchStackNavigator = () => (
       component={ChatScreen}
       options={{ headerShown: false }}
     />
+    <SearchStack.Screen
+      name="RatingScreen"
+      component={RatingScreen}
+      options={{ headerShown: false }}
+    />
   </SearchStack.Navigator>
 )
 
@@ -264,6 +269,11 @@ const ProfileStackNavigator = () => (
     <ProfileStack.Screen
       name="Chat"
       component={ChatScreen}
+      options={{ headerShown: false }}
+    />
+    <ProfileStack.Screen
+      name="RatingScreen"
+      component={RatingScreen}
       options={{ headerShown: false }}
     />
   </ProfileStack.Navigator>

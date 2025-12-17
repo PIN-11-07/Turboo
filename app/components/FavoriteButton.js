@@ -13,7 +13,7 @@ let cachedUserId = undefined
 
 const subscribeToFavoriteStatus = (listingKey, callback) => {
   if (!listingKey) {
-    return () => {}
+    return () => { }
   }
 
   if (!favoriteStatusListeners.has(listingKey)) {
@@ -282,10 +282,13 @@ export function FavoriteButton({
       return
     }
 
-    setLoading(true)
+    // Optimistic update
+    const previousState = isFavorite
+    const newState = !previousState
+    setFavoriteStatus(listingKey, newState)
 
     try {
-      if (isFavorite) {
+      if (previousState) {
         const { error } = await supabase
           .from('favorites')
           .delete()
@@ -315,12 +318,10 @@ export function FavoriteButton({
           }
         }
       }
-
-      setFavoriteStatus(listingKey, !isFavorite)
     } catch (toggleError) {
       console.error('[FavoriteButton] Error toggling favorite', toggleError)
-    } finally {
-      setLoading(false)
+      // Revert on error
+      setFavoriteStatus(listingKey, previousState)
     }
   }, [disabledProp, isFavorite, listingId, listingKey, loading, user])
 
