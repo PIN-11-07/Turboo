@@ -3,6 +3,7 @@ import {
   ActivityIndicator,
   Alert,
   Image,
+  Pressable,
   ScrollView,
   Text,
   TextInput,
@@ -456,17 +457,25 @@ export default function ProfileScreen() {
                   resizeMode="contain"
                 />
               </View>
-              <TouchableOpacity 
-                style={styles.reviewButton}
+              <Pressable
+                style={({ pressed }) => [
+                  styles.reviewButton,
+                  { backgroundColor: pressed ? palette.champagne : palette.darkMustard },
+                ]}
                 onPress={() => {
                   // TODO: Navigate to reviews screen
                   console.log('Navigate to reviews')
                 }}
               >
-                <Text style={styles.reviewButtonText}>
-                  See customer reviews ({profile.ratingCount})
-                </Text>
-              </TouchableOpacity>
+                {({ pressed }) => (
+                  <Text style={[styles.reviewButtonText, { color: pressed ? palette.darkMustard : palette.champagne }]}>
+                    See customer reviews{' '}
+                    <Text style={{ fontFamily: 'OTJubileeGolden', fontSize: 18 }}>
+                      ({profile.ratingCount})
+                    </Text>
+                  </Text>
+                )}
+              </Pressable>
             </View>
           </View>
           <View style={styles.verificationDetails}>
@@ -519,17 +528,27 @@ export default function ProfileScreen() {
 
             {localError ? <Text style={styles.errorText}>{localError}</Text> : null}
 
-            <TouchableOpacity
-              style={[styles.saveButton, saving && { opacity: 0.7 }]}
+            <Pressable
+              style={({ pressed }) => [
+                styles.saveButton,
+                pressed && { borderColor: palette.champagne },
+                saving && { opacity: 0.7 },
+              ]}
               onPress={handleSaveProfile}
               disabled={saving}
             >
-              {saving ? (
-                <ActivityIndicator color={palette.background} />
-              ) : (
-                <Text style={styles.saveButtonText}>Guardar Cambios</Text>
+              {({ pressed }) => (
+                <>
+                  {saving ? (
+                    <ActivityIndicator color={palette.mustard} />
+                  ) : (
+                    <Text style={[styles.saveButtonText, pressed && { color: palette.champagne, fontWeight: '700' }]}>
+                      Save Changes
+                    </Text>
+                  )}
+                </>
               )}
-            </TouchableOpacity>
+            </Pressable>
           </>
         ) : (
           <>
@@ -554,15 +573,22 @@ export default function ProfileScreen() {
 
       {/* Smart Car Alerts */}
       <View style={styles.personalDataSection}>
-        <TouchableOpacity 
-          style={styles.smartAlertsCard}
+        <Pressable
+          style={({ pressed }) => [
+            styles.smartAlertsCard,
+            { backgroundColor: pressed ? palette.champagne : palette.mustard },
+          ]}
           onPress={() => {
             // TODO: Navigate to smart alerts settings
             console.log('Navigate to smart alerts')
           }}
         >
-          <Text style={styles.smartAlertsTitle}>Smart car alerts</Text>
-        </TouchableOpacity>
+          {({ pressed }) => (
+            <Text style={[styles.smartAlertsTitle, { color: pressed ? palette.darkMustard : palette.champagne }]}>
+              Smart car alerts
+            </Text>
+          )}
+        </Pressable>
         <Text style={styles.smartAlertsDescription}>
           Keep this enabled to receive alerts for cars that match your interests and to help us improve your "Selected for You" recommendations.
         </Text>
