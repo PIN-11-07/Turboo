@@ -286,7 +286,7 @@ export const profileScreenStyles = StyleSheet.create({
     fontFamily: FONT_FAMILY,
   },
   
-  // Nouveaux styles pour les fonctionnalités améliorées
+  // New styles for enhanced features
   loadingText: {
     marginTop: 16,
     fontSize: 16,
@@ -416,21 +416,21 @@ export const profileScreenStyles = StyleSheet.create({
     fontFamily: FONT_FAMILY,
   },
   saveButton: {
-    backgroundColor: palette.success,
-    flexDirection: 'row',
+    flex: 1,
+    height: 54,
+    borderRadius: 5,
     alignItems: 'center',
     justifyContent: 'center',
-    paddingHorizontal: 24,
-    paddingVertical: 12,
-    borderRadius: 25,
+    borderWidth: 1,
+    borderColor: palette.mustard,
+    backgroundColor: 'transparent',
     marginTop: 16,
     minWidth: 200,
   },
   saveButtonText: {
-    color: palette.background,
+    color: palette.mustard,
     fontSize: 16,
-    fontWeight: 'bold',
-    fontFamily: FONT_FAMILY,
+    fontFamily: 'BaiJamjuree-Regular',
   },
   cancelButton: {
     backgroundColor: 'transparent',
@@ -779,7 +779,7 @@ export const profileScreenStyles = StyleSheet.create({
     fontFamily: FONT_FAMILY,
   },
   reviewButton: {
-    backgroundColor: palette.mustard,
+    backgroundColor: palette.darkMustard,
     paddingVertical: 12,
     paddingHorizontal: 32,
     borderRadius: 8,
@@ -788,10 +788,10 @@ export const profileScreenStyles = StyleSheet.create({
     justifyContent: 'center',
   },
   reviewButtonText: {
-    fontSize: 20,
+    fontSize: 18,
     fontWeight: '600',
     color: palette.champagne,
-    fontFamily: FONT_FAMILY,
+    fontFamily: 'BaiJamjuree-Regular',
   },
   verificationDetails: {
     marginTop: 20,
@@ -856,7 +856,7 @@ export const profileScreenStyles = StyleSheet.create({
   smartAlertsTitle: {
     fontSize: 27,
     fontWeight: 'bold',
-    color: palette.champagne,
+    color: palette.darkGrey,
     marginBottom: 2,
     fontFamily: FONT_FAMILY,
   },
