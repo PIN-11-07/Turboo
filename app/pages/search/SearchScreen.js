@@ -226,7 +226,7 @@ export default function SearchScreen() {
                                         search.setIsFocused(false)
                                     }, 200)
                                 }}
-                                placeholder="Search cars, members..."
+                                placeholder="Search cars"
                                 placeholderTextColor={palette.champagne}
                                 style={styles.searchInput}
                                 returnKeyType="search"

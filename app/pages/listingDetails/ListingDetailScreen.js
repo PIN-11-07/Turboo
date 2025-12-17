@@ -89,7 +89,7 @@ export default function ListingDetailScreen() {
   const normalizedSellerRating = Number.isFinite(Number(sellerRating))
     ? Number(sellerRating)
     : null
-  const sellerBadgeValue = listing?.sales_count ?? '1'
+  const sellerBadgeValue = '3'
 
   return (
     <SafeAreaView style={styles.safeArea} edges={['top', 'left', 'right']}>

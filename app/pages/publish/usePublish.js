@@ -53,6 +53,7 @@ export const usePublish = () => {
   const [form, setForm] = useState(createInitialForm)
   const [activePicker, setActivePicker] = useState(null)
   const [submitting, setSubmitting] = useState(false)
+  const [submittingAction, setSubmittingAction] = useState(null)
   const [error, setError] = useState(null)
   const [successMessage, setSuccessMessage] = useState(null)
 
@@ -162,7 +163,7 @@ export const usePublish = () => {
     const payload = validateForm()
     if (!payload) return
 
-    setSubmitting(true); setError(null); setSuccessMessage(null)
+    setSubmitting(true); setSubmittingAction('submit'); setError(null); setSuccessMessage(null)
 
     try {
       let imageUrl = null
@@ -188,13 +189,60 @@ export const usePublish = () => {
     } catch (e) {
       setError("Error al publicar. Inténtalo más tarde.")
     } finally {
-      setSubmitting(false)
+      setSubmitting(false); setSubmittingAction(null)
+    }
+  }
+
+  const buildDraftPayload = () => ({
+    title: (form.title || '').trim() || null,
+    description: (form.description || '').trim() || null,
+    price: sanitizeNumber(form.price),
+    make: form.make || null,
+    model: (form.model || '').trim() || null,
+    year: sanitizeInteger(form.year),
+    mileage: sanitizeInteger(form.mileage),
+    fuel_type: form.fuel_type || null,
+    transmission: form.transmission || null,
+    doors: sanitizeInteger(form.doors),
+    color: (form.color || '').trim() || null,
+    location: (form.location || '').trim() || null,
+  })
+
+  const handleSaveDraft = async () => {
+    if (!isAuthenticated) return setError('Debes iniciar sesión')
+    const payload = validateForm()
+    if (!payload) return
+    setSubmitting(true); setSubmittingAction('draft'); setError(null); setSuccessMessage(null)
+
+    try {
+      let imageUrl = null
+      if (image) {
+        imageUrl = await uploadToCloudinary(image)
+        if (!imageUrl) throw new Error('Error subiendo imagen')
+      }
+
+      const { error: insertError } = await supabase.from('listings').insert({
+        ...payload,
+        user_id: user.id,
+        images: imageUrl ? [imageUrl] : [],
+        is_active: false,
+      })
+
+      if (insertError) throw insertError
+
+      setForm(createInitialForm())
+      setImage(null)
+      setSuccessMessage('Saved to drafts.')
+    } catch (e) {
+      setError('No fue posible guardar el borrador. Inténtalo más tarde.')
+    } finally {
+      setSubmitting(false); setSubmittingAction(null)
     }
   }
 
   return {
-    form, image, setImage, submitting, error,
+    form, image, setImage, submitting, submittingAction, error,
     successMessage, activePicker, isAuthenticated,
-    handleChange, togglePicker, handleOptionSelect, handleSubmit,
+    handleChange, togglePicker, handleOptionSelect, handleSubmit, handleSaveDraft,
   }
 }
