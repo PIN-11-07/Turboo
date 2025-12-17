@@ -20,22 +20,28 @@ import { palette } from '../../theme/palette';
 
 const MAKE_OPTIONS = [
   'Alfa Romeo',
+  'Aston Martin',
   'Audi',
+  'Bentley',
   'BMW',
   'Citroen',
   'Cupra',
   'Dacia',
+  'Ferrari',
   'Fiat',
   'Ford',
   'Hyundai',
   'Jeep',
   'Kia',
+  'Lamborghini',
   'Mazda',
+  'McLaren',
   'Mercedes-Benz',
   'Mini',
   'Nissan',
   'Opel',
   'Peugeot',
+  'Porsche',
   'Renault',
   'Seat',
   'Skoda',
@@ -43,6 +49,25 @@ const MAKE_OPTIONS = [
   'Toyota',
   'Volkswagen',
   'Volvo',
+];
+
+const BODY_TYPE_OPTIONS = [
+  'Coupe',
+  'Convertible',
+  'SUV',
+  'Sedan',
+  'Hatchback',
+  'Wagon',
+  'Pickup',
+  'Van',
+  'Other'
+];
+
+const CONDITION_OPTIONS = [
+  'Excellent',
+  'Good',
+  'Fair',
+  'Needs Work'
 ];
 
 const FUEL_OPTIONS = ['Gasoline', 'Diesel', 'Hybrid', 'Electric', 'LPG', 'CNG'];
@@ -146,9 +171,9 @@ export default function PublishScreen() {
         behavior={Platform.OS === 'ios' ? 'padding' : undefined}
       >
         <ScrollView contentContainerStyle={styles.scrollContent}>
-         <Text style={styles.sellCarTitle}>
-  SELL A CAR
-</Text>
+          <Text style={styles.sellCarTitle}>
+            SELL A CAR
+          </Text>
 
           {image ? (
             <View style={styles.imageContainer}>
@@ -208,7 +233,7 @@ export default function PublishScreen() {
             all sides.
           </Text>
 
-         <Text style={{ fontFamily: 'OTJubileeGolden', fontSize: 27, color: palette.lightGrey }}>
+          <Text style={{ fontFamily: 'OTJubileeGolden', fontSize: 27, color: palette.lightGrey }}>
             Car information
           </Text>
 
@@ -239,6 +264,14 @@ export default function PublishScreen() {
             value={form.model}
             onChangeText={(t) => handleChange('model', t)}
           />
+
+          <Text style={styles.label}>Body Type</Text>
+          <TouchableOpacity style={styles.selector} onPress={() => togglePicker('body_type')}>
+            <Text style={styles.selectorValue}>
+              {form.body_type || 'Select body type'}
+            </Text>
+          </TouchableOpacity>
+          {renderOptionList('body_type', BODY_TYPE_OPTIONS)}
 
           <Text style={styles.label}>Year</Text>
           <TextInput
@@ -279,6 +312,14 @@ export default function PublishScreen() {
             value={form.mileage}
             onChangeText={(t) => handleChange('mileage', t)}
           />
+
+          <Text style={styles.label}>Condition</Text>
+          <TouchableOpacity style={styles.selector} onPress={() => togglePicker('condition')}>
+            <Text style={styles.selectorValue}>
+              {form.condition || 'Select condition'}
+            </Text>
+          </TouchableOpacity>
+          {renderOptionList('condition', CONDITION_OPTIONS)}
 
           <Text style={styles.label}>Fuel type</Text>
           <TouchableOpacity style={styles.selector} onPress={() => togglePicker('fuel_type')}>
@@ -338,7 +379,7 @@ export default function PublishScreen() {
             </View>
           )}
 
-          
+
 
           <TouchableOpacity
             style={[

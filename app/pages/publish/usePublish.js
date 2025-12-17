@@ -33,6 +33,8 @@ const createInitialForm = () => ({
   doors: '',
   color: '',
   location: '',
+  body_type: '',
+  condition: '',
 })
 
 const sanitizeNumber = (value) => {
@@ -57,7 +59,7 @@ export const usePublish = () => {
   const [error, setError] = useState(null)
   const [successMessage, setSuccessMessage] = useState(null)
 
-  
+
   const [image, setImage] = useState(null)
 
   const isAuthenticated = Boolean(user?.id)
@@ -76,6 +78,8 @@ export const usePublish = () => {
       doors: 'Doors',
       color: 'Color',
       location: 'Location',
+      body_type: 'Body type',
+      condition: 'Condition',
     }),
     []
   )
@@ -133,20 +137,22 @@ export const usePublish = () => {
       fuel_type: form.fuel_type,
       transmission: form.transmission,
       doors: doorsValue,
-      color: form.color.trim(),  
+      color: form.color.trim(),
       location: form.location.trim(),
+      body_type: form.body_type,
+      condition: form.condition,
     }
   }
 
   const uploadToCloudinary = async (uri) => {
     try {
       const data = new FormData()
-      data.append("file", { uri, type:"image/jpeg", name:`vehiculo_${Date.now()}.jpg` })
+      data.append("file", { uri, type: "image/jpeg", name: `vehiculo_${Date.now()}.jpg` })
       data.append("upload_preset", UPLOAD_PRESET)
 
       const res = await fetch(`https://api.cloudinary.com/v1_1/${CLOUD_NAME}/image/upload`, {
-        method:"POST",
-        body:data
+        method: "POST",
+        body: data
       })
 
       const json = await res.json()
@@ -159,7 +165,7 @@ export const usePublish = () => {
 
   const handleSubmit = async () => {
     if (!isAuthenticated) return setError("Debes iniciar sesión")
-    
+
     const payload = validateForm()
     if (!payload) return
 
@@ -175,9 +181,9 @@ export const usePublish = () => {
 
       const { error: insertError } = await supabase.from("listings").insert({
         ...payload,
-        user_id:user.id,
+        user_id: user.id,
         images: imageUrl ? [imageUrl] : [],
-        is_active:true,
+        is_active: true,
       })
 
       if (insertError) throw insertError
@@ -206,6 +212,8 @@ export const usePublish = () => {
     doors: sanitizeInteger(form.doors),
     color: (form.color || '').trim() || null,
     location: (form.location || '').trim() || null,
+    body_type: form.body_type || null,
+    condition: form.condition || null,
   })
 
   const handleSaveDraft = async () => {

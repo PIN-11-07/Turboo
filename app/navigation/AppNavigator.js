@@ -58,7 +58,7 @@ const getTabBarStyle = route => {
   return undefined
 }
 
-const CustomTabBar = ({ state, descriptors, navigation }) => {
+const CustomTabBar = React.memo(({ state, descriptors, navigation }) => {
   const focusedOptions = descriptors[state.routes[state.index].key]?.options || {}
   const tabBarStyle = StyleSheet.flatten(focusedOptions.tabBarStyle)
   const shouldHideTabBar = focusedOptions.tabBarVisible === false || tabBarStyle?.display === 'none'
@@ -67,7 +67,7 @@ const CustomTabBar = ({ state, descriptors, navigation }) => {
 
   return (
     <View style={styles.tabContainer}>
-      <BlurView intensity={40} tint="dark" style={styles.tabContent}>
+      <BlurView intensity={30} tint="dark" style={styles.tabContent}>
         {state.routes.map((route, index) => {
           const { options } = descriptors[route.key]
           const isFocused = state.index === index
@@ -127,7 +127,7 @@ const CustomTabBar = ({ state, descriptors, navigation }) => {
       </BlurView>
     </View>
   )
-}
+})
 
 const FeedStackNavigator = () => (
   <FeedStack.Navigator screenOptions={stackScreenOptions}>
@@ -279,19 +279,25 @@ const ProfileStackNavigator = () => (
   </ProfileStack.Navigator>
 )
 
+const TAB_SCREEN_OPTIONS = {
+  // Keep every tab mounted so each stack loads once at startup
+  // Note: lazy: false can cause startup lag but faster switching. 
+  // If switching is still slow, try lazy: true. 
+  lazy: false,
+  unmountOnBlur: false,
+  headerShown: false,
+  sceneContainerStyle: {
+    backgroundColor: palette.background,
+  },
+}
+
+const renderCustomTabBar = props => <CustomTabBar {...props} />
+
 export default function AppNavigator() {
   return (
     <Tab.Navigator
-      tabBar={props => <CustomTabBar {...props} />}
-      screenOptions={{
-        // Keep every tab mounted so each stack loads once at startup
-        lazy: false,
-        unmountOnBlur: false,
-        headerShown: false,
-        sceneContainerStyle: {
-          backgroundColor: palette.background,
-        },
-      }}
+      tabBar={renderCustomTabBar}
+      screenOptions={TAB_SCREEN_OPTIONS}
     >
       <Tab.Screen
         name="Home"
