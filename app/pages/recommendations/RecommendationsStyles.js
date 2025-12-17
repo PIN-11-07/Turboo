@@ -8,6 +8,16 @@ export const styles = StyleSheet.create({
   safeArea: { flex: 1, backgroundColor: palette.background },
 
   // HEADER
+  header: {
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+    backgroundColor: palette.black,
+  },
+  iconButton: {
+    padding: 8,
+  },
+
+  // HEADER CONTAINER
   headerContainer: { paddingHorizontal: 22, paddingTop: 0 },
   heroTitleMain: { fontSize: 50, fontWeight: "700", color: palette.champagne, fontFamily: 'OTJubileeGolden-Extralight' },
   heroTitleSub: { fontSize: 50, fontStyle: "italic", color: palette.champagne, marginTop: -6, fontFamily: 'OTJubileeGolden-Italic' },

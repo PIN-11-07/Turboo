@@ -31,6 +31,11 @@ export const feedScreenStyles = StyleSheet.create({
     marginBottom: 12,
     backgroundColor: "transparent",
   },
+  headerWithButton: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'flex-end',
+  },
   recommendationsSection: {
     paddingHorizontal: 16,
     marginBottom: 12,

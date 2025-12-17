@@ -19,4 +19,5 @@ export const palette = {
   champagne: '#E1CFAA',
   lightGrey: '#D9D9D9',
   white: '#FFFFFF',
+  black: '#000000',
 }

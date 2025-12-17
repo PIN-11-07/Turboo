@@ -131,25 +131,28 @@ export default function FeedScreen() {
 
       <View style={styles.container}>
         <View style={styles.topSection}>
-          <Text style={styles.heroTitleMain}>Discover</Text>
-          <Text style={styles.heroTitleSub}>all cars</Text>
-          <View style={{ height: 20 }} />
+          <View style={styles.headerWithButton}>
+            <View>
+              <Text style={styles.heroTitleMain}>Discover</Text>
+              <Text style={styles.heroTitleSub}>all cars</Text>
+            </View>
+            {/* Recommendations Button */}
+            <TouchableOpacity
+              style={styles.recommendButton}
+              activeOpacity={0.85}
+              onPress={() => navigation.navigate('Recommendations')}
+            >
+              <Ionicons name="sparkles-outline" size={16} color={palette.champagne} />
+              <Text style={styles.recommendButtonText}>For you</Text>
+            </TouchableOpacity>
+          </View>
+          <View style={{ height: 40 }} />
           <LinearGradient
             colors={['#c68515ff', '#000000ff']}
             start={{ x: 0, y: 0 }}
             end={{ x: 0, y: 1 }}
             style={styles.heroContainer}
           />
-
-          {/* Recommendations Button */}
-          <TouchableOpacity
-            style={styles.recommendButton}
-            activeOpacity={0.85}
-            onPress={() => navigation.navigate('Recommendations')}
-          >
-            <Ionicons name="sparkles-outline" size={16} color={palette.champagne} />
-            <Text style={styles.recommendButtonText}>For you</Text>
-          </TouchableOpacity>
 
           {error && <Text style={styles.errorText}>{error}</Text>}
         </View>

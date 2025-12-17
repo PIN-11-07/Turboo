@@ -2,6 +2,7 @@ import React, { useCallback } from 'react'
 import { View, Text, FlatList, TouchableOpacity, Image, TouchableWithoutFeedback } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { useNavigation } from '@react-navigation/native'
+import { Ionicons } from '@expo/vector-icons'
 import { palette } from '../../theme/palette'
 import FavoriteButton from '../../components/FavoriteButton'
 import { styles } from "./RecommendationsStyles"
@@ -60,6 +61,11 @@ export default function RecommendationsScreen() {
 
   return (
     <SafeAreaView style={styles.safeArea}>
+      <View style={styles.header}>
+        <TouchableOpacity onPress={() => navigation.goBack()} style={styles.iconButton}>
+          <Ionicons name="arrow-back" size={24} color={palette.white} />
+        </TouchableOpacity>
+      </View>
       <View style={styles.headerContainer}>
         <Text style={styles.heroTitleMain}>Selected</Text>
         <Text style={styles.heroTitleSub}>for you</Text>

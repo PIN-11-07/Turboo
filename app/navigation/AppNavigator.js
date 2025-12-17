@@ -159,7 +159,7 @@ const FeedStackNavigator = () => (
     <FeedStack.Screen
       name="Recommendations"
       component={RecommendationsScreen}
-      options={{ title: '' }}
+      options={{ headerShown: false }}
     />
     <FeedStack.Screen
       name="RatingScreen"
