@@ -216,13 +216,12 @@ const styles = StyleSheet.create({
   headerTitleLight: {
     fontSize: 32,
     color: '#E0E0E0',
-    fontFamily: Platform.OS === 'ios' ? 'Georgia' : 'serif',
-    fontWeight: '300',
+    fontFamily: 'OTJubileeGolden-ExtraLight',
   },
   headerTitleBold: {
     fontSize: 42,
     color: '#E0E0E0',
-    fontFamily: Platform.OS === 'ios' ? 'Georgia' : 'serif',
+    fontFamily: 'OTJubileeGolden-Italic',
     fontWeight: 'bold',
     fontStyle: 'italic',
     lineHeight: 48,
